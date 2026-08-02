@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f3d77a"/>
+      <stop offset="45%" stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#8a6d1a"/>
+    </linearGradient>
+    <linearGradient id="goldInner" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff3c4"/>
+      <stop offset="55%" stop-color="#f3d77a"/>
+      <stop offset="100%" stop-color="#c9a227"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.42" r="0.55">
+      <stop offset="0%" stop-color="#d4af37" stop-opacity="0.35"/>
+      <stop offset="70%" stop-color="#d4af37" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- background -->
+  <rect x="0" y="0" width="200" height="200" rx="34" fill="#0a0a0d"/>
+  <rect x="0" y="0" width="200" height="200" rx="34" fill="url(#glow)"/>
+
+  <!-- Art Deco double border -->
+  <rect x="10" y="10" width="180" height="180" rx="26" fill="none" stroke="url(#goldGrad)" stroke-width="2.4"/>
+  <rect x="19" y="19" width="162" height="162" rx="20" fill="none" stroke="#d4af37" stroke-opacity="0.35" stroke-width="1.1"/>
+
+  <!-- corner diamonds -->
+  <g fill="url(#goldGrad)">
+    <rect x="14" y="14" width="7" height="7" transform="rotate(45 17.5 17.5)"/>
+    <rect x="179" y="14" width="7" height="7" transform="rotate(45 182.5 17.5)"/>
+    <rect x="14" y="179" width="7" height="7" transform="rotate(45 17.5 182.5)"/>
+    <rect x="179" y="179" width="7" height="7" transform="rotate(45 182.5 182.5)"/>
+  </g>
+
+  <!-- laurel arcs -->
+  <path d="M56 150 Q100 172 144 150" fill="none" stroke="#d4af37" stroke-opacity="0.5" stroke-width="1.2"/>
+  <path d="M64 156 Q100 174 136 156" fill="none" stroke="#d4af37" stroke-opacity="0.28" stroke-width="1"/>
+
+  <!-- stylized flame: three teardrops -->
+  <!-- outer flame -->
+  <path d="M100 34
+           C 108 52, 122 62, 122 82
+           A 24 24 0 1 1 78 82
+           C 78 62, 92 52, 100 34 Z"
+        fill="url(#goldGrad)" opacity="0.9"/>
+  <!-- mid flame -->
+  <path d="M100 50
+           C 106 63, 115 71, 115 86
+           A 16.5 16.5 0 1 1 85 86
+           C 85 71, 94 63, 100 50 Z"
+        fill="#e8c55a" opacity="0.95"/>
+  <!-- inner flame -->
+  <path d="M100 62
+           C 104 72, 110 78, 110 89
+           A 10.5 10.5 0 1 1 90 89
+           C 90 78, 96 72, 100 62 Z"
+        fill="url(#goldInner)"/>
+
+  <!-- flame base / ember -->
+  <ellipse cx="100" cy="124" rx="15" ry="5" fill="url(#goldGrad)" opacity="0.85"/>
+
+  <!-- S monogram over flame -->
+  <text x="100" y="142" text-anchor="middle"
+        font-family="Playfair Display, Georgia, serif" font-size="44" font-weight="600"
+        fill="url(#goldInner)" letter-spacing="1">S</text>
+</svg>

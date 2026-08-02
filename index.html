@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="vi" data-lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ST DUPONT VINTAGE — Sang Van · Bật lửa sưu tầm chính hãng</title>
+<meta name="description" content="Sưu tầm & bảo dưỡng bật lửa S.T. Dupont vintage chính hãng — Tinh hoa nước Pháp, gửi đến Việt Nam.">
+<link rel="icon" type="image/png" href="assets/img/logo-final_64.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --bg:#0a0a0d;
+  --bg-2:#101014;
+  --bg-3:#16161c;
+  --ink:#f3ecd9;
+  --ink-dim:#a89f8a;
+  --ink-faint:#6f6857;
+  --gold:#d4af37;
+  --gold-bright:#f3d77a;
+  --gold-deep:#9a7b1e;
+  --line:rgba(212,175,55,.18);
+  --serif:'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  --serif-2:'Cormorant Garamond', Georgia, serif;
+  --sans:'Inter', system-ui, sans-serif;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-weight:300;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+::selection{background:var(--gold);color:#0a0a0d}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+.container{width:min(1200px,92vw);margin:0 auto}
+.section{padding:110px 0;position:relative}
+
+/* ============ GOLD ORNAMENT ============ */
+.ornament{display:flex;align-items:center;justify-content:center;gap:18px;margin:26px auto 0}
+.ornament::before,.ornament::after{content:"";height:1px;width:70px;background:linear-gradient(90deg,transparent,var(--gold));opacity:.6}
+.ornament::after{background:linear-gradient(90deg,var(--gold),transparent)}
+.ornament .dia{width:7px;height:7px;transform:rotate(45deg);background:var(--gold);box-shadow:0 0 12px rgba(212,175,55,.7)}
+.eyebrow{
+  font-family:var(--sans);font-size:.72rem;letter-spacing:.42em;text-transform:uppercase;
+  color:var(--gold);text-align:center;margin-bottom:18px;
+}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.12}
+h2.sec-title{font-size:clamp(2rem,4.6vw,3.4rem);text-align:center;letter-spacing:.02em}
+.sec-sub{text-align:center;color:var(--ink-dim);max-width:640px;margin:18px auto 0;font-size:.98rem}
+
+/* ============ BUTTONS ============ */
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:16px 34px;font-family:var(--sans);font-size:.8rem;letter-spacing:.22em;text-transform:uppercase;
+  border:1px solid var(--gold);color:var(--gold-bright);background:transparent;cursor:pointer;
+  transition:all .45s var(--ease);position:relative;overflow:hidden;
+}
+.btn::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,var(--gold-deep),var(--gold),var(--gold-bright));transform:translateX(-101%);transition:transform .5s var(--ease);z-index:-1}
+.btn:hover{color:#0a0a0d}
+.btn:hover::before{transform:translateX(0)}
+.btn.solid{background:linear-gradient(120deg,var(--gold-deep),var(--gold) 55%,var(--gold-bright));color:#0a0a0d;border-color:transparent}
+.btn.solid:hover{box-shadow:0 8px 40px rgba(212,175,55,.35);transform:translateY(-2px)}
+.btn.solid:hover::before{display:none}
+
+/* ============ NAV ============ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 5vw;transition:all .5s var(--ease);
+}
+nav.scrolled{background:rgba(10,10,13,.88);backdrop-filter:blur(14px);padding:12px 5vw;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:14px}
+.brand .mark{
+  width:48px;height:48px;flex:0 0 48px;display:block;border:none;
+}
+.brand .mark::after{display:none}
+.brand .name{font-family:var(--serif);font-size:1.05rem;letter-spacing:.14em;color:var(--ink)}
+.brand .name small{display:block;font-family:var(--sans);font-size:.58rem;letter-spacing:.5em;color:var(--gold);text-transform:uppercase;margin-top:2px}
+.nav-links{display:flex;align-items:center;gap:34px}
+.nav-links a{font-size:.76rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-dim);transition:color .3s}
+.nav-links a:hover{color:var(--gold-bright)}
+.lang-toggle{
+  display:inline-flex;border:1px solid var(--line);overflow:hidden;margin-left:6px;
+}
+.lang-toggle button{
+  background:transparent;border:none;color:var(--ink-dim);font-family:var(--sans);
+  font-size:.72rem;letter-spacing:.14em;padding:8px 14px;cursor:pointer;transition:all .3s;
+}
+.lang-toggle button.active{background:var(--gold);color:#0a0a0d;font-weight:600}
+.burger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:6px}
+.burger span{width:26px;height:2px;background:var(--gold);transition:all .3s}
+
+/* ============ HERO ============ */
+.hero{
+  min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;
+}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center;animation:kenburns 22s var(--ease) infinite alternate}
+@keyframes kenburns{from{transform:scale(1)}to{transform:scale(1.12) translateY(-2%)}}
+.hero-bg::after{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 78% 60% at 50% 48%,rgba(10,10,13,.05) 0%,rgba(10,10,13,.72) 62%,rgba(10,10,13,.96) 100%),
+    linear-gradient(180deg,rgba(10,10,13,.42) 0%,rgba(10,10,13,.30) 35%,var(--bg) 100%);
+}
+.gold-haze{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse 45% 30% at 50% 58%,rgba(212,175,55,.16),transparent 70%);
+  animation:haze 9s ease-in-out infinite alternate}
+@keyframes haze{from{opacity:.6;transform:scale(1)}to{opacity:1;transform:scale(1.12)}}
+.sparks{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.spark{
+  position:absolute;width:3px;height:3px;border-radius:50%;background:var(--gold-bright);
+  box-shadow:0 0 8px 2px rgba(243,215,122,.5);opacity:0;animation:rise linear infinite;
+}
+@keyframes rise{
+  0%{transform:translateY(20vh) translateX(0) scale(.4);opacity:0}
+  12%{opacity:.9}
+  85%{opacity:.35}
+  100%{transform:translateY(-80vh) translateX(6vw) scale(1);opacity:0}
+}
+.hero-content{position:relative;z-index:5;width:min(1000px,92vw);margin:0 auto;text-align:center;padding-top:60px}
+.hero .eyebrow{margin-bottom:22px;text-shadow:0 2px 10px rgba(10,10,13,.8)}
+.hero h1{
+  font-size:clamp(3rem,8.5vw,6.6rem);font-weight:700;letter-spacing:.02em;
+  background:linear-gradient(180deg,#fff8e0 0%,var(--gold-bright) 38%,var(--gold) 62%,#8a6d1a 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 6px 40px rgba(212,175,55,.25));
+}
+.hero h1 em{font-style:italic;font-weight:500}
+.hero .tagline{
+  margin:26px auto 0;max-width:560px;font-family:var(--serif-2);font-style:italic;
+  font-size:clamp(1.1rem,2vw,1.35rem);color:var(--ink);letter-spacing:.04em;
+  text-shadow:0 2px 14px rgba(10,10,13,.85),0 1px 4px rgba(10,10,13,.9);
+}
+.hero .divider{display:flex;align-items:center;justify-content:center;gap:16px;margin:34px auto 0}
+.hero .divider::before,.hero .divider::after{content:"";width:90px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.hero .divider::after{background:linear-gradient(90deg,var(--gold),transparent)}
+.hero .divider .d{width:8px;height:8px;transform:rotate(45deg);border:1px solid var(--gold)}
+.hero-cta{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:42px}
+.hero-stats{
+  margin-top:70px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);
+}
+.stat{background:rgba(10,10,13,.72);backdrop-filter:blur(6px);padding:26px 10px;text-align:center}
+.stat b{font-family:var(--serif);font-size:clamp(1.5rem,3vw,2.1rem);font-weight:600;color:var(--gold-bright);display:block}
+.stat span{font-size:.68rem;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-dim)}
+
+/* ============ MARQUEE ============ */
+.marquee{
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  background:linear-gradient(90deg,var(--bg-2),var(--bg-3),var(--bg-2));
+  padding:18px 0;overflow:hidden;position:relative;
+}
+.marquee .track{display:flex;gap:56px;white-space:nowrap;animation:scroll 30s linear infinite;width:max-content}
+.marquee span{font-family:var(--serif-2);font-style:italic;font-size:1.02rem;color:var(--ink-dim);letter-spacing:.12em}
+.marquee span i{color:var(--gold);font-style:normal;margin:0 8px}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ============ COLLECTION ============ */
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:60px}
+.card{position:relative;overflow:hidden;background:var(--bg-2);border:1px solid var(--line);aspect-ratio:4/3;cursor:pointer;transition:all .5s var(--ease)}
+.card img{width:100%;height:100%;object-fit:cover;transition:transform 1.1s var(--ease),filter .5s}
+.card:hover{border-color:var(--gold);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.card:hover img{transform:scale(1.09)}
+.card::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 45%,rgba(10,10,13,.92) 100%);opacity:.9;transition:opacity .5s;
+}
+.card .cap{position:absolute;left:24px;right:24px;bottom:20px;z-index:2;opacity:1;transform:translateY(0);transition:all .5s var(--ease)}
+.card:hover .cap{transform:translateY(-6px)}
+.card .cap b{font-family:var(--serif);font-weight:500;font-size:1.05rem;color:#fff;display:block;letter-spacing:.04em;text-shadow:0 2px 14px rgba(0,0,0,.7)}
+.card .cap span{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-bright);text-shadow:0 1px 8px rgba(0,0,0,.8)}
+.card.tall{aspect-ratio:3/4}
+
+/* ============ ABOUT ============ */
+.about-grid{display:grid;grid-template-columns:380px 1fr;gap:70px;align-items:center;margin-top:40px}
+.about-photo{position:relative}
+.about-photo .frame{border:1px solid var(--gold);padding:14px;position:relative}
+.about-photo .frame::before{content:"";position:absolute;inset:8px;border:1px solid rgba(212,175,55,.3);pointer-events:none}
+.about-photo img{width:100%;aspect-ratio:1;object-fit:cover;filter:saturate(1.02)}
+.about-photo .badge{
+  position:absolute;bottom:-18px;right:-18px;background:linear-gradient(120deg,var(--gold-deep),var(--gold),var(--gold-bright));
+  color:#0a0a0d;padding:14px 22px;text-align:center;box-shadow:0 12px 40px rgba(212,175,55,.3);
+}
+.about-photo .badge b{display:block;font-family:var(--serif);font-size:1.3rem;font-weight:700;line-height:1}
+.about-photo .badge span{font-size:.6rem;letter-spacing:.26em;text-transform:uppercase;font-weight:600}
+.about-copy .eyebrow{text-align:left}
+.about-copy h2{font-size:clamp(1.9rem,3.4vw,2.8rem)}
+.about-copy p{color:var(--ink-dim);margin-top:22px;font-size:1.02rem}
+.about-copy .quote{
+  font-family:var(--serif-2);font-style:italic;font-size:1.35rem;color:var(--gold-bright);
+  border-left:2px solid var(--gold);padding:8px 0 8px 26px;margin:30px 0 0;
+}
+.about-links{display:flex;gap:16px;flex-wrap:wrap;margin-top:34px}
+
+/* ============ SERVICES ============ */
+.services{background:linear-gradient(180deg,var(--bg),var(--bg-2) 30%,var(--bg));position:relative}
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:60px}
+.svc{
+  border:1px solid var(--line);background:var(--bg-2);padding:44px 36px;text-align:center;
+  transition:all .5s var(--ease);position:relative;overflow:hidden;
+}
+.svc::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0;transition:opacity .5s}
+.svc:hover{border-color:var(--gold);transform:translateY(-6px)}
+.svc:hover::before{opacity:1}
+.svc .num{font-family:var(--serif);font-size:2.6rem;color:transparent;-webkit-text-stroke:1px var(--gold);opacity:.6}
+.svc h3{font-size:1.28rem;margin:16px 0 12px}
+.svc p{color:var(--ink-dim);font-size:.92rem}
+.svc .hr{width:40px;height:1px;background:var(--gold);margin:0 auto 18px}
+
+/* ============ CONTACT ============ */
+.contact{position:relative;overflow:hidden;text-align:center}
+.contact::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 55% 45% at 50% 60%,rgba(212,175,55,.1),transparent 70%)}
+.contact .container{position:relative;z-index:2}
+.contact .phone{
+  font-family:var(--serif);font-size:clamp(2.2rem,5.5vw,4rem);font-weight:600;margin:34px 0 10px;
+  background:linear-gradient(180deg,#fff8e0,var(--gold-bright) 45%,var(--gold));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:.06em;display:inline-block;
+}
+.contact .note{color:var(--ink-dim);margin-bottom:44px}
+.cta-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.cta-row .btn{min-width:210px;justify-content:center}
+
+/* ============ FOOTER ============ */
+footer{border-top:1px solid var(--line);padding:44px 0 34px;background:var(--bg-2)}
+.foot{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.foot .fname{font-family:var(--serif);font-size:1.1rem;letter-spacing:.16em;color:var(--ink)}
+.foot .fname span{color:var(--gold)}
+.foot p{font-size:.72rem;letter-spacing:.1em;color:var(--ink-faint)}
+.foot .social{display:flex;gap:14px;margin-top:8px}
+.foot .social a{
+  width:44px;height:44px;border:1px solid var(--line);display:grid;place-items:center;
+  font-size:.72rem;letter-spacing:.1em;color:var(--ink-dim);transition:all .35s;
+}
+.foot .social a:hover{border-color:var(--gold);color:var(--gold-bright);transform:translateY(-3px)}
+
+/* ============ REVEAL ============ */
+.reveal{opacity:0;transform:translateY(46px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.reveal.in{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}
+
+/* ============ LIGHTBOX ============ */
+.lightbox{
+  position:fixed;inset:0;z-index:200;background:rgba(5,5,8,.96);display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .4s var(--ease);cursor:zoom-out;
+}
+.lightbox.open{opacity:1;pointer-events:auto}
+.lightbox img{max-width:88vw;max-height:82vh;object-fit:contain;box-shadow:0 30px 120px rgba(0,0,0,.8);border:1px solid var(--line)}
+.lightbox .lb-cap{position:absolute;bottom:26px;left:0;right:0;text-align:center;color:var(--ink-dim);font-size:.85rem;letter-spacing:.1em}
+.lightbox .lb-close{position:absolute;top:22px;right:30px;width:46px;height:46px;border:1px solid var(--line);display:grid;place-items:center;color:var(--gold);font-size:1.4rem;cursor:pointer;transition:all .3s;background:rgba(10,10,13,.6)}
+.lightbox .lb-close:hover{border-color:var(--gold);color:var(--gold-bright)}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:980px){
+  .nav-links{display:none}
+  .burger{display:flex}
+  .nav-links.open{display:flex;position:fixed;inset:0;flex-direction:column;justify-content:center;gap:30px;background:rgba(10,10,13,.97);z-index:99;font-size:1.1rem}
+  .hero-bg img{animation:none;transform:none;object-fit:contain;background:var(--bg)}
+  .gallery{grid-template-columns:repeat(2,1fr)}
+  .svc-grid{grid-template-columns:1fr}
+  .about-grid{grid-template-columns:1fr;gap:54px}
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:560px){
+  .gallery{grid-template-columns:1fr}
+  .section{padding:80px 0}
+  .hero-cta .btn{width:100%}
+  .hero-content{padding-top:96px}
+  .hero .eyebrow{margin-top:34px;font-size:.6rem;letter-spacing:.28em}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav id="nav">
+  <div class="brand">
+    <img class="mark" src="assets/img/logo-final_64.png" alt="Sang Van logo" width="48" height="48">
+    <div class="name">ST·DUPONT <small data-i18n="nav_brand_sub">Sang Van · Collection</small></div>
+  </div>
+  <div class="nav-links" id="navLinks">
+    <a href="#collection" data-i18n="nav_collection">Bộ sưu tập</a>
+    <a href="#about" data-i18n="nav_about">Về Sang</a>
+    <a href="#services" data-i18n="nav_services">Dịch vụ</a>
+    <a href="#contact" data-i18n="nav_contact">Liên hệ</a>
+    <div class="lang-toggle">
+      <button id="langVi" class="active" onclick="setLang('vi')">VI</button>
+      <button id="langEn" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+  <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero-bg">
+    <picture>
+      <source media="(max-width: 768px)" srcset="assets/img/hero-mobile.jpg">
+      <img src="assets/img/hero.jpg" alt="S.T. Dupont vintage lighter" fetchpriority="high">
+    </picture>
+  </div>
+  <div class="gold-haze"></div>
+  <div class="sparks" id="sparks"></div>
+  <div class="hero-content">
+    <div class="eyebrow reveal">S.T. Dupont · Paris · Vintage Collection</div>
+    <h1 class="reveal d1"><span data-i18n="hero_title_1">DI SẢN</span><br><em data-i18n="hero_title_2">Của Lửa</em></h1>
+    <p class="tagline reveal d2" data-i18n="hero_tagline">Những chiếc bật lửa S.T. Dupont vintage chính hãng — được săn tìm, bảo dưỡng và trao lại bởi một người thực sự đam mê.</p>
+    <div class="divider reveal d3"><span class="d"></span></div>
+    <div class="hero-cta reveal d3">
+      <a class="btn solid" href="tel:+84905076886"><span data-i18n="cta_call">GỌI NGAY</span> · +84 905 076 886</a>
+      <a class="btn" href="#collection" data-i18n="cta_collection">Khám phá bộ sưu tập</a>
+    </div>
+    <div class="hero-stats reveal d4">
+      <div class="stat"><b>20+</b><span data-i18n="stat_fb">Năm sưu tầm</span></div>
+      <div class="stat"><b>1.000+</b><span data-i18n="stat_tiktok">Bật lửa đã thẩm định</span></div>
+      <div class="stat"><b>15+</b><span data-i18n="stat_views">Năm bảo dưỡng</span></div>
+      <div class="stat"><b>100%</b><span data-i18n="stat_videos">Chính hãng kiểm định</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MARQUEE ============ -->
+<div class="marquee">
+  <div class="track" id="marqueeTrack">
+    <span><i>◆</i> S.T. Dupont Vintage <i>◆</i> Bật lửa sưu tầm chính hãng <i>◆</i> Bảo dưỡng chuyên sâu <i>◆</i> Sơn mài &amp; guilloché Pháp <i>◆</i> Gatsby · L2 · Ligne 1 <i>◆</i></span>
+    <span><i>◆</i> S.T. Dupont Vintage <i>◆</i> Bật lửa sưu tầm chính hãng <i>◆</i> Bảo dưỡng chuyên sâu <i>◆</i> Sơn mài &amp; guilloché Pháp <i>◆</i> Gatsby · L2 · Ligne 1 <i>◆</i></span>
+  </div>
+</div>
+
+<!-- ============ COLLECTION ============ -->
+<section class="section" id="collection">
+  <div class="container">
+    <div class="eyebrow reveal" data-i18n="col_eyebrow">Collection 2026</div>
+    <h2 class="sec-title reveal" data-i18n="col_title">Tinh hoa trong từng chi tiết</h2>
+    <div class="ornament reveal"><span class="dia"></span></div>
+    <p class="sec-sub reveal" data-i18n="col_sub">Mỗi chiếc bật lửa là một lát cắt lịch sử — sơn mài Trung Hoa, khắc guilloché, mạ vàng 20 microns. Mỗi sản phẩm đều được kiểm tra và bảo dưỡng trước khi đến tay người sưu tầm.</p>
+    <div class="gallery">
+      <div class="card reveal"><img src="assets/img/img_04.jpg" alt="ST Dupont vintage lighter on wooden box">
+        <div class="cap"><b data-i18n="p1">L2 Diamond Thập niên 80</b><span data-i18n="p1_tag">Mạ vàng 20 microns</span></div>
+      </div>
+      <div class="card reveal d1"><img src="assets/img/img_01.jpg" alt="ST Dupont gold guilloche lighter">
+        <div class="cap"><b data-i18n="p2">Ligne 1 Guilloché</b><span data-i18n="p2_tag">Vàng champagne</span></div>
+      </div>
+      <div class="card reveal d2"><img src="assets/img/img_08.jpg" alt="ST Dupont black lacquer lighter">
+        <div class="cap"><b data-i18n="p3">Sơn mài đen huyền</b><span data-i18n="p3_tag">Viền kim loại sáng</span></div>
+      </div>
+      <div class="card reveal"><img src="assets/img/img_05.jpg" alt="ST Dupont green black lighter">
+        <div class="cap"><b data-i18n="p4">Xanh đen cổ điển</b><span data-i18n="p4_tag">Vintage Collection</span></div>
+      </div>
+      <div class="card tall reveal d1"><img src="assets/img/img_12.jpg" alt="Hands holding gold lighter">
+        <div class="cap"><b data-i18n="p5">Gatsby thập niên 90</b><span data-i18n="p5_tag">Bọc vàng guilloché</span></div>
+      </div>
+      <div class="card reveal d2"><img src="assets/img/img_13.jpg" alt="Gold guilloche lighter in navy box">
+        <div class="cap"><b data-i18n="p6">L2 Diamond · Vàng khía</b><span data-i18n="p6_tag">Hộp kèm phụ kiện</span></div>
+      </div>
+      <div class="card reveal"><img src="assets/img/img_03.jpg" alt="Lighter bottom engraving">
+        <div class="cap"><b data-i18n="p7">Dấu khắc thương hiệu</b><span data-i18n="p7_tag">Paris · Made in France</span></div>
+      </div>
+      <div class="card reveal d1"><img src="assets/img/img_02.jpg" alt="Open lighter mechanism">
+        <div class="cap"><b data-i18n="p8">Cơ chế đánh lửa</b><span data-i18n="p8_tag">Bảo dưỡng tận tay</span></div>
+      </div>
+      <div class="card reveal d2"><img src="assets/img/img_11.jpg" alt="Vintage lighter set with accessories">
+        <div class="cap"><b data-i18n="p9">Bộ sưu tầm đi kèm</b><span data-i18n="p9_tag">Hộp · Bao da · Phụ kiện</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section class="section" id="about" style="background:linear-gradient(180deg,var(--bg),var(--bg-2) 40%,var(--bg))">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-photo reveal">
+        <div class="frame"><img src="assets/img/avatar.jpg" alt="Sang Van"></div>
+        <div class="badge"><b>20+</b><span data-i18n="badge_fb">Năm sưu tầm</span></div>
+      </div>
+      <div class="about-copy reveal d1">
+        <div class="eyebrow" data-i18n="about_eyebrow">Về tôi</div>
+        <h2 data-i18n="about_title">Sang Van — người giữ lửa S.T. Dupont</h2>
+        <p data-i18n="about_p1">Đam mê sưu tầm bật lửa S.T. Dupont chính hãng. Tôi dành thời gian tìm kiếm những chiếc bật lửa vintage còn nguyên giá trị, kiểm tra từng chi tiết, bảo dưỡng cơ chế đánh lửa và trao lại chúng cho những người biết trân trọng.</p>
+        <p data-i18n="about_p2">Từ TP.HCM, qua Facebook và TikTok, tôi chia sẻ hành trình sưu tầm của mình đến cộng đồng yêu bật lửa — và đồng hành cùng họ trong việc bảo dưỡng, phục hồi những tuyệt tác nước Pháp.</p>
+        <blockquote class="quote" data-i18n="about_quote">“Đừng do dự nữa anh em, quyết định thôi. Lăn tăn chỉ chuốc muộn phiền — một khi đã thích, xuống tiền nhích ngay.”</blockquote>
+        <div class="about-links">
+          <a class="btn" href="https://www.facebook.com/vansang.kt" target="_blank" rel="noopener">Facebook</a>
+          <a class="btn" href="https://www.tiktok.com/@sangdupont" target="_blank" rel="noopener">TikTok</a>
+          <a class="btn solid" href="https://zalo.me/84905076886" target="_blank" rel="noopener" data-i18n="about_zalo">Chat Zalo</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SERVICES ============ -->
+<section class="section services" id="services">
+  <div class="container">
+    <div class="eyebrow reveal" data-i18n="svc_eyebrow">Dịch vụ</div>
+    <h2 class="sec-title reveal" data-i18n="svc_title">Hơn cả một bộ sưu tập</h2>
+    <div class="ornament reveal"><span class="dia"></span></div>
+    <div class="svc-grid">
+      <div class="svc reveal">
+        <div class="num">01</div>
+        <div class="hr"></div>
+        <h3 data-i18n="svc1_t">Sưu tầm &amp; kiểm định</h3>
+        <p data-i18n="svc1_p">Bật lửa S.T. Dupont vintage chính hãng, kiểm tra kỹ nguồn gốc, dấu khắc và tình trạng trước khi trao tay.</p>
+      </div>
+      <div class="svc reveal d1">
+        <div class="num">02</div>
+        <div class="hr"></div>
+        <h3 data-i18n="svc2_t">Bảo dưỡng chuyên sâu</h3>
+        <p data-i18n="svc2_p">Vệ sinh, chỉnh cơ chế đánh lửa, thay phụ kiện — giữ cho ngọn lửa luôn bùng cháy đúng nhịp Pháp.</p>
+      </div>
+      <div class="svc reveal d2">
+        <div class="num">03</div>
+        <div class="hr"></div>
+        <h3 data-i18n="svc3_t">Phục hồi sơn mài</h3>
+        <p data-i18n="svc3_p">Chăm sóc lớp sơn mài Trung Hoa và bề mặt mạ vàng — giữ vẻ đẹp nguyên bản qua thời gian.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="section contact" id="contact">
+  <div class="container">
+    <div class="eyebrow reveal" data-i18n="ct_eyebrow">Liên hệ</div>
+    <h2 class="sec-title reveal" data-i18n="ct_title">Sở hữu một phần lịch sử</h2>
+    <div class="ornament reveal"><span class="dia"></span></div>
+    <a class="phone reveal d1" href="tel:+84905076886">+84 905 076 886</a>
+    <p class="note reveal d2" data-i18n="ct_note">Inbox hoặc gọi trực tiếp — mình luôn sẵn sàng tư vấn, gửi ảnh chi tiết và bảo dưỡng tận tay.</p>
+    <div class="cta-row reveal d3">
+      <a class="btn solid" href="tel:+84905076886">📞 <span data-i18n="ct_call">Gọi ngay</span></a>
+      <a class="btn solid" href="https://zalo.me/84905076886" target="_blank" rel="noopener">Zalo</a>
+      <a class="btn" href="https://m.me/vansang.kt" target="_blank" rel="noopener">Messenger</a>
+      <a class="btn" href="https://www.tiktok.com/@sangdupont" target="_blank" rel="noopener">TikTok</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LIGHTBOX ============ -->
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose" aria-label="Close">✕</button>
+  <img id="lbImg" src="" alt="">
+  <div class="lb-cap" id="lbCap"></div>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="container foot">
+    <div class="foot-logo">
+      <img src="assets/img/logo-final_64.png" alt="Sang Van logo" width="54" height="54">
+    </div>
+    <div class="fname">ST·DUPONT <span>VINTAGE</span> — Sang Van</div>
+    <p data-i18n="foot_note">Bật lửa sưu tầm chính hãng · Bảo dưỡng chuyên sâu · TP.HCM, Việt Nam</p>
+    <div class="social">
+      <a href="https://www.facebook.com/vansang.kt" target="_blank" rel="noopener">FB</a>
+      <a href="https://www.tiktok.com/@sangdupont" target="_blank" rel="noopener">TK</a>
+      <a href="https://zalo.me/84905076886" target="_blank" rel="noopener">ZL</a>
+    </div>
+    <p>© 2026 · Sang Van Collection</p>
+  </div>
+</footer>
+
+<script>
+/* ============ I18N ============ */
+const I18N = {
+  vi: {
+    nav_brand_sub:"Sang Van · Collection",
+    nav_collection:"Bộ sưu tập",
+    nav_about:"Về Sang",
+    nav_services:"Dịch vụ",
+    nav_contact:"Liên hệ",
+    hero_title_1:"DI SẢN",
+    hero_title_2:"Của Lửa",
+    hero_tagline:"Những chiếc bật lửa S.T. Dupont vintage chính hãng — được săn tìm, bảo dưỡng và trao lại bởi một người thực sự đam mê.",
+    cta_call:"GỌI NGAY",
+    cta_collection:"Khám phá bộ sưu tập",
+    stat_fb:"Năm sưu tầm",
+    stat_tiktok:"Bật lửa đã thẩm định",
+    stat_views:"Năm bảo dưỡng",
+    stat_videos:"Chính hãng kiểm định",
+    col_eyebrow:"Collection 2026",
+    col_title:"Tinh hoa trong từng chi tiết",
+    col_sub:"Mỗi chiếc bật lửa là một lát cắt lịch sử — sơn mài Trung Hoa, khắc guilloché, mạ vàng 20 microns. Mỗi sản phẩm đều được kiểm tra và bảo dưỡng trước khi đến tay người sưu tầm.",
+    p1:"L2 Diamond Thập niên 80", p1_tag:"Mạ vàng 20 microns",
+    p2:"Ligne 1 Guilloché", p2_tag:"Vàng champagne",
+    p3:"Sơn mài đen huyền", p3_tag:"Viền kim loại sáng",
+    p4:"Xanh đen cổ điển", p4_tag:"Vintage Collection",
+    p5:"Gatsby thập niên 90", p5_tag:"Bọc vàng guilloché",
+    p6:"L2 Diamond · Vàng khía", p6_tag:"Hộp kèm phụ kiện",
+    p7:"Dấu khắc thương hiệu", p7_tag:"Paris · Made in France",
+    p8:"Cơ chế đánh lửa", p8_tag:"Bảo dưỡng tận tay",
+    p9:"Bộ sưu tầm đi kèm", p9_tag:"Hộp · Bao da · Phụ kiện",
+    badge_fb:"Năm sưu tầm",
+    about_eyebrow:"Về tôi",
+    about_title:"Sang Van — người giữ lửa S.T. Dupont",
+    about_p1:"Đam mê sưu tầm bật lửa S.T. Dupont chính hãng. Tôi dành thời gian tìm kiếm những chiếc bật lửa vintage còn nguyên giá trị, kiểm tra từng chi tiết, bảo dưỡng cơ chế đánh lửa và trao lại chúng cho những người biết trân trọng.",
+    about_p2:"Từ TP.HCM, qua Facebook và TikTok, tôi chia sẻ hành trình sưu tầm của mình đến cộng đồng yêu bật lửa — và đồng hành cùng họ trong việc bảo dưỡng, phục hồi những tuyệt tác nước Pháp.",
+    about_quote:"“Đừng do dự nữa anh em, quyết định thôi. Lăn tăn chỉ chuốc muộn phiền — một khi đã thích, xuống tiền nhích ngay.”",
+    about_zalo:"Chat Zalo",
+    svc_eyebrow:"Dịch vụ",
+    svc_title:"Hơn cả một bộ sưu tập",
+    svc1_t:"Sưu tầm & kiểm định", svc1_p:"Bật lửa S.T. Dupont vintage chính hãng, kiểm tra kỹ nguồn gốc, dấu khắc và tình trạng trước khi trao tay.",
+    svc2_t:"Bảo dưỡng chuyên sâu", svc2_p:"Vệ sinh, chỉnh cơ chế đánh lửa, thay phụ kiện — giữ cho ngọn lửa luôn bùng cháy đúng nhịp Pháp.",
+    svc3_t:"Phục hồi sơn mài", svc3_p:"Chăm sóc lớp sơn mài Trung Hoa và bề mặt mạ vàng — giữ vẻ đẹp nguyên bản qua thời gian.",
+    ct_eyebrow:"Liên hệ",
+    ct_title:"Sở hữu một phần lịch sử",
+    ct_note:"Inbox hoặc gọi trực tiếp — mình luôn sẵn sàng tư vấn, gửi ảnh chi tiết và bảo dưỡng tận tay.",
+    ct_call:"Gọi ngay",
+    foot_note:"Bật lửa sưu tầm chính hãng · Bảo dưỡng chuyên sâu · TP.HCM, Việt Nam"
+  },
+  en: {
+    nav_brand_sub:"Sang Van · Collection",
+    nav_collection:"Collection",
+    nav_about:"About Sang",
+    nav_services:"Services",
+    nav_contact:"Contact",
+    hero_title_1:"HEIRLOOM",
+    hero_title_2:"Of Fire",
+    hero_tagline:"Authentic vintage S.T. Dupont lighters — sourced, restored and passed on by a true enthusiast.",
+    cta_call:"CALL NOW",
+    cta_collection:"Explore the collection",
+    stat_fb:"Years Collecting",
+    stat_tiktok:"Lighters Authenticated",
+    stat_views:"Years of Service",
+    stat_videos:"Authenticity Verified",
+    col_eyebrow:"Collection 2026",
+    col_title:"Excellence in every detail",
+    col_sub:"Each lighter is a slice of history — Chinese lacquer, guilloché engraving, 20-micron gold plating. Every piece is inspected and serviced before it reaches the collector.",
+    p1:"L2 Diamond · 1980s", p1_tag:"20-micron gold plate",
+    p2:"Ligne 1 Guilloché", p2_tag:"Champagne gold",
+    p3:"Black lacquer noir", p3_tag:"Polished metal trim",
+    p4:"Classic green-black", p4_tag:"Vintage Collection",
+    p5:"Gatsby · 1990s", p5_tag:"Gold guilloché",
+    p6:"L2 Diamond · Fluted gold", p6_tag:"Box & accessories",
+    p7:"Brand hallmarks", p7_tag:"Paris · Made in France",
+    p8:"Ignition mechanism", p8_tag:"Hand-serviced",
+    p9:"Collector's set", p9_tag:"Box · Leather · Accessories",
+    badge_fb:"Years Collecting",
+    about_eyebrow:"About me",
+    about_title:"Sang Van — keeper of the S.T. Dupont flame",
+    about_p1:"Passionate about authentic S.T. Dupont lighters. I spend my time hunting for vintage pieces that retain their value, inspecting every detail, servicing the ignition mechanism, and passing them to people who truly appreciate them.",
+    about_p2:"From Ho Chi Minh City, through Facebook and TikTok, I share my collecting journey with the lighter community — and help them service and restore these French masterpieces.",
+    about_quote:"“Don't hesitate anymore, my friends — decide. Hesitation only brings regret; once you love it, go for it.”",
+    about_zalo:"Chat on Zalo",
+    svc_eyebrow:"Services",
+    svc_title:"More than a collection",
+    svc1_t:"Curating & authentication", svc1_p:"Authentic vintage S.T. Dupont lighters, carefully checked for provenance, hallmarks and condition.",
+    svc2_t:"Deep servicing", svc2_p:"Cleaning, ignition tuning, parts replacement — keeping the flame burning with French precision.",
+    svc3_t:"Lacquer restoration", svc3_p:"Caring for Chinese lacquer and gold-plated surfaces — preserving original beauty through time.",
+    ct_eyebrow:"Contact",
+    ct_title:"Own a piece of history",
+    ct_note:"Message or call directly — always happy to advise, send detailed photos and hand-service your lighter.",
+    ct_call:"Call now",
+    foot_note:"Authentic collector lighters · Expert servicing · Ho Chi Minh City, Vietnam"
+  }
+};
+function setLang(lang){
+  document.documentElement.setAttribute('lang', lang);
+  document.documentElement.dataset.lang = lang;
+  const dict = I18N[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.dataset.i18n;
+    if(dict[key]) el.textContent = dict[key];
+  });
+  document.getElementById('langVi').classList.toggle('active', lang==='vi');
+  document.getElementById('langEn').classList.toggle('active', lang==='en');
+  try{localStorage.setItem('sang_lang', lang)}catch(e){}
+}
+(function(){
+  let saved = 'vi';
+  try{saved = localStorage.getItem('sang_lang') || 'vi'}catch(e){}
+  setLang(saved);
+})();
+
+/* ============ NAV ============ */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', ()=>{
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+});
+const burger = document.getElementById('burger');
+const navLinks = document.getElementById('navLinks');
+burger.addEventListener('click', ()=>{ navLinks.classList.toggle('open'); });
+navLinks.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click', ()=> navLinks.classList.remove('open'));
+});
+
+/* ============ REVEAL ============ */
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ============ SPARKS ============ */
+(function(){
+  const box = document.getElementById('sparks');
+  for(let i=0;i<18;i++){
+    const s = document.createElement('span');
+    s.className = 'spark';
+    s.style.left = (8 + Math.random()*84) + '%';
+    s.style.animationDuration = (7 + Math.random()*9) + 's';
+    s.style.animationDelay = (Math.random()*8) + 's';
+    box.appendChild(s);
+  }
+})();
+
+/* ============ LIGHTBOX ============ */
+(function(){
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbCap = document.getElementById('lbCap');
+  document.querySelectorAll('.card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      const img = card.querySelector('img');
+      const cap = card.querySelector('.cap');
+      lbImg.src = img.src.replace('/assets/img/', '/assets/img/');
+      lbCap.textContent = cap ? cap.textContent.trim().replace(/\s+/g,' · ') : '';
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+  const close = ()=>{ lb.classList.remove('open'); document.body.style.overflow=''; };
+  document.getElementById('lbClose').addEventListener('click', close);
+  lb.addEventListener('click', e=>{ if(e.target===lb) close(); });
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape') close(); });
+})();
+</script>
+</body>
+</html>

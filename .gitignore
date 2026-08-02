@@ -1,0 +1,13 @@
+# Dữ liệu crawl nội bộ — không public
+data/
+
+# Screenshot preview nội bộ
+preview/
+
+# Ảnh thử nghiệm hướng B (chưa dùng)
+assets/img/hero-B-*.jpg
+
+# Hệ thống
+.DS_Store
+Thumbs.db
+*.log

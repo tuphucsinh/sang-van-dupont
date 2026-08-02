@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 200" width="720" height="200">
+  <defs>
+    <linearGradient id="gGold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f3d77a"/>
+      <stop offset="50%" stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#8a6d1a"/>
+    </linearGradient>
+    <linearGradient id="gCream" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff8e0"/>
+      <stop offset="60%" stop-color="#f3ecd9"/>
+      <stop offset="100%" stop-color="#c9b98a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ================= ICON ================= -->
+  <!-- badge background -->
+  <rect x="0" y="0" width="200" height="200" rx="30" fill="#0a0a0d"/>
+  <!-- outer border -->
+  <rect x="8" y="8" width="184" height="184" rx="24" fill="none" stroke="#d4af37" stroke-width="1.6"/>
+  <!-- inner border -->
+  <rect x="15" y="15" width="170" height="170" rx="19" fill="none" stroke="#d4af37" stroke-opacity="0.4" stroke-width="0.8"/>
+  <!-- corner ticks (Art Deco) -->
+  <g stroke="#d4af37" stroke-width="1.2" stroke-linecap="round">
+    <path d="M14 26 L26 14"/>
+    <path d="M174 14 L186 26"/>
+    <path d="M14 174 L26 186"/>
+    <path d="M174 186 L186 174"/>
+  </g>
+
+  <!-- flame: single refined shape, 3 tones -->
+  <path d="M100 26
+           C 110 50, 128 62, 128 88
+           A 29 29 0 1 1 72 88
+           C 72 62, 90 50, 100 26 Z"
+        fill="url(#gGold)"/>
+  <path d="M100 44
+           C 107 61, 117 70, 117 88
+           A 18 18 0 1 1 83 88
+           C 83 70, 93 61, 100 44 Z"
+        fill="#e9c75c"/>
+  <path d="M100 58
+           C 105 70, 111 77, 111 88
+           A 11.5 11.5 0 1 1 89 88
+           C 89 77, 95 70, 100 58 Z"
+        fill="url(#gCream)"/>
+
+  <!-- flame base: subtle -->
+  <path d="M84 130 Q100 124 116 130" fill="none" stroke="#d4af37" stroke-opacity="0.5" stroke-width="1.2"/>
+
+  <!-- S monogram centered on flame base -->
+  <text x="100" y="140" text-anchor="middle"
+        font-family="Playfair Display, Georgia, serif" font-size="40" font-weight="500"
+        fill="#f3ecd9" letter-spacing="0.5">S</text>
+
+  <!-- ================= WORDMARK ================= -->
+  <g>
+    <!-- main name -->
+    <text x="238" y="88" font-family="Playfair Display, Georgia, serif" font-size="52" font-weight="600"
+          fill="#f3ecd9" letter-spacing="4">SANG VAN</text>
+    <!-- tagline -->
+    <text x="240" y="122" font-family="Cormorant Garamond, Georgia, serif" font-size="21" font-style="italic"
+          fill="#d4af37" letter-spacing="4">Bật lửa sưu tầm &amp; bảo dưỡng</text>
+    <!-- rule -->
+    <line x1="240" y1="138" x2="480" y2="138" stroke="url(#gGold)" stroke-width="1"/>
+    <!-- collection -->
+    <text x="240" y="164" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="500"
+          fill="#a89f8a" letter-spacing="7">SANG VAN COLLECTION</text>
+  </g>
+</svg>
