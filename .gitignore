@@ -11,3 +11,4 @@ assets/img/hero-B-*.jpg
 .DS_Store
 Thumbs.db
 *.log
+.vercel
