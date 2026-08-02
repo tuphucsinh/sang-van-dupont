@@ -277,6 +277,17 @@ footer{border-top:1px solid var(--line);padding:44px 0 34px;background:var(--bg-
   .hero-content{padding-top:96px}
   .hero .eyebrow{margin-top:34px;font-size:.6rem;letter-spacing:.28em}
 }
+/* ============ CHAT FAB ============ */
+.chat-fab{
+  position:fixed;right:22px;bottom:22px;z-index:200;
+  width:58px;height:58px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--gold),var(--gold-2));
+  color:#0a0a0d;box-shadow:0 8px 24px rgba(212,175,55,.35);
+  transition:transform .3s var(--ease),box-shadow .3s var(--ease);
+}
+.chat-fab:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 12px 30px rgba(212,175,55,.5)}
+@media(max-width:560px){.chat-fab{width:52px;height:52px;right:16px;bottom:16px}}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .reveal{opacity:1;transform:none}
@@ -314,6 +325,9 @@ footer{border-top:1px solid var(--line);padding:44px 0 34px;background:var(--bg-
   </div>
   <div class="gold-haze"></div>
   <div class="sparks" id="sparks"></div>
+  <a class="chat-fab" href="https://t.me/sangdupontbot" target="_blank" rel="noopener" aria-label="Chat tư vấn" title="Chat tư vấn">
+    <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.14 2 11.25c0 2.9 1.53 5.45 3.9 7.12-.1 1.05-.45 2.5-1.65 3.63 0 0 2.95-.2 4.7-1.7.95.28 1.95.45 3.05.45 5.52 0 10-4.14 10-9.5S17.52 2 12 2z"/></svg>
+  </a>
   <div class="hero-content">
     <div class="eyebrow reveal">S.T. Dupont · Paris · Vintage Collection</div>
     <h1 class="reveal d1"><span data-i18n="hero_title_1">DI SẢN</span><br><em data-i18n="hero_title_2">Của Lửa</em></h1>
@@ -441,6 +455,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 34px;background:var(--bg-
     <a class="phone reveal d1" href="tel:+84905076886">+84 905 076 886</a>
     <p class="note reveal d2" data-i18n="ct_note">Inbox hoặc gọi trực tiếp — mình luôn sẵn sàng tư vấn, gửi ảnh chi tiết và bảo dưỡng tận tay.</p>
     <div class="cta-row reveal d3">
+      <a class="btn solid" href="https://t.me/sangdupontbot" target="_blank" rel="noopener" data-i18n="ct_chat">💬 Chat tư vấn</a>
       <a class="btn solid" href="tel:+84905076886">📞 <span data-i18n="ct_call">Gọi ngay</span></a>
       <a class="btn solid" href="https://zalo.me/84905076886" target="_blank" rel="noopener">Zalo</a>
       <a class="btn" href="https://m.me/vansang.kt" target="_blank" rel="noopener">Messenger</a>
@@ -519,6 +534,7 @@ const I18N = {
     ct_title:"Sở hữu một phần lịch sử",
     ct_note:"Inbox hoặc gọi trực tiếp — mình luôn sẵn sàng tư vấn, gửi ảnh chi tiết và bảo dưỡng tận tay.",
     ct_call:"Gọi ngay",
+    ct_chat:"Chat tư vấn",
     foot_note:"Bật lửa sưu tầm chính hãng · Bảo dưỡng chuyên sâu · TP.HCM, Việt Nam"
   },
   en: {
@@ -564,6 +580,7 @@ const I18N = {
     ct_title:"Own a piece of history",
     ct_note:"Message or call directly — always happy to advise, send detailed photos and hand-service your lighter.",
     ct_call:"Call now",
+    ct_chat:"Chat with us",
     foot_note:"Authentic collector lighters · Expert servicing · Ho Chi Minh City, Vietnam"
   }
 };
