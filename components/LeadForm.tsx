@@ -27,6 +27,8 @@ const initialForm: FormData = {
 
 export default function LeadForm() {
   const [form, setForm] = useState<FormData>(initialForm);
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const [consent, setConsent] = useState<boolean>(false);
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [requestCode, setRequestCode] = useState<string>("");
@@ -38,8 +40,24 @@ export default function LeadForm() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const selectedFiles = Array.from(e.target.files);
+    const validImages = selectedFiles.filter(
+      (file) => file.type.startsWith("image/") && file.size <= 2 * 1024 * 1024
+    );
+    setAttachments((prev) => [...prev, ...validImages].slice(0, 3));
+    e.target.value = "";
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleReset = () => {
     setForm(initialForm);
+    setAttachments([]);
+    setConsent(false);
     setStatus("idle");
     setErrorMsg("");
     setRequestCode("");
@@ -63,10 +81,28 @@ export default function LeadForm() {
       return;
     }
 
+    if (form.type === "maintenance" && !consent) {
+      setStatus("error");
+      setErrorMsg("Vui lòng đồng ý chia sẻ thông tin");
+      return;
+    }
+
     setStatus("sending");
     setErrorMsg("");
 
     try {
+      let b64List: string[] = [];
+      if (form.type === "maintenance" && attachments.length > 0) {
+        const toBase64 = (f: File) =>
+          new Promise<string>((res, rej) => {
+            const r = new FileReader();
+            r.onload = () => res(String(r.result).split(",")[1] || "");
+            r.onerror = rej;
+            r.readAsDataURL(f);
+          });
+        b64List = await Promise.all(attachments.map(toBase64));
+      }
+
       const res = await fetch(FUNC_URL, {
         method: "POST",
         headers: {
@@ -79,6 +115,14 @@ export default function LeadForm() {
           name: trimmedName,
           phone: trimmedPhone,
           channel: form.channel || "web_form",
+          ...(form.type === "maintenance" && attachments.length > 0
+            ? {
+                attachments: attachments.map((f, i) => ({
+                  name: f.name,
+                  base64: b64List[i],
+                })),
+              }
+            : {}),
         }),
       });
 
@@ -86,6 +130,8 @@ export default function LeadForm() {
       if (res.ok && d.ok) {
         setRequestCode(d.request_code || "");
         setStatus("success");
+        setAttachments([]);
+        setConsent(false);
       } else {
         setStatus("error");
         setErrorMsg(d.error || "Lỗi gửi");
@@ -306,6 +352,109 @@ export default function LeadForm() {
               style={{ ...inputStyle, resize: "vertical" }}
             />
           </div>
+
+          {form.type === "maintenance" && (
+            <>
+              {/* Attachments */}
+              <div style={{ marginBottom: "16px" }}>
+                <label htmlFor="lead-attachments" style={labelStyle}>
+                  Ảnh sản phẩm (tối đa 3)
+                </label>
+                <input
+                  id="lead-attachments"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleFileChange}
+                  style={{
+                    ...inputStyle,
+                    padding: "8px",
+                    cursor: "pointer",
+                  }}
+                />
+                {attachments.length > 0 && (
+                  <div
+                    style={{
+                      marginTop: "8px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "6px",
+                    }}
+                  >
+                    {attachments.map((file, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          background: "#0a0a0d",
+                          padding: "6px 10px",
+                          borderRadius: "4px",
+                          border: "1px solid rgba(212, 175, 55, 0.2)",
+                          fontSize: "0.85rem",
+                          color: "#f3ecd9",
+                        }}
+                      >
+                        <span
+                          style={{
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            marginRight: "8px",
+                          }}
+                        >
+                          📷 {file.name} ({(file.size / 1024).toFixed(0)} KB)
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveFile(idx)}
+                          style={{
+                            background: "transparent",
+                            border: "none",
+                            color: "#ef4444",
+                            cursor: "pointer",
+                            fontSize: "0.85rem",
+                            padding: "2px 6px",
+                          }}
+                        >
+                          ✕ Xóa
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Consent checkbox */}
+              <div
+                style={{
+                  marginBottom: "16px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                <input
+                  id="lead-consent"
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                  style={{ cursor: "pointer" }}
+                />
+                <label
+                  htmlFor="lead-consent"
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "#f3ecd9",
+                    cursor: "pointer",
+                  }}
+                >
+                  Tôi đồng ý cung cấp thông tin và ảnh để được hỗ trợ bảo dưỡng
+                </label>
+              </div>
+            </>
+          )}
 
           <button
             type="submit"

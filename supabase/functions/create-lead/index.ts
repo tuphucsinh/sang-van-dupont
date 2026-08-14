@@ -50,6 +50,7 @@ export default {
     const need = String(body.need || "").trim().slice(0, 500);
     const line_interest = String(body.line_interest || "").trim().slice(0, 200);
     const channel = String(body.channel || "web_form").trim().slice(0, 50);
+    const attachments = Array.isArray(body.attachments) ? body.attachments.slice(0, 3) : [];
 
     // Validate
     if (!["buy", "maintenance"].includes(type)) return json({ ok: false, error: "Loại yêu cầu không hợp lệ" }, 400);
@@ -87,6 +88,48 @@ export default {
     if (insertErr || !lead) {
       console.error("insert lead fail:", insertErr?.message);
       return json({ ok: false, error: "Không lưu được yêu cầu — thử lại sau" }, 500);
+    }
+
+    // Attachments (ảnh private, ≤3, tổng raw ≤3MB) — upload qua service role vào lead-attachments
+    const b64ToBytes = (b64: string): Uint8Array => {
+      const bin = atob(b64);
+      const out = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+      return out;
+    };
+    let savedAttachments = 0;
+    if (attachments.length > 0) {
+      let totalBytes = 0;
+      for (const a of attachments) {
+        const b64 = typeof a?.base64 === "string" ? a.base64 : "";
+        totalBytes += b64ToBytes(b64).length;
+      }
+      if (totalBytes > 3 * 1024 * 1024) {
+        return json({ ok: false, error: "Tổng ảnh tối đa 3MB" }, 400);
+      }
+      for (const [i, a] of attachments.entries()) {
+        const b64 = typeof a?.base64 === "string" ? a.base64 : "";
+        const name = typeof a?.name === "string" ? a.name : `anh-${i + 1}.jpg`;
+        if (!b64) continue;
+        const raw = b64ToBytes(b64);
+        if (raw.length === 0 || raw.length > 1.5 * 1024 * 1024) continue;
+        const ext = name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+        const path = `leads/${lead.id}/${Date.now()}-${i}.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from("lead-attachments")
+          .upload(path, raw, { contentType: "image/jpeg", upsert: false });
+        if (upErr) {
+          console.error("upload attach fail:", upErr.message);
+          continue;
+        }
+        const { error: attErr } = await supabase.from("lead_attachments").insert({
+          lead_id: lead.id,
+          storage_path: path,
+          storage_bucket: "lead-attachments",
+        });
+        if (attErr) console.error("insert attach fail:", attErr.message);
+        else savedAttachments++;
+      }
     }
 
     // Telegram notification
