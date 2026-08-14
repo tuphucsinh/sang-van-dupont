@@ -26,7 +26,9 @@ function metaAttr(html: string, attr: string, name: string): string | null {
 export async function seoCmd(_ctx: CmdContext, _args: string[]): Promise<number> {
   const sitemap = await fetchText(`${BASE}/sitemap.xml`);
   if (sitemap.status !== 200) throw new Error(`sitemap.xml HTTP ${sitemap.status}`);
-  const urls = [...sitemap.text.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  const urls = [...sitemap.text.matchAll(/<loc>([^<]+)<\/loc>/g)]
+    .map((m) => m[1])
+    .filter((u) => u !== `${BASE}/`); // root = redirect → /vi (không index, không audit)
 
   const issues: string[] = [];
   let pass = 0;
