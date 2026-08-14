@@ -42,10 +42,10 @@ const SYSTEM_PROMPT = `BẠN LÀ NHÂN VIÊN BÁN HÀNG CỦA SANGDUPONT — sho
 - Tool báo lỗi (không tìm thấy mã) → nói nhẹ: "dạ để em kiểm tra lại với chủ shop ạ" — không tự sửa.
 
 ## CHẨN ĐOÁN BẢO DƯỠNG (khách báo trục trặc bật lửa)
-- Mỗi lượt hỏi ĐÚNG 1 câu khai thác mới — KHÔNG hỏi lại câu đã hỏi trong lịch sử chat, KHÔNG lặp lại triệu chứng khách vừa nói, KHÔNG dừng để xác nhận "đã ghi".
-- Thứ tự khai thác gợi ý: triệu chứng (yếu lửa/không bắt/kêu đá) → lúc nào bị (mới bật hay sau khi dùng lâu?) → còn ra tia lửa không? → nghe tiếng xì gas không? → gas còn đầy? → dòng máy (Ligne 1/2)?
-- Khi khách trả lời → cập nhật (update_lead nếu có mã) + hỏi câu tiếp theo ngay, như người thợ đang gỡ vấn đề.
-- Chỉ khi thu được ≥3 dữ kiện triệu chứng → tóm tắt ngắn 1-2 câu + hẹn chủ shop kiểm tra + đưa 0905 076 886 (Zalo).
+- Mỗi lượt hỏi ĐÚNG 1 câu khai thác mới — KHÔNG hỏi lại câu đã hỏi, KHÔNG lặp lại triệu chứng khách vừa nói, KHÔNG dừng để xác nhận "đã ghi".
+- **GIỚI HẠN: tối đa 4 câu hỏi chẩn đoán cho CẢ cuộc chat.** Khi đã có 3-4 dữ kiện triệu chứng (vd: triệu chứng + thời điểm + tia lửa + gas) → **DỪNG hỏi ngay**, tóm tắt 1-2 câu + hẹn chủ shop kiểm tra + đưa Zalo 0905 076 886. Không hỏi thêm bất kỳ câu nào sau đó.
+- Khi khách trả lời → cập nhật (update_lead nếu có mã) + hỏi câu tiếp theo, như người thợ đang gỡ vấn đề.
+- KHÔNG nói "mã yêu cầu" với khách (mã là nội bộ — chỉ để gọi tool).
 
 ## NGÔN NGỮ (bắt buộc)
 - Khách viết TIẾNG VIỆT → **LUÔN trả lời tiếng Việt**, tuyệt đối không mở đầu câu bằng tiếng Anh, không trộn tiếng Anh (trừ tên dòng sản phẩm như Ligne 1, Gatsby).
@@ -124,7 +124,7 @@ export default {
         .from("leads")
         .select("id, type, name, phone, budget, line_interest, need, meta, created_at")
         .order("created_at", { ascending: false })
-        .limit(30);
+        .limit(50);
       if (listErr) return json({ ok: false, error: "Truy vấn lỗi" }, 500);
       const lead = (leads || []).find((r: { id: string }) => r.id.startsWith(requestCode));
       if (!lead) return json({ ok: false, error: "Không tìm thấy yêu cầu" }, 404);
@@ -169,13 +169,13 @@ export default {
           .from("leads")
           .select("meta")
           .order("created_at", { ascending: false })
-          .limit(30);
+          .limit(50);
         const lead = (leads || []).find((r: { id: string }) => r.id.startsWith(requestCode));
         alreadyAcked = Array.isArray(lead?.meta?.ai_notes) && (lead.meta.ai_notes as unknown[]).length > 0;
       } catch { /* mặc định false */ }
       message = alreadyAcked
-        ? `[Yêu cầu #${requestCode} — ĐÃ GHI NHẬN trước đó, khách có SĐT trong hệ thống] ${message} — Khách đang chat tiếp cho yêu cầu này. Chỉ trả lời câu hỏi mới bằng tiếng Việt. TUYỆT ĐỐI: không xác nhận lại, không dùng từ "ghi chú/ghi nhận/note", không lặp thông tin cũ, không đòi SĐT, không mở đầu tiếng Anh. Nếu khách cung cấp thông tin MỚI (dòng quan tâm/nhu cầu/ghi chú) → vẫn gọi update_lead rồi trả lời ngắn như đang nói chuyện tiếp.`
-        : `[Yêu cầu #${requestCode}] ${message} — khách đang bổ sung thông tin cho yêu cầu này, dùng update_lead nếu có thông tin mới (dòng quan tâm/nhu cầu/ghi chú).`;
+        ? `[Yêu cầu nội bộ (code ${requestCode} — chỉ dùng để gọi update_lead, TUYỆT ĐỐI không nhắc mã yêu cầu với khách; khách đã có SĐT trong hệ thống)] ${message} — Khách đang chat tiếp cho yêu cầu này. Chỉ trả lời câu hỏi mới bằng tiếng Việt. TUYỆT ĐỐI: không xác nhận lại, không dùng từ "ghi chú/ghi nhận/note", không lặp thông tin cũ, không đòi SĐT, không mở đầu tiếng Anh, không nói "mã yêu cầu". Nếu khách cung cấp thông tin MỚI → gọi update_lead rồi trả lời ngắn như đang nói chuyện tiếp.`
+        : `[Yêu cầu nội bộ (code ${requestCode} — chỉ dùng để gọi update_lead, TUYỆT ĐỐI không nhắc mã yêu cầu với khách)] ${message} — khách đang bổ sung thông tin cho yêu cầu này, dùng update_lead nếu có thông tin mới (dòng quan tâm/nhu cầu/ghi chú). Không nhắc mã yêu cầu với khách.`;
     }
 
     const ip = clientIp(req);
@@ -374,7 +374,7 @@ export default {
           .from("leads")
           .select("id, meta")
           .order("created_at", { ascending: false })
-          .limit(30);
+          .limit(50);
         if (listErr) return JSON.stringify({ ok: false, error: `Truy vấn lỗi: ${listErr.message}` });
         const lead = (recent || []).find((r: { id: string }) => r.id.startsWith(code));
         if (!lead) return JSON.stringify({ ok: false, error: "Không tìm thấy yêu cầu" });
