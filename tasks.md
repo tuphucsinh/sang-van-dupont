@@ -128,7 +128,7 @@ _(4 task P1T01–P1T04 đã xong — chi tiết: `.ai/MASTER_PLAN.md` Phase 1; t
 - Apply sạch; 2 bucket tồn tại đúng public/private
 - Test (Mika): anon download được ảnh product, KHÔNG download được lead attachment; authenticated download được cả
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): applied + test storage thật — service upload 200, anon upload chặn 400, anon download product public 200, anon download lead private chặn 400, service download lead 200; test files đã xóa
 
 ---
 
