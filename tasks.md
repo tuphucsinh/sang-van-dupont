@@ -48,7 +48,7 @@ _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE
 - curl test: POST hợp lệ → 201 + lead trong DB + Telegram nhận message; POST thiếu phone → 400; POST lần 6 trong giờ → 429
 - Test data dọn sau verify
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): deploy OK; curl test 201 (lead + DB + Telegram nhận), 400 (thiếu phone), 429 (rate limit lần 5/giờ); test data đã dọn
 
 ---
 
