@@ -115,10 +115,10 @@ export default function AiChat() {
     setLoading(true);
 
     try {
-      // Gửi kèm lịch sử chat (10 lượt gần nhất) — model biết ngữ cảnh, không mở đầu lại như khách mới
+      // Gửi kèm lịch sử chat (14 lượt gần nhất, 800 chars/lượt) — model biết ngữ cảnh, không mở đầu lại như khách mới
       const history = messages
-        .slice(-10)
-        .map((m) => ({ role: m.role === "user" ? "user" : "assistant", content: m.text.slice(0, 400) }));
+        .slice(-14)
+        .map((m) => ({ role: m.role === "user" ? "user" : "assistant", content: m.text.slice(0, 800) }));
       const res = await fetch(FUNC_URL, {
         method: "POST",
         headers: buildAuthHeaders(ANON_KEY),

@@ -395,14 +395,14 @@ export default {
     const apiKey = Deno.env.get("AI_API_KEY") || "";
     const baseUrl = Deno.env.get("AI_BASE_URL") || "https://opencode.ai/zen/go/v1";
     const model = Deno.env.get("AI_MODEL") || "deepseek-v4-flash";
-    // Lịch sử chat từ client (10 lượt) — model giữ ngữ cảnh cuộc trò chuyện
+    // Lịch sử chat từ client (14 lượt, 800 chars/lượt) — model giữ ngữ cảnh cuộc trò chuyện
     const history: { role: string; content: string }[] = Array.isArray(body.history)
       ? body.history
           .filter((m) => m && typeof m.content === "string" && m.content.trim())
-          .slice(-10)
+          .slice(-14)
           .map((m) => ({
             role: m.role === "user" ? "user" : "assistant",
-            content: String(m.content).slice(0, 400),
+            content: String(m.content).slice(0, 800),
           }))
       : [];
     let messages: { role: string; content: string }[] = [
