@@ -15,18 +15,6 @@ export default function Hero() {
       </div>
       <div className="gold-haze"></div>
       <div className="sparks" id="sparks"></div>
-      <a
-        className="chat-fab"
-        href="https://t.me/sangdupontbot"
-        target="_blank"
-        rel="noopener"
-        aria-label="Chat tư vấn"
-        title="Chat tư vấn"
-      >
-        <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true">
-          <path d="M12 2C6.48 2 2 6.14 2 11.25c0 2.9 1.53 5.45 3.9 7.12-.1 1.05-.45 2.5-1.65 3.63 0 0 2.95-.2 4.7-1.7.95.28 1.95.45 3.05.45 5.52 0 10-4.14 10-9.5S17.52 2 12 2z" />
-        </svg>
-      </a>
       <div className="hero-content">
         <div className="eyebrow reveal">S.T. Dupont · Paris · Vintage Collection</div>
         <h1 className="reveal d1">

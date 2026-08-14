@@ -265,17 +265,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 34px;background:var(--bg-
   .hero-content{padding-top:96px}
   .hero .eyebrow{margin-top:34px;font-size:.6rem;letter-spacing:.28em}
 }
-/* ============ CHAT FAB ============ */
-.chat-fab{
-  position:fixed;right:22px;bottom:22px;z-index:200;
-  width:58px;height:58px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,var(--gold),var(--gold-2));
-  color:#0a0a0d;box-shadow:0 8px 24px rgba(212,175,55,.35);
-  transition:transform .3s var(--ease),box-shadow .3s var(--ease);
-}
-.chat-fab:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 12px 30px rgba(212,175,55,.5)}
-@media(max-width:560px){.chat-fab{width:52px;height:52px;right:16px;bottom:16px}}
+/* ============ AI CHAT WIDGET (AiChat.tsx inline styles) ============ */
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .reveal{opacity:1;transform:none}

@@ -15,7 +15,6 @@ export default function AiChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -33,7 +32,6 @@ export default function AiChat() {
     setMessages((prev) => [...prev, { role: "user", text: msg }]);
     setInput("");
     setLoading(true);
-    setError("");
 
     try {
       const res = await fetch(FUNC_URL, {
@@ -73,7 +71,7 @@ export default function AiChat() {
         onClick={() => setOpen((prev) => !prev)}
         style={{
           position: "fixed",
-          bottom: 88,
+          bottom: 20,
           right: 20,
           width: 56,
           height: 56,
@@ -98,7 +96,7 @@ export default function AiChat() {
         <div
           style={{
             position: "fixed",
-            bottom: 120,
+            bottom: 84,
             right: 20,
             width: 360,
             maxWidth: "calc(100vw - 32px)",
@@ -173,7 +171,7 @@ export default function AiChat() {
                   lineHeight: 1.55,
                 }}
               >
-                Xin chào! Tôi là trợ lý AI của SangDupont. Bạn cần tư vấn về mẫu bật lửa hay bút Dupont nào?
+                Chào anh/chị, em là trợ lý AI của SangDupont, anh/chị cần em tư vấn về mẫu bật lửa Duponts nào?
               </div>
             )}
             {messages.map((m, idx) => (
