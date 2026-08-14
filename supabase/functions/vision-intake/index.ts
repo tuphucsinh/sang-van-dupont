@@ -22,6 +22,10 @@ Dựa trên ảnh + tên sản phẩm "${name}", viết NHÁP mô tả bán hàn
 KHÔNG bịa thông số cụ thể (năm, số lượng mạ), KHÔNG đề cập giá.
 Trả về JSON đúng format: {"desc_vi": "...", "desc_en": "..."}`;
 
+const TRANSLATE_PROMPT = `Bạn là phiên dịch chuyên ngành bật lửa cao cấp S.T. Dupont.
+Dịch tên sản phẩm từ tiếng Việt sang tiếng Anh. Giữ nguyên thuật ngữ thương hiệu (Ligne 1/2, Guilloché, Diamond Head...), dịch phần mô tả (màu sắc, chất liệu, kiểu dáng) sang tiếng Anh tự nhiên.
+Trả về CHỈ chuỗi tên tiếng Anh — không giải thích, không thêm gì khác.`;
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
   "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -58,10 +62,13 @@ export default {
       return json({ ok: false, error: "JSON không hợp lệ" }, 400);
     }
     const imageB64 = String(body.image_b64 || "");
-    if (!imageB64) return json({ ok: false, error: "Thiếu ảnh (image_b64)" }, 400);
-    // ước lượng kích thước base64 → bytes (xấp xỉ 3/4)
-    if ((imageB64.length * 3) / 4 > MAX_IMG_BYTES + 4096) {
-      return json({ ok: false, error: "Ảnh quá lớn (tối đa 1.5MB)" }, 400);
+    // translate không cần ảnh
+    if (body.mode !== "translate") {
+      if (!imageB64) return json({ ok: false, error: "Thiếu ảnh (image_b64)" }, 400);
+      // ước lượng kích thước base64 → bytes (xấp xỉ 3/4)
+      if ((imageB64.length * 3) / 4 > MAX_IMG_BYTES + 4096) {
+        return json({ ok: false, error: "Ảnh quá lớn (tối đa 1.5MB)" }, 400);
+      }
     }
 
     const ip = clientIp(req);
@@ -74,34 +81,41 @@ export default {
       return json({ ok: false, error: "Thử lại sau 1 giờ" }, 429);
     }
 
-    const mode = body.mode === "draft" ? "draft" : "intake";
+    const mode = body.mode === "draft" ? "draft" : body.mode === "translate" ? "translate" : "intake";
     const name = String(body.name || "").slice(0, 200);
-    const userPrompt = mode === "draft" ? DRAFT_PROMPT(name) : INTAKE_PROMPT;
+    const text = String(body.text || "").slice(0, 300);
+    let userPrompt = INTAKE_PROMPT;
+    if (mode === "draft") userPrompt = DRAFT_PROMPT(name);
+    if (mode === "translate") {
+      if (!text) return json({ ok: false, error: "Thiếu text" }, 400);
+      userPrompt = `${TRANSLATE_PROMPT}\nTên tiếng Việt: "${text}"`;
+    }
 
     const apiKey = Deno.env.get("AI_API_KEY") || "";
     const baseUrl = Deno.env.get("AI_BASE_URL") || "https://opencode.ai/zen/go/v1";
-    const model = Deno.env.get("AI_VISION_MODEL") || "qwen3.8-max";
+    const model = Deno.env.get("AI_VISION_MODEL") || "qwen3.7-plus";
 
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
     let res: Response;
     try {
+      const payload: Record<string, unknown> = {
+        model,
+        messages: [
+          { role: "user", content: [{ type: "text", text: userPrompt }] },
+        ],
+        max_tokens: 500,
+      };
+      if (mode !== "translate") {
+        (payload.messages[0].content as unknown[]).push({
+          type: "image_url",
+          image_url: { url: `data:image/jpeg;base64,${imageB64}` },
+        });
+      }
       res = await fetch(`${baseUrl}/chat/completions`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-        body: JSON.stringify({
-          model,
-          messages: [
-            {
-              role: "user",
-              content: [
-                { type: "text", text: userPrompt },
-                { type: "image_url", image_url: { url: `data:image/jpeg;base64,${imageB64}` } },
-              ],
-            },
-          ],
-          max_tokens: 500,
-        }),
+        body: JSON.stringify(payload),
         signal: ctrl.signal,
       });
     } catch (e) {
@@ -154,6 +168,11 @@ export default {
         }
       } catch { /* fallback */ }
       return json({ ok: true, draft: { desc_vi: content, desc_en: "" } });
+    }
+
+    if (mode === "translate") {
+      // bỏ dấu ngoặc kép thừa nếu model wrap
+      return json({ ok: true, translated: content.replace(/^["']|["']$/g, "").trim() }, 200);
     }
 
     return json({ ok: true, summary: content, missing_angles: [] }, 200);

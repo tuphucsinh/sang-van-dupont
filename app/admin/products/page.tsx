@@ -230,6 +230,30 @@ export default function AdminProductsPage() {
       name_vi: val,
       slug: !editing ? slugify(val) : prev.slug,
     }));
+    // Tự động dịch tên tiếng Anh khi gõ tên VI (chỉ khi chưa có name_en)
+    if (val.trim().length >= 5 && !formData.name_en.trim()) {
+      autoTranslateName(val);
+    }
+  };
+
+  const autoTranslateName = async (text: string) => {
+    try {
+      const res = await fetch(VISION_URL, {
+        method: "POST",
+        headers: {
+          apikey: ANON_KEY,
+          Authorization: "Bearer " + ANON_KEY,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ mode: "translate", text: text.trim() }),
+      });
+      const d = await res.json();
+      if (res.ok && d.ok && d.translated) {
+        setFormData((prev) => ({ ...prev, name_en: d.translated }));
+      }
+    } catch {
+      // dịch lỗi → anh tự gõ — không chặn
+    }
   };
 
   const ensureUniqueSlug = async (baseSlug: string): Promise<string> => {
