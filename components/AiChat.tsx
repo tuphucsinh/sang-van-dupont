@@ -188,7 +188,7 @@ export default function AiChat() {
                   lineHeight: 1.55,
                 }}
               >
-                Chào anh/chị, em là trợ lý AI của SangDupont, anh/chị cần em tư vấn về mẫu bật lửa Duponts nào?
+                Chào anh/chị, em là trợ lý AI của SangDupont, anh/chị cần em tư vấn về mẫu bật lửa Dupont nào?
               </div>
             )}
             {messages.map((m, idx) => (
