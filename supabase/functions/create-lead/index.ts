@@ -50,6 +50,7 @@ export default {
     const need = String(body.need || "").trim().slice(0, 500);
     const line_interest = String(body.line_interest || "").trim().slice(0, 200);
     const channel = String(body.channel || "web_form").trim().slice(0, 50);
+    const aiSummary = typeof body.ai_summary === "string" ? body.ai_summary.trim().slice(0, 2000) : null;
     const attachments = Array.isArray(body.attachments) ? body.attachments.slice(0, 3) : [];
 
     // Validate
@@ -80,6 +81,7 @@ export default {
         need: need || null,
         line_interest: line_interest || null,
         channel: channel || null,
+        ai_summary: aiSummary || null,
         status: "new",
         meta: { ip, source: "web_form", submitted_at: new Date().toISOString() },
       })
@@ -144,6 +146,7 @@ export default {
       need ? `📝 ${escapeHtml(need)}` : "",
       line_interest ? `🔥 Dòng quan tâm: ${escapeHtml(line_interest)}` : "",
       channel ? `📡 Kênh: ${escapeHtml(channel)}` : "",
+      aiSummary ? `🤖 AI sơ bộ: ${escapeHtml(aiSummary)}` : "",
       `🕐 ${new Date(lead.created_at).toLocaleString("vi-VN")}`,
       `#${lead.id.slice(0, 8)}`,
     ]

@@ -4,7 +4,16 @@ import { useRef, useState } from "react";
 import { track } from "./Ga4";
 
 const FUNC_URL = "https://iloaeaoojxdovedjtowt.supabase.co/functions/v1/create-lead";
+const VISION_URL = "https://iloaeaoojxdovedjtowt.supabase.co/functions/v1/vision-intake";
 const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+
+const toBase64 = (f: File) =>
+  new Promise<string>((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(String(r.result).split(",")[1] || "");
+    r.onerror = rej;
+    r.readAsDataURL(f);
+  });
 
 interface FormData {
   type: "buy" | "maintenance";
@@ -30,10 +39,43 @@ export default function LeadForm() {
   const [form, setForm] = useState<FormData>(initialForm);
   const [attachments, setAttachments] = useState<File[]>([]);
   const [consent, setConsent] = useState<boolean>(false);
+  const [aiSummary, setAiSummary] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [requestCode, setRequestCode] = useState<string>("");
   const startedRef = useRef(false);
+
+  const analyzeFirstImage = async (file: File) => {
+    setAiLoading(true);
+    setAiError("");
+    try {
+      const b64 = await toBase64(file);
+      const res = await fetch(VISION_URL, {
+        method: "POST",
+        headers: {
+          apikey: ANON_KEY,
+          Authorization: "Bearer " + ANON_KEY,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          image_b64: b64,
+          mode: "intake",
+        }),
+      });
+      const d = await res.json();
+      if (res.ok && d.ok && d.summary) {
+        setAiSummary(d.summary);
+      } else {
+        setAiError("AI chưa nhận xét được — không sao, vẫn gửi được");
+      }
+    } catch {
+      setAiError("AI chưa nhận xét được — không sao, vẫn gửi được");
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -52,12 +94,22 @@ export default function LeadForm() {
     const validImages = selectedFiles.filter(
       (file) => file.type.startsWith("image/") && file.size <= 1.5 * 1024 * 1024
     );
-    setAttachments((prev) => [...prev, ...validImages].slice(0, 3));
+    const newAttachments = [...attachments, ...validImages].slice(0, 3);
+    setAttachments(newAttachments);
     e.target.value = "";
+
+    if (form.type === "maintenance" && newAttachments.length > 0 && !aiSummary && !aiLoading) {
+      analyzeFirstImage(newAttachments[0]);
+    }
   };
 
   const handleRemoveFile = (index: number) => {
-    setAttachments((prev) => prev.filter((_, i) => i !== index));
+    const nextAttachments = attachments.filter((_, i) => i !== index);
+    setAttachments(nextAttachments);
+    if (nextAttachments.length === 0) {
+      setAiSummary("");
+      setAiError("");
+    }
   };
 
   const handleReset = () => {
@@ -65,6 +117,9 @@ export default function LeadForm() {
     setForm(initialForm);
     setAttachments([]);
     setConsent(false);
+    setAiSummary("");
+    setAiLoading(false);
+    setAiError("");
     setStatus("idle");
     setErrorMsg("");
     setRequestCode("");
@@ -100,13 +155,6 @@ export default function LeadForm() {
     try {
       let b64List: string[] = [];
       if (form.type === "maintenance" && attachments.length > 0) {
-        const toBase64 = (f: File) =>
-          new Promise<string>((res, rej) => {
-            const r = new FileReader();
-            r.onload = () => res(String(r.result).split(",")[1] || "");
-            r.onerror = rej;
-            r.readAsDataURL(f);
-          });
         b64List = await Promise.all(attachments.map(toBase64));
       }
 
@@ -122,12 +170,17 @@ export default function LeadForm() {
           name: trimmedName,
           phone: trimmedPhone,
           channel: form.channel || "web_form",
-          ...(form.type === "maintenance" && attachments.length > 0
+          ...(form.type === "maintenance"
             ? {
-                attachments: attachments.map((f, i) => ({
-                  name: f.name,
-                  base64: b64List[i],
-                })),
+                ai_summary: aiSummary || undefined,
+                ...(attachments.length > 0
+                  ? {
+                      attachments: attachments.map((f, i) => ({
+                        name: f.name,
+                        base64: b64List[i],
+                      })),
+                    }
+                  : {}),
               }
             : {}),
         }),
@@ -150,6 +203,9 @@ export default function LeadForm() {
         setStatus("success");
         setAttachments([]);
         setConsent(false);
+        setAiSummary("");
+        setAiLoading(false);
+        setAiError("");
       } else {
         setStatus("error");
         setErrorMsg(d.error || "Lỗi gửi");
@@ -442,6 +498,48 @@ export default function LeadForm() {
                       </div>
                     ))}
                   </div>
+                )}
+
+                {aiLoading && (
+                  <p
+                    style={{
+                      color: "#d4af37",
+                      fontSize: "0.8rem",
+                      margin: "8px 0 0",
+                      fontStyle: "italic",
+                    }}
+                  >
+                    🤖 AI đang xem ảnh...
+                  </p>
+                )}
+
+                {aiSummary && (
+                  <div
+                    style={{
+                      marginTop: "8px",
+                      background: "#0a0a0d",
+                      border: "1px solid rgba(212, 175, 55, 0.3)",
+                      borderRadius: "6px",
+                      padding: "8px",
+                      fontSize: "0.8rem",
+                      color: "#f3ecd9",
+                      lineHeight: "1.4",
+                    }}
+                  >
+                    🤖 AI nhận xét sơ bộ: {aiSummary}
+                  </div>
+                )}
+
+                {aiError && !aiSummary && !aiLoading && (
+                  <p
+                    style={{
+                      color: "#a89f8a",
+                      fontSize: "0.8rem",
+                      margin: "8px 0 0",
+                    }}
+                  >
+                    {aiError}
+                  </p>
                 )}
               </div>
 
