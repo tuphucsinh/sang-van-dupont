@@ -1,6 +1,6 @@
 # DECISIONS LOG — SangDupont
 
-> Status: **PLAN — chờ duyệt**
+> Status: **MASTERPLAN APPROVED 2026-08-14 (anh duyệt)** — Phase 1 băm task xong, sẵn sàng `/do`
 > Format: mỗi entry = ngày, quyết định, lý do, nguồn. Append-only.
 
 ## 2026-08-14 — Chuẩn hóa project + masterplan từ 2 file kế hoạch

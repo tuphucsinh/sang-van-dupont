@@ -1,6 +1,6 @@
 # MASTER PLAN — SangDupont (Sangwebsite)
 
-> Status: **PLAN — chờ duyệt** (Reviewer + user gate)
+> Status: **APPROVED 2026-08-14 (anh duyệt)** — Phase 1 đã plan2task, sẵn sàng `/do`
 > Created: 2026-08-14 · Author: Mika
 > Nguồn: `ke_hoach_nang_cap_sangdupont_tinh_gon(1).md` (713 dòng) + `sangdupont_ai_hermes_capabilities.md` (413 dòng)
 > Workflow: AGENTS.md chuẩn — Mika plan/verify → Runner implement → Reviewer khi chạm auth/DB/backend/production
