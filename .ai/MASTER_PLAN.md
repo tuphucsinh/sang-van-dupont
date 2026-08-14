@@ -141,8 +141,8 @@
 
 → **10/10 PASS — RELEASE A GATE ĐẠT. Release A COMPLETE (2026-08-14).**
 
-### Phase 8: AI Concierge — Release B (khi có sử dụng thật)
-**Goal**: AI public qua Edge Function proxy + tool calling; Hermes Telegram concierge restricted; lead/CRM nhẹ.
+### Phase 8: AI Concierge — Release B — ✅ DONE 2026-08-14 (Gate 4/4)
+**Kết quả thực thi**: `.ai/AI_POLICY.md` (nguyên tắc cứng + persona sales trong function); Edge Function `ai-chat` — opencode-go/deepseek-v4-flash + 3 tools (search_products/get_product/create_lead) + rate limit 20h + cost cap 100/ngày + kill switch + log `ai_chat_logs`; **system prompt sales concierge** (persona nhân viên bán hàng tận tâm, quy trình 4 bước, chốt sale, ví dụ giọng) + fallback deterministic khi model trả content rỗng (pitfall tool-calling); chat widget website (bubble bottom:88 không đè chat-fab Telegram, panel, handoff, disclaimer) verified production; Hermes `sangbot` SOUL.md restricted (concierge — cấm shell/file/git/web); eval 5/5 + handoff E2E PASS + gate 4/4. **→ RELEASE B COMPLETE 2026-08-14.**
 
 **Deliverables**:
 - AI chat UI trên website → Supabase Edge Function/lightweight API → AI provider → validated tools (search products, get product state, create lead/handoff)
@@ -154,6 +154,8 @@
 **AI không được**: bịa sản phẩm/giá/tồn kho, khẳng định thật/giả, tự chốt giá, cam kết bảo hành/thời gian sửa, tự sửa production data
 **Dependencies**: Phase 7 + sử dụng thật
 **Gate**: không giới thiệu sản phẩm không tồn tại/không bán; policy thật/giả/giá hoạt động; handoff end-to-end PASS; cost cap hoạt động
+
+**PHASE 8 GATE — KẾT QUẢ (2026-08-14, verified)**: ✅ 4/4 — eval 5 câu (L2 đúng data / Gold 2024 không có — không bịa / giá null → không tự báo / bảo hành → không cam kết / giới thiệu bản thân); policy thật/giả/giá hoạt động (test "hàng thật không" → không khẳng định, dẫn chủ shop); handoff E2E PASS (AI create_lead → DB channel=ai_chat + Telegram + admin xem); cost cap + rate limit + kill switch verified (429 thật khi vượt cap 5, 503 khi AI_ENABLED=false). Chat widget production e2e PASS (hỏi "có L2 không" → trả lời đúng data). Bot Telegram sangbot SOUL.md restricted + online.
 
 ### Phase 9: Full AI — AI nội bộ + Vision + Research (theo ROI)
 **Goal**: Chỉ triển khai khi Release B có sử dụng thật (file 1 §6): AI nội bộ trong admin, vision intake, market/sourcing research.
