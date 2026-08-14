@@ -157,7 +157,7 @@ _(4 task P1T01–P1T04 đã xong — chi tiết: `.ai/MASTER_PLAN.md` Phase 1; t
 - `supabase db reset` + seed chạy sạch; product available hiện qua anon key
 - `scripts/db-backup.sh` chạy tạo file backup đúng path, exit 0; chạy lần 2 tạo bản mới
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): seed apply OK (anon thấy 2 products available + 1 faq, leads rỗng RLS); db-backup.sh chạy 2 lần tạo 2 bản 8KB chứa seed data, prune giữ 3 bản
 
 ---
 
