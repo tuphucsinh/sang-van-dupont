@@ -51,7 +51,7 @@ export async function getAllProducts(): Promise<Product[]> {
       ...p,
       media: (media as MediaRow[] | null)
         ?.filter((m) => m.product_id === p.id)
-        .map(({ product_id, ...m }) => m) || [],
+        .map((m) => ({ url: m.url, kind: m.kind, sort_order: m.sort_order })) || [],
     }));
   } catch (err) {
     console.warn("[catalog] getAllProducts error:", err);

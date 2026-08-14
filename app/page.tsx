@@ -10,14 +10,17 @@ import Lightbox from "@/components/Lightbox";
 import Footer from "@/components/Footer";
 import SparksClient from "@/components/SparksClient";
 import RevealClient from "@/components/RevealClient";
+import { getAllProducts } from "../lib/catalog";
 
-export default function HomePage() {
+export default async function Home() {
+  const products = await getAllProducts();
+
   return (
     <I18nProvider>
       <Nav />
       <Hero />
       <Marquee />
-      <Collection />
+      <Collection products={products} />
       <About />
       <Services />
       <Contact />
