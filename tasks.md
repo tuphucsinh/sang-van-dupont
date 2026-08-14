@@ -106,7 +106,7 @@ _(5 task P2T01–P2T05 đã xong + Reviewer PASS SW-P2-MIGRATIONS-01 — chi ti�
 - `npm run build` PASS; `out/` chứa HTML có 9 product name thật (grep)
 - Browser verify (Mika): collection hiện 9 card, 1 badge "Đã giữ", click card → `/vi/products/<slug>` mở, no console error
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): build PASS, out/index.html chứa 8 card + 8 link /vi/products/*, CDP browser: cards=8, NO_JS_ERRORS, Chrome sạch sau test
 
 ---
 
