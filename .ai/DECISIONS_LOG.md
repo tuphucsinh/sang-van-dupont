@@ -47,3 +47,12 @@
 | D18 | **Admin login = GitHub OAuth** (Supabase Auth provider) + **allowlist email** (chỉ `tvccbod@gmail.com` — email GitHub của anh) trong RLS | Anh login quen, 2FA GitHub sẵn; mọi authenticated khác chỉ đọc public (R1 reviewer xử lý — không ai khác write được kể cả khi authorize OAuth) |
 | D19 | Admin CRUD **client-side** (supabase-js + user session → PostgREST qua RLS) — static export KHÔNG có server actions/route handlers | `output:'export'` giới hạn; RLS là lớp enforce thật (không chỉ UI guard) |
 | D20 | Route admin: `/admin` (login) + `/admin/products` (CRUD) + `/admin/leads` (xem lead); client guard + RLS enforce | Tách rõ login vs CRUD vs lead; Phase 4 gồm luôn xem lead (anh chốt) |
+
+## 2026-08-14 — Reviewer SW-P4-ADMIN-01: PASS + 4 góp ý
+
+| # | Góp ý | Xử lý |
+|---|---|---|
+| R4-1 | Sanitize storage path (slug thô có thể chứa ký tự lạ) | ✅ Fix: slugify() + ext lọc a-z0-9 |
+| R4-2 | Upload chỉ check size, không check MIME | ✅ Fix: `file.type.startsWith('image/')` |
+| R4-3 | Xóa product → file bucket orphan | ✅ Fix: storage.remove trước delete |
+| R4-4 | ADMIN_EMAIL lặp 3 nơi; ARCHITECT §4 ghi "signed URL qua Edge Function" nhưng thực tế createSignedUrl client-side | Ghi nhận: RLS là nguồn sự thật duy nhất (an toàn vì is_admin chặn); cập nhật ARCHITECT §4 khi Phase 7 (signed URL client-side OK vì RLS) |
