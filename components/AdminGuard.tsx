@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabase-client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const ADMIN_EMAIL = "tvccbod@gmail.com";
+const ADMIN_EMAILS = ["tvccbod@gmail.com", "aivntps@gmail.com"];
 
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<"loading" | "ok" | "denied">("loading");
@@ -14,7 +14,7 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!mounted) return;
-      if (session?.user?.email === ADMIN_EMAIL) {
+      if (session?.user?.email && ADMIN_EMAILS.includes(session.user.email)) {
         setStatus("ok");
       } else {
         setStatus("denied");
@@ -25,7 +25,7 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!mounted) return;
-      if (session?.user?.email === ADMIN_EMAIL) {
+      if (session?.user?.email && ADMIN_EMAILS.includes(session.user.email)) {
         setStatus("ok");
       } else {
         setStatus("denied");
