@@ -133,7 +133,7 @@ export default function AiChat() {
             </span>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <a
-                href="https://t.me/sangdupontbot"
+                href="https://zalo.me/0905076886"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -142,7 +142,7 @@ export default function AiChat() {
                   textDecoration: "none",
                 }}
               >
-                Chat người thật →
+                Chat chủ shop →
               </a>
               <button
                 onClick={() => setOpen(false)}
@@ -286,17 +286,6 @@ export default function AiChat() {
             </button>
           </form>
 
-          {/* Disclaimer */}
-          <div
-            style={{
-              fontSize: "0.65rem",
-              color: "#6f6857",
-              textAlign: "center",
-              padding: "4px 10px 8px",
-            }}
-          >
-            Trợ lý AI trả lời dựa trên dữ liệu sản phẩm — thông tin cuối cùng do người thật xác nhận
-          </div>
         </div>
       )}
     </>
