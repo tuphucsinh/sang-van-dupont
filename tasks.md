@@ -100,7 +100,7 @@ _(4 task P1T01–P1T04 đã xong — chi tiết: `.ai/MASTER_PLAN.md` Phase 1; t
 - File SQL tồn tại; apply sạch
 - Test RLS (Mika verify): anon key đọc được product available + faq; anon KHÔNG đọc được leads/lead_attachments; admin (authenticated) CRUD được
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): applied + test REST thật — anon đọc chỉ `test-available` (ẩn draft), anon leads rỗng, anon INSERT leads/products → 401, service role đọc được lead; test data đã dọn
 
 ---
 
