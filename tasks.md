@@ -109,7 +109,7 @@
 - Mở `out/` bằng `python3 -m http.server` + Chrome thật (`/usr/bin/google-chrome-stable`): không lỗi console (CDP), toggle VI/EN hoạt động, lightbox click mở ảnh, marquee/sparks chạy
 - So sánh visual với bản gốc: screenshot 2 bên (bản cũ = `git show HEAD:index.html` qua http.server, bản mới = out/) — section hero/collection/contact không lệch layout đáng kể
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): lint/tsc/build PASS; browser CDP: DOM match 100% (9 cards, 18 sparks, title, h1), EN/VI toggle + localStorage, lightbox open/close, desktop+mobile screenshot OK, NO_JS_ERRORS
 
 ---
 
