@@ -159,6 +159,37 @@ export default {
         if (!tgRes.ok) {
           console.error("telegram send http fail:", tgRes.status, await tgRes.text());
         }
+        // Gửi kèm ảnh (nếu lead có attachment) — tải từ Storage private bằng service role rồi upload multipart
+        if (savedAttachments > 0) {
+          const { data: attRows, error: attListErr } = await supabase
+            .from("lead_attachments")
+            .select("storage_path")
+            .eq("lead_id", lead.id)
+            .order("created_at", { ascending: true })
+            .limit(3);
+          if (!attListErr && attRows) {
+            for (const row of attRows) {
+              const { data: fileBlob, error: dlErr } = await supabase.storage
+                .from("lead-attachments")
+                .download(row.storage_path);
+              if (dlErr || !fileBlob) {
+                console.error("download attach for telegram fail:", dlErr?.message);
+                continue;
+              }
+              const form = new FormData();
+              form.set("chat_id", String(chatId));
+              form.set("photo", fileBlob, "attachment.jpg");
+              form.set("caption", `📎 Ảnh đính kèm — ${typeLabel}\n👤 ${escapeHtml(name)} · #${lead.id.slice(0, 8)}`);
+              const photoRes = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+                method: "POST",
+                body: form,
+              });
+              if (!photoRes.ok) {
+                console.error("telegram sendPhoto fail:", photoRes.status, await photoRes.text());
+              }
+            }
+          }
+        }
       }
     } catch (e) {
       console.error("telegram send fail:", (e as Error).message);
