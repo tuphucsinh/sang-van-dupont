@@ -109,16 +109,21 @@ export default function AiChat() {
     setLoading(true);
 
     try {
+      // Gửi kèm lịch sử chat (10 lượt gần nhất) — model biết ngữ cảnh, không mở đầu lại như khách mới
+      const history = messages
+        .slice(-10)
+        .map((m) => ({ role: m.role === "user" ? "user" : "assistant", content: m.text.slice(0, 400) }));
       const res = await fetch(FUNC_URL, {
         method: "POST",
         headers: {
-          apikey: ANON_KEY,
+          apikey: ***
           Authorization: "Bearer " + ANON_KEY,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           message: msg,
           lang,
+          history,
           ...(requestCodeRef.current ? { request_code: requestCodeRef.current } : {}),
         }),
       });

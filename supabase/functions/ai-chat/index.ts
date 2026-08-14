@@ -102,7 +102,7 @@ export default {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    let body: { message?: string; action?: string; request_code?: string };
+    let body: { message?: string; action?: string; request_code?: string; history?: { role?: string; content?: string }[] };
     try {
       body = await req.json();
     } catch {
@@ -168,7 +168,7 @@ export default {
         alreadyAcked = Array.isArray(lead?.meta?.ai_notes) && (lead.meta.ai_notes as unknown[]).length > 0;
       } catch { /* mặc định false */ }
       message = alreadyAcked
-        ? `[Yêu cầu #${requestCode} — ĐÃ GHI NHẬN trước đó] ${message} — Khách đang chat tiếp cho yêu cầu này. Chỉ trả lời câu hỏi mới bằng tiếng Việt. TUYỆT ĐỐI KHÔNG xác nhận lại "đã ghi nhận", không lặp lại thông tin cũ, không mở đầu tiếng Anh. Nếu khách cung cấp thông tin MỚI (dòng quan tâm/nhu cầu/ghi chú) → vẫn gọi update_lead.`
+        ? `[Yêu cầu #${requestCode} — ĐÃ GHI NHẬN trước đó, khách có SĐT trong hệ thống] ${message} — Khách đang chat tiếp cho yêu cầu này. Chỉ trả lời câu hỏi mới bằng tiếng Việt. TUYỆT ĐỐI: không xác nhận lại, không dùng từ "ghi chú/ghi nhận/note", không lặp thông tin cũ, không đòi SĐT, không mở đầu tiếng Anh. Nếu khách cung cấp thông tin MỚI (dòng quan tâm/nhu cầu/ghi chú) → vẫn gọi update_lead rồi trả lời ngắn như đang nói chuyện tiếp.`
         : `[Yêu cầu #${requestCode}] ${message} — khách đang bổ sung thông tin cho yêu cầu này, dùng update_lead nếu có thông tin mới (dòng quan tâm/nhu cầu/ghi chú).`;
     }
 
@@ -395,8 +395,19 @@ export default {
     const apiKey = Deno.env.get("AI_API_KEY") || "";
     const baseUrl = Deno.env.get("AI_BASE_URL") || "https://opencode.ai/zen/go/v1";
     const model = Deno.env.get("AI_MODEL") || "deepseek-v4-flash";
+    // Lịch sử chat từ client (10 lượt) — model giữ ngữ cảnh cuộc trò chuyện
+    const history: { role: string; content: string }[] = Array.isArray(body.history)
+      ? body.history
+          .filter((m) => m && typeof m.content === "string" && m.content.trim())
+          .slice(-10)
+          .map((m) => ({
+            role: m.role === "user" ? "user" : "assistant",
+            content: String(m.content).slice(0, 400),
+          }))
+      : [];
     let messages: { role: string; content: string }[] = [
       { role: "system", content: SYSTEM_PROMPT },
+      ...history,
       { role: "user", content: message },
     ];
     let finalText = "";
