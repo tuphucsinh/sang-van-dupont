@@ -1,9 +1,37 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 
 export default function Hero() {
+  const [videoDone, setVideoDone] = useState(false);
+
   return (
     <section className="hero">
       <div className="hero-bg">
+        {/* Video Veo (thử nghiệm local — không git/deploy) — chạy 1 lần; dừng thì tối/mờ nhẹ */}
+        <video
+          autoPlay
+          muted
+          playsInline
+          onEnded={() => setVideoDone(true)}
+          poster="/assets/img/hero-veo-poster.jpg"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 1, filter: "brightness(.68) contrast(1.12) saturate(1.08)" }}
+        >
+          <source src="/assets/video/hero-veo.mp4" type="video/mp4" />
+        </video>
+        {/* Lớp dim khi video dừng — tối + mờ nhẹ, fade mượt */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 2,
+            pointerEvents: "none",
+            background: "rgba(10,10,13,.4)",
+            backdropFilter: "blur(2px)",
+            opacity: videoDone ? 1 : 0,
+            transition: "opacity 1.2s ease",
+          }}
+        />
         <picture>
           <source media="(max-width: 768px)" srcSet="/assets/img/hero-mobile.jpg" />
           <img

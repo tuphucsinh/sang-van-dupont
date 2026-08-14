@@ -1,8 +1,30 @@
 # Veo Video Prompts — SangDupont (2026-08-14)
 
-> Dùng ảnh THẬT từ website làm reference (image-to-video). Veo giữ sản phẩm, prompt điều khiển chuyển động/ánh sáng/nền.
-> Ảnh chính: `out/assets/img/hero.jpg` (bật lửa trong hộp — cinematic). Ảnh phụ: `img_08.jpg`, `img_03.jpg`.
+> Dùng ảnh THẬT từ website/FB làm reference (image-to-video). Veo giữ sản phẩm, prompt điều khiển chuyển động/ánh sáng/nền.
+> Ảnh chính WEBSITE: `out/assets/img/hero.jpg` (bật lửa đen sơn mài trong hộp).
+> **Ảnh chính FB (wow nhất — bật lửa VÀNG khắc RỒNG, nắp mở)**: tải từ facebook.com/vansang.kt — lưu local: copy từ `/tmp/fb-photos/fb_3.jpg` (fb_4/fb_5 = ảnh phụ hộp quà).
 > Lưu ý: KHÔNG nhắc tên thương hiệu trong prompt (Veo sẽ tự đổi/bóp méo logo) — dùng "vintage French luxury lighter".
+
+---
+
+## 0. HERO FB — "Ngọn lửa bùng lên từ rồng" (8s — ảnh fb_3, khuyên dùng nhất)
+**Input image**: fb_3.jpg (bật lửa vàng khắc rồng, nắp mở) · **Ratio**: 9:16 hoặc 1:1 · **Duration**: 8s
+
+```
+Cinematic luxury product commercial, 8 seconds, ultra premium watch-advertisement style.
+A vintage gold lighter with hand-engraved dragon patterns and open lid, from the reference image,
+held in a hand. A warm golden flame suddenly ignites from the burner with a soft metallic click,
+the flame flickering gently and growing steadier.
+Slow cinematic camera orbit around the lighter, the golden light from the flame tracing the
+engraved dragon details, making them sparkle line by line.
+Thin wisps of smoke curling upward, floating gold dust particles, dark moody background with
+warm golden bokeh.
+Dramatic chiaroscuro lighting, slow motion, shallow depth of field, 35mm film aesthetic,
+sophisticated and masculine, black and gold palette.
+No text, no logo, no watermark.
+```
+
+> Nếu Veo animate tay khó → đổi "held in a hand" thành "resting on dark stone surface" (bỏ tay, dễ hơn).
 
 ---
 
