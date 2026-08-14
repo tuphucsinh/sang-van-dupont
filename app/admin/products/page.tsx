@@ -215,6 +215,18 @@ export default function AdminProductsPage() {
     if (!ok) return;
 
     try {
+      // Dọn file storage trước (tránh orphan) — media URL từ bucket product-images
+      for (const m of p.product_media || []) {
+        if (m.url.includes("/storage/v1/object/public/product-images/")) {
+          const path = m.url.split("/product-images/")[1];
+          if (path) {
+            const { error: rmErr } = await supabase.storage
+              .from("product-images")
+              .remove([path]);
+            if (rmErr) console.warn("Không xóa được file storage:", rmErr.message);
+          }
+        }
+      }
       const { error } = await supabase.from("products").delete().eq("id", p.id);
       if (error) throw error;
 
@@ -235,11 +247,16 @@ export default function AdminProductsPage() {
       e.target.value = "";
       return;
     }
+    if (!file.type.startsWith("image/")) {
+      showToastMsg("err", "Chỉ chấp nhận file ảnh");
+      e.target.value = "";
+      return;
+    }
 
     setUploadingMedia(true);
     try {
-      const ext = file.name.split(".").pop() || "jpg";
-      const slugClean = formData.slug.trim() || "item";
+      const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+      const slugClean = slugify(formData.slug) || "item";
       const path = `products/${slugClean}/${Date.now()}.${ext}`;
 
       const { error: uploadError } = await supabase.storage
