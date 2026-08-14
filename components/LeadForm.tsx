@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { track } from "./Ga4";
 
 const FUNC_URL = "https://iloaeaoojxdovedjtowt.supabase.co/functions/v1/create-lead";
 const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
@@ -32,11 +33,16 @@ export default function LeadForm() {
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [requestCode, setRequestCode] = useState<string>("");
+  const startedRef = useRef(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    if (!startedRef.current) {
+      startedRef.current = true;
+      track("start_form", { type: form.type });
+    }
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -55,6 +61,7 @@ export default function LeadForm() {
   };
 
   const handleReset = () => {
+    startedRef.current = false;
     setForm(initialForm);
     setAttachments([]);
     setConsent(false);
@@ -127,6 +134,17 @@ export default function LeadForm() {
       });
 
       const d = await res.json();
+      track("submit_form", {
+        type: form.type,
+        request_code: d.request_code || "",
+        status:
+          res.ok && d.ok
+            ? "ok"
+            : res.status === 429
+            ? "rate_limited"
+            : "error",
+      });
+
       if (res.ok && d.ok) {
         setRequestCode(d.request_code || "");
         setStatus("success");
@@ -137,6 +155,7 @@ export default function LeadForm() {
         setErrorMsg(d.error || "Lỗi gửi");
       }
     } catch {
+      track("submit_form", { type: form.type, status: "network_error" });
       setStatus("error");
       setErrorMsg("Không kết nối được — thử lại");
     }

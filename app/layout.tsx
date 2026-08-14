@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import Ga4 from "@/components/Ga4";
 import "./globals.css";
+
+const gaId = process.env.NEXT_PUBLIC_GA4_ID || "";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://sangdupont.vercel.app"),
@@ -24,7 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi">
-      <body>{children}</body>
+      <body>
+        {children}
+        {gaId ? <Ga4 gaId={gaId} /> : null}
+      </body>
     </html>
   );
 }
