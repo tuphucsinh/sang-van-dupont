@@ -76,6 +76,27 @@ AI sẽ: lọc đúng tiêu chí → giới thiệu 1-3 mẫu thật → hỏi n
 - AI **chỉ giới thiệu candidate mà code trả về** — không tự thêm/bớt sản phẩm
 - Không có mẫu hợp tiêu chí → AI nói thật + hỏi ngân sách/gu khác
 
+## 4️⃣ AI MARKETING PIPELINE — "1 sản phẩm → 8 đầu ra" (Phase 11)
+
+**Mục đích**: một bộ ảnh/thông tin sản phẩm → đồng thời tạo product listing, bài website, Facebook post, TikTok caption, story/reel ngắn, bản tiếng Anh, SEO metadata, alt text — giảm nhập nội dung lặp lại.
+
+### Cách dùng (qua sangbot — Hermes nội bộ Telegram)
+
+1. Nhắn sangbot: **"sinh marketing cho <slug>"** (vd `black-lacquer`) — hoặc chạy tay:
+   `npm run marketing -- <slug>` (từ `/home/pi5/projects/Sangwebsite`)
+2. Chờ ~2-4 phút (16+ lượt gọi model) → draft lưu `marketing/drafts/<slug>/`
+3. **Anh review**: `git diff marketing/drafts/` — kiểm tra không bịa giá/thông số
+4. Publish: dán vào `/admin/products` (hoặc sangbot `sangops products update`)
+
+### Guard
+- AI chỉ dùng data THẬT từ Supabase; giá NULL → "Liên hệ 0905 076 886"
+- AI chỉ tạo **draft** — anh duyệt trước publish; không tự đăng bài
+- Chi phí: log `.tmp/marketing-log.md`; model text `deepseek-v4-flash` + vision `qwen3.7-plus` (opencode-go)
+
+### Lưu ý
+- Vision alt text: qwen3.7-plus xem từng ảnh thật (base64 local) — không bịa chi tiết ngoài ảnh
+- Draft git-tracked → có lịch sử, diff review dễ
+
 ---
 
 ## ⚙️ Vận hành chung
