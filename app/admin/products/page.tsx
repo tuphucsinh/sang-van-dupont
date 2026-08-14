@@ -87,6 +87,8 @@ export default function AdminProductsPage() {
   const [toast, setToast] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
   const [drafting, setDrafting] = useState<boolean>(false);
   const [draftError, setDraftError] = useState<string>("");
+  const [enNameLoading, setEnNameLoading] = useState<boolean>(false);
+  const [enNameError, setEnNameError] = useState<string>("");
 
   const showToastMsg = useCallback((type: "ok" | "err", msg: string) => {
     setToast({ type, msg });
@@ -230,14 +232,22 @@ export default function AdminProductsPage() {
       name_vi: val,
       slug: !editing ? slugify(val) : prev.slug,
     }));
-    // Tự động dịch tên tiếng Anh khi gõ tên VI (chỉ khi chưa có name_en)
-    if (val.trim().length >= 5 && !formData.name_en.trim()) {
-      autoTranslateName(val);
-    }
   };
 
-  const autoTranslateName = async (text: string) => {
+  // Tên VI đã là tiếng Anh (không dấu tiếng Việt) → copy nguyên, không gọi API
+  const isPureLatin = (text: string) =>
+    !/[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠĂẰẮẲẴẶÂẦẤẨẪẬÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ]/.test(text);
+
+  const handleGenerateEnName = async () => {
+    const vi = formData.name_vi.trim();
+    if (!vi) return;
+    setEnNameLoading(true);
     try {
+      if (isPureLatin(vi)) {
+        // Không có dấu tiếng Việt → tên EN = tên VI (0 API)
+        setFormData((prev) => ({ ...prev, name_en: vi }));
+        return;
+      }
       const res = await fetch(VISION_URL, {
         method: "POST",
         headers: {
@@ -245,14 +255,18 @@ export default function AdminProductsPage() {
           Authorization: "Bearer " + ANON_KEY,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ mode: "translate", text: text.trim() }),
+        body: JSON.stringify({ mode: "translate", text: vi }),
       });
       const d = await res.json();
       if (res.ok && d.ok && d.translated) {
         setFormData((prev) => ({ ...prev, name_en: d.translated }));
+      } else {
+        setEnNameError("AI chưa dịch được — thử lại hoặc gõ tay");
       }
     } catch {
-      // dịch lỗi → anh tự gõ — không chặn
+      setEnNameError("Lỗi kết nối — thử lại");
+    } finally {
+      setEnNameLoading(false);
     }
   };
 
@@ -1070,26 +1084,53 @@ export default function AdminProductsPage() {
                     >
                       Tên tiếng Anh <span style={{ color: "#ef4444" }}>*</span>
                     </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.name_en}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name_en: e.target.value })
-                      }
-                      placeholder="VD: Dupont Ligne 2 Gold Lines"
-                      style={{
-                        width: "100%",
-                        background: "#18181e",
-                        border: "1px solid rgba(212, 175, 55, 0.25)",
-                        borderRadius: "6px",
-                        padding: "8px 12px",
-                        color: "#f3ecd9",
-                        fontSize: "14px",
-                        outline: "none",
-                        boxSizing: "border-box",
-                      }}
-                    />
+                    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                      <input
+                        type="text"
+                        required
+                        value={formData.name_en}
+                        onChange={(e) => {
+                          setFormData({ ...formData, name_en: e.target.value });
+                          setEnNameError("");
+                        }}
+                        placeholder="VD: Dupont Ligne 2 Gold Lines"
+                        style={{
+                          flex: 1,
+                          background: "#18181e",
+                          border: "1px solid rgba(212, 175, 55, 0.25)",
+                          borderRadius: "6px",
+                          padding: "8px 12px",
+                          color: "#f3ecd9",
+                          fontSize: "14px",
+                          outline: "none",
+                          boxSizing: "border-box",
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleGenerateEnName}
+                        disabled={enNameLoading || !formData.name_vi.trim()}
+                        title="Tạo tên tiếng Anh tự động từ tên tiếng Việt"
+                        style={{
+                          background: "transparent",
+                          border: "1px solid rgba(212, 175, 55, 0.4)",
+                          color: "#d4af37",
+                          borderRadius: "6px",
+                          padding: "8px 10px",
+                          fontSize: "12px",
+                          cursor: "pointer",
+                          whiteSpace: "nowrap",
+                          opacity: enNameLoading || !formData.name_vi.trim() ? 0.5 : 1,
+                        }}
+                      >
+                        {enNameLoading ? "Đang tạo..." : "✨ Tạo EN tự động"}
+                      </button>
+                    </div>
+                    {enNameError && (
+                      <p style={{ color: "#ef4444", fontSize: "12px", marginTop: "4px" }}>
+                        {enNameError}
+                      </p>
+                    )}
                   </div>
 
                   <div>
