@@ -1,4 +1,5 @@
 import React from "react";
+import LeadForm from "./LeadForm";
 
 export default function Contact() {
   return (
@@ -57,6 +58,7 @@ export default function Contact() {
             TikTok
           </a>
         </div>
+        <LeadForm />
       </div>
     </section>
   );
