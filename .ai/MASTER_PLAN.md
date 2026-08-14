@@ -36,8 +36,8 @@
 
 ## 1. PHASES
 
-### Phase 1: Foundation — Repo chuẩn hóa + Next.js/TS migration
-**Goal**: Chuẩn hóa repo theo quy trình; chuyển landing page static → Next.js + TypeScript giữ visual parity desktop/mobile; cấu hình static export + lint/typecheck/build.
+### Phase 1: Foundation — Repo chuẩn hóa + Next.js/TS migration — ✅ DONE 2026-08-14
+**Kết quả thực thi**: repo chuẩn hóa (`.ai/` + tasks.md + HANDOFF + .tmp gitignored); tag `v0.1-pre-migration` + backup tar.gz 20.8MB (hermes-artifacts); dọn 28 asset thừa + data/preview ra ngoài; Next.js App Router + TS strict + `output:'export'` (lint/tsc/build PASS); migrate toàn bộ UI sang 12 components giữ visual parity (CDP verify: DOM match 100%, EN/VI toggle + localStorage, lightbox, desktop+mobile screenshots, NO_JS_ERRORS); CI GitHub Actions build off-host (7 steps, chờ push thật). Runner: agy (P1T02/03) + Mika direct (P1T01 ops, P1T04 sau 2 lần agy fail 503).
 
 **Deliverables**:
 - Backup repo trước khi dọn/migration (git tag/archive — file 1 §13 bước 1)
