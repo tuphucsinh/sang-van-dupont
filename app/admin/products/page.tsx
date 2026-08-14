@@ -54,6 +54,9 @@ const INITIAL_FORM: ProductFormData = {
   status: "available",
 };
 
+const VISION_URL = "https://iloaeaoojxdovedjtowt.supabase.co/functions/v1/vision-intake";
+const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+
 function slugify(text: string): string {
   return text
     .toString()
@@ -82,6 +85,8 @@ export default function AdminProductsPage() {
   const [uploadingMedia, setUploadingMedia] = useState<boolean>(false);
   const [staticImgPath, setStaticImgPath] = useState<string>("");
   const [toast, setToast] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
+  const [drafting, setDrafting] = useState<boolean>(false);
+  const [draftError, setDraftError] = useState<string>("");
 
   const showToastMsg = useCallback((type: "ok" | "err", msg: string) => {
     setToast({ type, msg });
@@ -120,6 +125,7 @@ export default function AdminProductsPage() {
     setFormData(INITIAL_FORM);
     setIsSlugManual(false);
     setStaticImgPath("");
+    setDraftError("");
     setShowForm(true);
   };
 
@@ -139,6 +145,7 @@ export default function AdminProductsPage() {
     });
     setIsSlugManual(true);
     setStaticImgPath("");
+    setDraftError("");
     setShowForm(true);
   };
 
@@ -148,6 +155,78 @@ export default function AdminProductsPage() {
     setFormData(INITIAL_FORM);
     setIsSlugManual(false);
     setStaticImgPath("");
+    setDraftError("");
+  };
+
+  const handleAiDraft = async () => {
+    if (!editing || !editing.product_media?.length) {
+      setDraftError("Cần ảnh cover trước");
+      return;
+    }
+    setDrafting(true);
+    setDraftError("");
+    try {
+      const coverMedia =
+        editing.product_media.find((m) => m.kind === "cover") ||
+        editing.product_media[0];
+      const coverUrl = coverMedia?.url;
+      if (!coverUrl) {
+        setDraftError("Cần ảnh cover trước");
+        return;
+      }
+
+      const resImg = await fetch(coverUrl);
+      if (!resImg.ok) throw new Error("Không thể tải ảnh sản phẩm");
+      const blob = await resImg.blob();
+      const b64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = String(reader.result || "");
+          resolve(result.includes(",") ? result.split(",")[1] : result);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+
+      const res = await fetch(VISION_URL, {
+        method: "POST",
+        headers: {
+          apikey: ANON_KEY,
+          Authorization: "Bearer " + ANON_KEY,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          image_b64: b64,
+          mode: "draft",
+          name: formData.name_vi || editing.name_vi || "",
+        }),
+      });
+
+      const d = await res.json();
+      if (res.ok && d.ok && d.draft) {
+        setFormData((prev) => ({
+          ...prev,
+          desc_vi: d.draft.desc_vi || prev.desc_vi,
+          desc_en: d.draft.desc_en || prev.desc_en,
+        }));
+        setEditing((prev) =>
+          prev
+            ? {
+                ...prev,
+                desc_vi: d.draft.desc_vi || prev.desc_vi,
+                desc_en: d.draft.desc_en || prev.desc_en,
+              }
+            : null
+        );
+      } else {
+        setDraftError(d.error || "AI chưa tạo được");
+      }
+    } catch (err) {
+      console.error("Lỗi AI draft:", err);
+      setDraftError("Lỗi kết nối AI");
+    } finally {
+      setDrafting(false);
+    }
   };
 
   const handleNameViChange = (val: string) => {
@@ -1128,16 +1207,53 @@ export default function AdminProductsPage() {
 
                 {/* Textareas */}
                 <div style={{ marginBottom: "14px" }}>
-                  <label
+                  <div
                     style={{
-                      display: "block",
-                      fontSize: "13px",
-                      marginBottom: "4px",
-                      color: "rgba(243, 236, 217, 0.85)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginBottom: "6px",
+                      flexWrap: "wrap",
+                      gap: "8px",
                     }}
                   >
-                    Mô tả tiếng Việt
-                  </label>
+                    <label
+                      style={{
+                        fontSize: "13px",
+                        color: "rgba(243, 236, 217, 0.85)",
+                      }}
+                    >
+                      Mô tả tiếng Việt
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleAiDraft}
+                      disabled={drafting || !editing}
+                      style={{
+                        background: "transparent",
+                        border: "1px solid #d4af37",
+                        color: "#d4af37",
+                        borderRadius: "6px",
+                        padding: "6px 12px",
+                        fontSize: "0.75rem",
+                        cursor: drafting || !editing ? "not-allowed" : "pointer",
+                        opacity: drafting || !editing ? 0.5 : 1,
+                      }}
+                    >
+                      {drafting ? "AI đang viết..." : "✨ Draft mô tả bằng AI"}
+                    </button>
+                  </div>
+                  {draftError && (
+                    <p
+                      style={{
+                        color: "#c0392b",
+                        fontSize: "0.75rem",
+                        margin: "0 0 6px",
+                      }}
+                    >
+                      {draftError}
+                    </p>
+                  )}
                   <textarea
                     rows={3}
                     value={formData.desc_vi}
