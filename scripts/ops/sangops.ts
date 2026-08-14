@@ -11,6 +11,9 @@ import { publishCmd } from "./publish";
 import { linksCmd } from "./links";
 import { i18nCmd } from "./i18n";
 import { seoCmd } from "./seo";
+import { smokeCmd } from "./smoke";
+import { ciCmd } from "./ci";
+import { rollbackCmd } from "./rollback";
 
 const OPS_LOG = path.resolve(process.cwd(), ".tmp/ops.log");
 
@@ -51,9 +54,9 @@ const REGISTRY: { name: string; desc: string; impl?: (ctx: CmdContext, args: str
   { name: "links", desc: "Crawl sitemap → check link/ảnh hỏng", impl: linksCmd, task: "P12T04" },
   { name: "i18n", desc: "So sánh nội dung VI/EN trong DB", impl: i18nCmd, task: "P12T04" },
   { name: "seo", desc: "Audit SEO per-page (title/desc/canonical/hreflang/OG/JSON-LD/alt)", impl: seoCmd, task: "P12T04" },
-  { name: "smoke", desc: "Post-deploy: HTTP routes + CDP NO_JS_ERRORS + sitemap/robots", task: "P12T05" },
-  { name: "ci", desc: "Theo dõi GitHub Actions (gh run list/view --log-failed)", task: "P12T05" },
-  { name: "rollback", desc: "Chuẩn bị rollback (dry-run) — thực thi chỉ khi anh duyệt", task: "P12T05" },
+  { name: "smoke", desc: "Post-deploy: HTTP routes + CDP NO_JS_ERRORS + sitemap/robots", impl: smokeCmd, task: "P12T05" },
+  { name: "ci", desc: "Theo dõi GitHub Actions (gh run list/view --log-failed)", impl: ciCmd, task: "P12T05" },
+  { name: "rollback", desc: "Chuẩn bị rollback (dry-run) — thực thi chỉ khi anh duyệt", impl: rollbackCmd, task: "P12T05" },
 ];
 
 function usage() {

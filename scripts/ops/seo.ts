@@ -48,7 +48,8 @@ export async function seoCmd(_ctx: CmdContext, _args: string[]): Promise<number>
         else if (desc.length < 50) problems.push(`description ngắn (${desc.length}ch < 50)`);
         else if (desc.length > 165) problems.push(`description dài (${desc.length}ch > 165)`);
         if (!html.includes('rel="canonical"')) problems.push("thiếu canonical");
-        if (!html.includes("hreflang")) problems.push("thiếu hreflang");
+        // Next 16 render hreflang dạng hrefLang (camelCase) — HTML attr case-insensitive nên check lowercase
+        if (!html.toLowerCase().includes("hreflang")) problems.push("thiếu hreflang");
         if (!html.includes('property="og:title"') && !html.includes('name="og:title"')) problems.push("thiếu og:title");
         if (!html.includes("application/ld+json")) problems.push("thiếu JSON-LD");
         const imgs = [...html.matchAll(/<img[^>]+src=["']([^"']+)["']/g)].map((m) => m[1]);
