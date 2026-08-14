@@ -93,7 +93,10 @@ export default {
 
     const apiKey = Deno.env.get("AI_API_KEY") || "";
     const baseUrl = Deno.env.get("AI_BASE_URL") || "https://opencode.ai/zen/go/v1";
-    const model = Deno.env.get("AI_VISION_MODEL") || "qwen3.7-plus";
+    // translate (text-only) → deepseek-v4-flash rẻ/nhanh; intake/draft (có ảnh) → qwen3.7-plus vision
+    const model = mode === "translate"
+      ? "deepseek-v4-flash"
+      : (Deno.env.get("AI_VISION_MODEL") || "qwen3.7-plus");
 
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
