@@ -37,7 +37,7 @@ _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE
 **Constraints**: 3 font Google miễn phí, hỗ trợ subset vietnamese đầy đủ (Playfair Display ✓ / Cormorant Garamond ✓ / Inter ✓); KHÔNG thêm @import/<link> Google Fonts (next/font tự host); KHÔNG đổi màu/weight/layout
 **Definition of Done**: build PASS; preload woff2 trong HTML; Lighthouse ≥85/90; browser screenshot dấu tiếng Việt đúng (anh xác nhận); deploy production + commit
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): next/font/google self-host 3 font (subset vietnamese), browser CDP dấu tiếng Việt đúng + font premium; Lighthouse mobile 86/desktop 100 (tối ưu weight 600/400 italic/400-500, 17 files giảm từ 22); deploy production + anh xác nhận
 
 ## Phase 8: AI Concierge — Release B
 _(chưa băm task — gated: chờ sử dụng thật; hướng: Edge Function proxy + Hermes sangbot đã chạy)_
