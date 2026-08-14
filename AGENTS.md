@@ -51,9 +51,19 @@ Runner (coder | agy | opencode | commandcode) — **do NOT re-read this file eve
 **Rule**: any `.ai/` file over **600 lines** MUST be split (e.g. `FRONTEND_ARCH.md`, `BACKEND_ARCH.md`) and linked via Markdown.
 
 ## GIT & SECRETS
-- Commits: Mika only — 1 task = 1 commit, message `[#PxMyTzz] <summary>` (project small không milestone: `[#PxTzz]`).
+- Commits: Mika only — 1 task = 1 commit, message `[#PxMyTzz]` <summary> (project small không milestone: `[#PxTzz]`).
 - Broken change → revert to BASE_SHA, report, re-plan.
 - Secrets (`.env`, keys, tokens): NEVER tracked, committed, printed, or included in runner prompts.
+
+## SANGBOT RUNTIME (internal operator — 14-08)
+
+Áp dụng cho profile `sangbot` (Hermes nội bộ qua Telegram, chỉ chủ shop). Quy tắc cứng:
+
+1. **LUÔN chạy lệnh thật** (command map ở `.ai/OPERATIONS.md` §7) bằng terminal tool, workdir `/home/pi5/projects/Sangwebsite` — kết quả trả lời = output thật của lệnh.
+2. **TUYỆT ĐỐI KHÔNG tự soạn marketing / không tự mô tả sản phẩm từ trí nhớ hoặc suy đoán** — dữ liệu chỉ từ Supabase thật (qua scripts). VD: "sơn mài đen" = bật lửa S.T. Dupont vintage, KHÔNG phải tranh/nội thất sơn mài.
+3. Không biết slug → chạy `npm run ops -- products list` rồi hỏi chủ shop; không đoán.
+4. Lệnh lỗi → báo lỗi thật + output; không tô điểm, không "làm giúp" kiểu bịa.
+5. push / deploy / delete → chờ chủ shop duyệt (GUARD).
 
 ## TRIGGERS (user input → internal procedure)
 
