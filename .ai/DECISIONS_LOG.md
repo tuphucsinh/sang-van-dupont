@@ -61,7 +61,7 @@
 | B1 | Bảng `shop_policies` + tool `get_policies` — để AI trả lời chính sách (COD/đổi trả/giao hàng) chính xác, anh tự sửa qua SQL editor không cần redeploy | Để sau (anh chốt 14-08) — hiện AI chỉ "dẫn chủ shop 0905 076 886" |
 | B2 | Nhập giá thật qua `/admin/products` (price, price_unit) — AI tự trả lời giá ngay (tool đã trả price, không cần redeploy) | Chờ anh quyết giá từng mẫu |
 | B3 | GA4 Measurement ID → set env Vercel + rebuild | Chờ anh tạo property |
-| B4 | Backup cron định kỳ (db-backup.sh hằng ngày) | Tùy chọn — hiện chạy tay + keepalive T7/CN |
+| B4 | Backup cron định kỳ — **✅ DONE 2026-08-14**: gộp vào cron CN 08:00 (`supabase_keepalive_backup.py` = ping + backup sangwebsite giữ 7 bản); T7 21:00 giữ ping thuần. Ghi chú: KURABE backup TẮT (CLI fail IPv6 — cần `supabase link` + DB password khi cần) |
 | B5 | Giám sát AI usage (ai_chat_logs) — cost cap 100/ngày | Tự động, Mika báo khi gần ngưỡng |
 
 ## 2026-08-14 — Reviewer SW-P4-ADMIN-01: PASS + 4 góp ý
