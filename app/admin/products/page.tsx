@@ -159,22 +159,17 @@ export default function AdminProductsPage() {
   };
 
   const handleAiDraft = async () => {
-    if (!editing || !editing.product_media?.length) {
+    // Ảnh cover: sửa → editing.product_media; tạo mới → pendingMedia
+    const coverUrl = editing
+      ? (editing.product_media.find((m) => m.kind === "cover") || editing.product_media[0])?.url
+      : pendingMedia[0]?.url;
+    if (!coverUrl) {
       setDraftError("Cần ảnh cover trước");
       return;
     }
     setDrafting(true);
     setDraftError("");
     try {
-      const coverMedia =
-        editing.product_media.find((m) => m.kind === "cover") ||
-        editing.product_media[0];
-      const coverUrl = coverMedia?.url;
-      if (!coverUrl) {
-        setDraftError("Cần ảnh cover trước");
-        return;
-      }
-
       const resImg = await fetch(coverUrl);
       if (!resImg.ok) throw new Error("Không thể tải ảnh sản phẩm");
       const blob = await resImg.blob();
@@ -198,7 +193,7 @@ export default function AdminProductsPage() {
         body: JSON.stringify({
           image_b64: b64,
           mode: "draft",
-          name: formData.name_vi || editing.name_vi || "",
+          name: formData.name_vi || "",
         }),
       });
 
@@ -1261,7 +1256,7 @@ export default function AdminProductsPage() {
                     <button
                       type="button"
                       onClick={handleAiDraft}
-                      disabled={drafting || !editing}
+                      disabled={drafting || (editing ? !editing.product_media?.length : pendingMedia.length === 0)}
                       style={{
                         background: "transparent",
                         border: "1px solid #d4af37",
