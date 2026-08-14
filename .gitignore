@@ -12,3 +12,6 @@ assets/img/hero-B-*.jpg
 Thumbs.db
 *.log
 .vercel
+
+# Session ephemeral (AGENTS.md)
+.tmp/
