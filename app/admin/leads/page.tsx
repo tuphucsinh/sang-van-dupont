@@ -4,6 +4,7 @@ import AdminGuard from "@/components/AdminGuard";
 import { supabase } from "@/lib/supabase-client";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 interface LeadAttachment {
   id: string;
@@ -55,6 +56,7 @@ const STATUS_OPTIONS = [
 ];
 
 export default function AdminLeadsPage() {
+  const isMobile = useIsMobile();
   const [leads, setLeads] = useState<LeadRow[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -158,7 +160,7 @@ export default function AdminLeadsPage() {
           padding: "32px 24px 80px",
         }}
       >
-        <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
+        <div style={{ maxWidth: "1000px", margin: "0 auto", padding: isMobile ? "12px" : undefined }}>
           {/* Header */}
           <header
             style={{
@@ -311,7 +313,7 @@ export default function AdminLeadsPage() {
             <div
               style={{
                 textAlign: "center",
-                padding: "40px",
+                padding: isMobile ? "20px" : "40px",
                 color: "rgba(243, 236, 217, 0.5)",
                 fontSize: "15px",
                 background: "#101014",

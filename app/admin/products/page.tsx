@@ -4,6 +4,7 @@ import AdminGuard from "@/components/AdminGuard";
 import { supabase } from "@/lib/supabase-client";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 export interface ProductMedia {
   id: string;
@@ -75,6 +76,7 @@ function errMsg(err: unknown): string {
 }
 
 export default function AdminProductsPage() {
+  const isMobile = useIsMobile();
   const [products, setProducts] = useState<ProductRow[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [editing, setEditing] = useState<ProductRow | null>(null);
@@ -640,7 +642,7 @@ export default function AdminProductsPage() {
           padding: "32px 24px 80px",
         }}
       >
-        <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
+        <div style={{ maxWidth: "1000px", margin: "0 auto", padding: isMobile ? "12px" : undefined }}>
           {/* Header */}
           <header
             style={{
@@ -975,9 +977,9 @@ export default function AdminProductsPage() {
                 background: "#101014",
                 border: "1px solid rgba(212, 175, 55, 0.35)",
                 borderRadius: "12px",
-                padding: "24px",
+                padding: isMobile ? "20px" : "24px",
                 maxWidth: "640px",
-                width: "100%",
+                width: isMobile ? "calc(100% - 24px)" : "100%",
                 maxHeight: "90vh",
                 overflowY: "auto",
                 boxShadow: "0 16px 48px rgba(0, 0, 0, 0.8)",
@@ -1025,7 +1027,7 @@ export default function AdminProductsPage() {
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
+                    gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
                     gap: "14px",
                     marginBottom: "14px",
                   }}
@@ -1084,7 +1086,7 @@ export default function AdminProductsPage() {
                     >
                       Tên tiếng Anh <span style={{ color: "#ef4444" }}>*</span>
                     </label>
-                    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                    <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: isMobile ? "wrap" : undefined }}>
                       <input
                         type="text"
                         required
@@ -1261,7 +1263,7 @@ export default function AdminProductsPage() {
                     />
                   </div>
 
-                  <div style={{ gridColumn: "span 2" }}>
+                  <div style={{ gridColumn: isMobile ? undefined : "span 2" }}>
                     <label
                       style={{
                         display: "block",
@@ -1668,7 +1670,7 @@ export default function AdminProductsPage() {
                         >
                           Hoặc dùng đường dẫn ảnh có sẵn trong dự án:
                         </label>
-                        <div style={{ display: "flex", gap: "8px" }}>
+                        <div style={{ display: "flex", gap: "8px", flexDirection: isMobile ? "column" : undefined }}>
                           <input
                             type="text"
                             value={staticImgPath}

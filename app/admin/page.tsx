@@ -3,11 +3,13 @@
 import { supabase } from "@/lib/supabase-client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 const ADMIN_EMAILS = ["tvccbod@gmail.com", "aivntps@gmail.com"];
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const isMobile = useIsMobile();
   const [checking, setChecking] = useState<boolean>(true);
   const [email, setEmail] = useState<string | null>(null);
   const [loginEmail, setLoginEmail] = useState("");
@@ -129,7 +131,7 @@ export default function AdminLoginPage() {
             background: "#101014",
             border: "1px solid rgba(220, 38, 38, 0.4)",
             borderRadius: "12px",
-            padding: "40px",
+            padding: isMobile ? "24px" : "40px",
             maxWidth: "400px",
             width: "100%",
             textAlign: "center",
@@ -219,7 +221,7 @@ export default function AdminLoginPage() {
           background: "#101014",
           border: "1px solid rgba(212,175,55,.25)",
           borderRadius: "12px",
-          padding: "40px",
+          padding: isMobile ? "24px" : "40px",
           maxWidth: "400px",
           width: "100%",
           margin: "auto",
