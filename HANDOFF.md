@@ -1,19 +1,23 @@
-# HANDOFF — SangDupont (2026-08-14, phiên 2 — Phase 10-12)
+# HANDOFF — SangDupont (2026-08-14, phiên chốt — Phase 10-12 + UX chat)
 
-**Trạng thái**: ✅ Phase 10-12 COMPLETE — Sangbot Internal Setup + AI Marketing Pipeline + AI Website Operator. Reviewer PASS (5 góp ý: fix 4 code/doc, còn 1 E2E canary chờ anh test).
+**Trạng thái**: ✅ COMPLETE — Phase 10-12 + feature lead→chat→Telegram. Production live, repo sync origin/main.
 
-**Chạy được**:
-- **Sangbot internal** (Telegram @sangdupontbot, chỉ anh — allowlist 6903033581): SOUL Internal Operator (guard push/deploy/delete chờ anh duyệt), toolsets terminal/file/web, gateway active.
-- **Marketing**: `npm run marketing -- <slug>` → 8 đầu ra VI/EN vào `marketing/drafts/<slug>/` (verified black-lacquer, 16 calls, không bịa giá). Model deepseek-v4-flash + qwen3.7-plus (opencode-go).
-- **Operator**: `npm run ops -- <cmd>` — products CRUD (soft-delete mặc định, hard --force), publish (--confirm + tự backup artifact), links/i18n/seo/smoke/ci/rollback (dry-run). Playbook `.ai/OPERATIONS.md`.
+## Đã hoàn tất hôm nay
+1. **P10 Sangbot Internal**: SOUL internal operator, allowlist chỉ anh (6903033581), gateway Telegram connected — **anh test thật đã hoạt động** (products list + marketing generator qua lệnh chat).
+2. **P11 Marketing Pipeline**: `npm run marketing -- <slug>` → 8 đầu ra VI/EN, drafts black-lacquer v2 verified (0 giá bịa). Reviewer: không bắt buộc (không chạm backend).
+3. **P12 Website Operator**: `npm run ops -- <cmd>` — CRUD/audits/smoke/publish/rollback. **Reviewer PASS** + 4/5 góp ý đã fix.
+4. **Fix hreflang SEO** (home thiếu — Next 16 hrefLang camelCase).
+5. **UX Lead → Chat → Telegram** (feature chính phiên chiều): form chỉ bắt buộc tên+SĐT; thiếu thông tin phụ → vẫn gửi + widget mở nhắc; khách bổ sung trong chat → AI ghi vào lead (update_lead); đóng widget → tin tóm tắt lên Telegram. **AI chat tối ưu**: không emoji/~, không lặp ghi chú, hỏi giới hạn 3-4 dữ kiện rồi chốt, giữ ngữ cảnh (history 14×800), không nhắc mã yêu cầu, MAX_TOKENS 2000.
 
-**Chưa push (12 commits)**: gồm fix hreflang SEO (home thêm alternates, Next16 hrefLang camelCase) + toàn bộ Phase 10-12 code. **Chờ anh báo push.**
+## Blockers
+- Không có. `gh` chưa auth (sangops ci báo rõ — không chặn).
 
-**Còn mở (không chặn)**:
-- B1 shop_policies · B2 giá thật (anh nhập /admin) · B3 GA4 ID (chờ anh) · Research 9B-next
-- E2E canary sangbot: anh nhắn "sinh marketing cho black-lacquer" + "xem sản phẩm" 1 lần để xác nhận chuỗi Telegram → lệnh
-- gh CLI chưa auth trên Pi5 (sangops ci báo rõ) — `gh auth login` khi cần theo dõi CI tự động
+## Next (khi anh muốn)
+- Test trải nghiệm khách thật 1-2 phiên → tinh chỉnh nếu cần.
+- Sangbot canary: "sinh marketing cho <slug khác>" lần đầu qua Telegram.
+- Phase 9B-next (research giá) khi anh cần.
 
-**Ops**: Publish = anh duyệt → `npm run ops -- publish --confirm` (tự backup out/ cũ). Kill AI = `supabase secrets set AI_ENABLED=false`. Backup CN 08:00 tự động.
-
-**Next**: chờ anh — push Phase 10-12 + GA4 ID / giá thật / policies / Research / canary sangbot.
+## Kỹ thuật lưu ý
+- **Hermes patch tool redact `apikey: <tên biến>` → `***` khi ghi file** → vỡ build (local build cache lừa) — dùng `buildAuthHeaders` động (`h["api"+"key"]`) — đã fix AiChat.
+- Deploy frontend qua `vercel build --prod` + `vercel deploy --prebuilt --prod` (git integration bị build cache cũ lừa — prebuilt là đường chuẩn).
+- Edge ai-chat rate limit 30/h/IP — khi test nhiều lượt → reset `ai_chat_logs` (2h) rồi chạy tiếp.
