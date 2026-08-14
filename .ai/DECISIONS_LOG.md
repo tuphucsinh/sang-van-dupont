@@ -57,6 +57,7 @@
 | D22 | **Tách Phase 9 thành 9A + 9B** (Sequential Thinking 2026-08-14): 9A = Ops hoàn thiện (shop_policies, /admin/stats, GA4, nhập giá) — KHÔNG gated, ROI ngay; 9B = Full AI (Vision/Admin draft/Research/Recommendation) — GATED chờ 2-4 tuần usage thật + GA4 | Tránh backlog chết chờ; nguyên tắc MVP-first + ROI của anh |
 | D23 | **i18n URL-based** (`/vi/` `/en/` + root redirect) — CẤM JS state/localStorage cho đổi ngôn ngữ (lệch form/widget); mọi link nội bộ theo lang | Fix cuối phiên tốn ~2h vì dùng state — bài học nhập skill |
 | D24 | **Đóng phiên 14-08**: rút skill tổng quát `static-website-supabase` (9 pitfalls phổ quát) — chi tiết dự án giữ `.ai/`, kiến thức tái dùng vào skill | Sequential Thinking + PDCA rà toàn bộ phiên |
+| D25 | **Skill `premium-website-design`**: nguyên tắc design premium (màu/typography/không gian/wow-detail) + AI features theo bậc ROI (chat → vision → draft → recommend → research) + guard AI | Anh yêu cầu tổng hợp sau đóng phiên — dùng cho mọi project website sau |
 
 ## 2026-08-14 — Backlog post-Release B
 
