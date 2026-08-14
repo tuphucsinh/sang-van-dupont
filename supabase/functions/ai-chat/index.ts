@@ -103,7 +103,7 @@ export default {
     } catch {
       return json({ ok: false, error: "JSON không hợp lệ" }, 400);
     }
-    const message = String(body.message || "").trim().slice(0, 1000);
+    let message = String(body.message || "").trim().slice(0, 1000);
     if (!message) return json({ ok: false, error: "Vui lòng nhập câu hỏi" }, 400);
     // UI gửi lang (vi/en) — buộc ngôn ngữ trả lời khi trang EN
     const uiLang = body.lang === "en" ? "en" : "vi";
@@ -307,13 +307,15 @@ export default {
         if (!need && !lineInterest && !note) {
           return JSON.stringify({ ok: false, error: "Chưa có thông tin mới để cập nhật" });
         }
-        // Tìm lead theo 8 ký tự đầu id
-        const { data: lead, error: findErr } = await supabase
+        // Tìm lead theo 8 ký tự đầu id (PostgREST không cast uuid→text trong filter — fetch gần nhất + match prefix)
+        const { data: recent, error: listErr } = await supabase
           .from("leads")
           .select("id, meta")
-          .filter("id::text", "like", `${code}%`)
-          .maybeSingle();
-        if (findErr || !lead) return JSON.stringify({ ok: false, error: "Không tìm thấy yêu cầu" });
+          .order("created_at", { ascending: false })
+          .limit(30);
+        if (listErr) return JSON.stringify({ ok: false, error: `Truy vấn lỗi: ${listErr.message}` });
+        const lead = (recent || []).find((r: { id: string }) => r.id.startsWith(code));
+        if (!lead) return JSON.stringify({ ok: false, error: "Không tìm thấy yêu cầu" });
         const oldMeta = (lead.meta && typeof lead.meta === "object" ? lead.meta : {}) as Record<string, unknown>;
         const notes: unknown[] = Array.isArray(oldMeta.ai_notes) ? oldMeta.ai_notes : [];
         if (note) {
@@ -326,7 +328,7 @@ export default {
             ...(lineInterest !== null ? { line_interest: lineInterest } : {}),
             meta: { ...oldMeta, ai_notes: notes },
           })
-          .filter("id::text", "like", `${code}%`);
+          .eq("id", lead.id);
         if (updErr) return JSON.stringify({ ok: false, error: `Cập nhật lỗi: ${updErr.message}` });
         return JSON.stringify({ ok: true, request_code: code });
       }
