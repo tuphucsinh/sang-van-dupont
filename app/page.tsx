@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 import SparksClient from "@/components/SparksClient";
 import RevealClient from "@/components/RevealClient";
 import { getAllProducts } from "../lib/catalog";
+import AiChat from "../components/AiChat";
 
 export default async function Home() {
   const products = await getAllProducts();
@@ -29,6 +30,7 @@ export default async function Home() {
       <Footer />
       <SparksClient />
       <RevealClient />
+      <AiChat />
     </I18nProvider>
   );
 }
