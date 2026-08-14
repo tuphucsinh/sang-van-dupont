@@ -141,7 +141,7 @@
 - Artifact upload path = `out/` đúng
 - KHÔNG thể push để test CI thật (chờ anh báo push) — ghi chú trong report
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): build.yml tạo xong, YAML parse OK (7 steps); runner agy fail 2 lần (503/exec error) → Mika direct theo bài học fallback; CI thật chờ push (anh báo)
 
 ---
 
