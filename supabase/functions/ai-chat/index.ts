@@ -1,0 +1,262 @@
+// ai-chat — AI Concierge: chat tư vấn sản phẩm (P8T02)
+// Provider: opencode-go (https://opencode.ai/zen/go/v1) model deepseek-v4-flash
+// Secrets: AI_API_KEY (OPENCODE_GO_API_KEY), AI_ENABLED, AI_MODEL, AI_BASE_URL, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+import { createClient } from "npm:@supabase/supabase-js@2";
+
+const ALLOWED_ORIGIN = "https://sangdupont.vercel.app";
+const RATE_LIMIT_PER_HOUR = 20;
+const COST_CAP_PER_DAY = 100; // số request/ngày
+const MAX_TOKENS = 800;
+const TIMEOUT_MS = 20_000;
+
+const SYSTEM_PROMPT = `Bạn là trợ lý tư vấn của SangDupont — cửa hàng bật lửa S.T. Dupont vintage chính hãng.
+TUÂN THỦ NGHIÊM:
+1. Chỉ trả lời dựa trên dữ liệu sản phẩm THẬT cung cấp qua tool (search_products / get_product). KHÔNG bịa sản phẩm, giá, tồn kho, tình trạng.
+2. Nếu giá product.price là null → trả lời "giá đang cập nhật — liên hệ 0905 076 886 để được báo giá".
+3. KHÔNG khẳng định thật/giả (xác thực ST Dupont) — chuyên gia mới quyết.
+4. Không cam kết bảo hành/thời gian sửa — hướng dẫn khách gửi yêu cầu bảo dưỡng.
+5. Khách muốn mua/tư vấn sâu/bảo dưỡng → gọi create_lead (hỏi tên + số điện thoại + nhu cầu) rồi báo "đã ghi nhận — sẽ liên hệ sớm".
+6. Trả lời ngắn gọn, thân thiện tiếng Việt (khách hỏi EN thì trả EN). Ngoài phạm vi bán hàng → lịch sự từ chối.
+7. Disclaimer khi cần: "Trợ lý AI trả lời dựa trên dữ liệu sản phẩm — thông tin cuối cùng do người thật xác nhận."`;
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
+function clientIp(req: Request): string {
+  const fwd = req.headers.get("x-forwarded-for");
+  if (fwd) return fwd.split(",")[0].trim();
+  return req.headers.get("x-real-ip") || "unknown";
+}
+
+function hash(s: string): string {
+  // hash nhẹ (djb2) — chỉ để đếm usage, không phải bảo mật
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
+  return h.toString(16);
+}
+
+export default {
+  fetch: async (req: Request) => {
+    if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+    if (req.method !== "POST") return json({ ok: false, error: "Method not allowed" }, 405);
+
+    // Kill switch
+    if (Deno.env.get("AI_ENABLED") !== "true") {
+      return json({ ok: false, error: "Trợ lý tạm tắt — liên hệ qua Telegram/Zalo" }, 503);
+    }
+
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+
+    let body: { message?: string };
+    try {
+      body = await req.json();
+    } catch {
+      return json({ ok: false, error: "JSON không hợp lệ" }, 400);
+    }
+    const message = String(body.message || "").trim().slice(0, 1000);
+    if (!message) return json({ ok: false, error: "Vui lòng nhập câu hỏi" }, 400);
+
+    const ip = clientIp(req);
+
+    // Rate limit 20/h/IP
+    const { count: hourCount } = await supabase
+      .from("ai_chat_logs")
+      .select("id", { count: "exact", head: true })
+      .gte("created_at", new Date(Date.now() - 3600_000).toISOString())
+      .eq("ip", ip);
+    if ((hourCount || 0) >= RATE_LIMIT_PER_HOUR) {
+      return json({ ok: false, error: "Bạn đã hỏi quá nhiều — thử lại sau 1 giờ" }, 429);
+    }
+
+    // Cost cap/ngày
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+    const { count: dayCount } = await supabase
+      .from("ai_chat_logs")
+      .select("id", { count: "exact", head: true })
+      .gte("created_at", startOfDay.toISOString());
+    if ((dayCount || 0) >= COST_CAP_PER_DAY) {
+      return json({ ok: false, error: "Đã hết lượt tư vấn hôm nay — liên hệ người thật" }, 429);
+    }
+
+    // Tools
+    const tools = [
+      {
+        type: "function",
+        function: {
+          name: "search_products",
+          description: "Tìm sản phẩm theo từ khóa (tên/dòng). Trả danh sách sản phẩm available.",
+          parameters: {
+            type: "object",
+            properties: { keyword: { type: "string", description: "Từ khóa tìm (slug/tên/dòng)" } },
+            required: ["keyword"],
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "get_product",
+          description: "Lấy chi tiết 1 sản phẩm theo slug (kèm ảnh).",
+          parameters: {
+            type: "object",
+            properties: { slug: { type: "string" } },
+            required: ["slug"],
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "create_lead",
+          description: "Ghi nhận lead (khách muốn mua/bảo dưỡng/tư vấn sâu). Cần tên + số điện thoại + nhu cầu.",
+          parameters: {
+            type: "object",
+            properties: {
+              name: { type: "string" },
+              phone: { type: "string" },
+              need: { type: "string" },
+            },
+            required: ["name", "phone", "need"],
+          },
+        },
+      },
+    ];
+
+    const callTool = async (name: string, args: Record<string, unknown>) => {
+      if (name === "search_products") {
+        const kw = String(args.keyword || "").trim();
+        const { data } = await supabase
+          .from("products")
+          .select("slug, name_vi, name_en, line, status, price")
+          .eq("status", "available")
+          .or(`name_vi.ilike.%${kw}%,name_en.ilike.%${kw}%,line.ilike.%${kw}%,slug.ilike.%${kw}%`)
+          .limit(5);
+        return JSON.stringify(data || []);
+      }
+      if (name === "get_product") {
+        const slug = String(args.slug || "");
+        const { data } = await supabase
+          .from("products")
+          .select("*, product_media(url, kind, sort_order)")
+          .eq("slug", slug)
+          .eq("status", "available")
+          .maybeSingle();
+        return JSON.stringify(data || null);
+      }
+      if (name === "create_lead") {
+        const name = String(args.name || "").trim().slice(0, 200);
+        const phone = String(args.phone || "").trim();
+        const need = String(args.need || "").trim().slice(0, 500);
+        if (!name || !/^[0-9+\s-]{8,15}$/.test(phone)) {
+          return JSON.stringify({ ok: false, error: "Cần tên hợp lệ + số điện thoại 8-15 số" });
+        }
+        const { data: lead, error } = await supabase
+          .from("leads")
+          .insert({ type: "buy", name, phone, need: need || null, channel: "ai_chat", status: "new", meta: { source: "ai_chat", ip } })
+          .select("id")
+          .single();
+        if (error || !lead) return JSON.stringify({ ok: false, error: "Lưu lead lỗi" });
+        // Telegram notify
+        const token = Deno.env.get("TELEGRAM_BOT_TOKEN") || "";
+        const chatId = Deno.env.get("TELEGRAM_CHAT_ID") || "";
+        try {
+          if (token && chatId) {
+            await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                chat_id: Number(chatId),
+                text: `🔔 Lead mới — AI CHAT\n👤 <b>${name}</b>\n📞 ${phone}\n📝 ${need || "-"}\n#${lead.id.slice(0, 8)}`,
+                parse_mode: "HTML",
+              }),
+            });
+          }
+        } catch { /* không fail chính */ }
+        return JSON.stringify({ ok: true, lead_id: lead.id, request_code: lead.id.slice(0, 8) });
+      }
+      return JSON.stringify({ error: "tool không tồn tại" });
+    };
+
+    // Vòng lặp tool calling (tối đa 3 vòng)
+    const apiKey = Deno.env.get("AI_API_KEY") || "";
+    const baseUrl = Deno.env.get("AI_BASE_URL") || "https://opencode.ai/zen/go/v1";
+    const model = Deno.env.get("AI_MODEL") || "deepseek-v4-flash";
+    let messages: { role: string; content: string }[] = [
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "user", content: message },
+    ];
+    let finalText = "";
+    let usedTokens = 0;
+    let ok = false;
+
+    for (let round = 0; round < 3; round++) {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+      let res: Response;
+      try {
+        res = await fetch(`${baseUrl}/chat/completions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+          body: JSON.stringify({ model, messages, tools, tool_choice: "auto", max_tokens: MAX_TOKENS }),
+          signal: ctrl.signal,
+        });
+      } catch (e) {
+        clearTimeout(t);
+        await supabase.from("ai_chat_logs").insert({ prompt_hash: hash(message), ip, status: 502, tokens: 0, response_preview: "upstream error" });
+        return json({ ok: false, error: "Trợ lý tạm lỗi — thử lại sau" }, 502);
+      }
+      clearTimeout(t);
+      if (!res.ok) {
+        const errBody = await res.text().catch(() => "");
+        await supabase.from("ai_chat_logs").insert({ prompt_hash: hash(message), ip, status: res.status, tokens: 0, response_preview: errBody.slice(0, 100) });
+        return json({ ok: false, error: "Trợ lý tạm lỗi — thử lại sau" }, 502);
+      }
+      const data = await res.json();
+      usedTokens = data.usage?.total_tokens || 0;
+      const choice = data.choices?.[0];
+      if (!choice) return json({ ok: false, error: "Phản hồi trống" }, 502);
+
+      if (choice.finish_reason === "tool_calls" && choice.message?.tool_calls?.length) {
+        messages.push(choice.message);
+        for (const tc of choice.message.tool_calls) {
+          let args: Record<string, unknown> = {};
+          try { args = JSON.parse(tc.function.arguments || "{}"); } catch { args = {}; }
+          const toolResult = await callTool(tc.function.name, args);
+          messages.push({ role: "tool", content: toolResult, tool_call_id: tc.id } as never);
+        }
+        continue;
+      }
+      finalText = String(choice.message?.content || "").trim();
+      ok = true;
+      break;
+    }
+
+    if (!ok) {
+      finalText = "Xin lỗi, tôi chưa trả lời được — vui lòng liên hệ 0905 076 886 để được hỗ trợ trực tiếp.";
+    }
+
+    await supabase.from("ai_chat_logs").insert({
+      prompt_hash: hash(message),
+      ip,
+      status: ok ? 200 : 500,
+      tokens: usedTokens,
+      response_preview: finalText.slice(0, 120),
+    });
+
+    return json({ ok: true, reply: finalText }, 200);
+  },
+};
