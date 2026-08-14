@@ -50,8 +50,8 @@
 **Dependencies**: `none` (bắt đầu từ landing hiện tại)
 **Gate**: build sạch; visual parity desktop/mobile; không regression đáng kể; lint/typecheck PASS
 
-### Phase 2: Supabase Foundation — DB + Auth + Storage + RLS
-**Goal**: Thiết lập Supabase Free làm backend: schema core, RLS, admin auth, storage buckets.
+### Phase 2: Supabase Foundation — DB + Auth + Storage + RLS — ✅ DONE 2026-08-14
+**Kết quả thực thi**: CLI 2.114 + link project `sangwebsite` (ACTIVE_HEALTHY, PG17, ap-northeast-1); `.env.local` gitignored (anon/service key, chmod 600); 3 migration applied: schema core (9 bảng + 2 enum + 8 index) → RLS (9 bảng enable, public chỉ đọc available, leads/attachments private, không public write) → storage (product-images public read + admin write, lead-attachments private); seed `[SEED]` 2 products + faq + testimonial + lead; `scripts/db-backup.sh` (backup thủ công, giữ N bản). **Verify thật**: anon đọc 2 available/ẩn draft, anon leads [], anon INSERT 401, service role full; storage anon upload 400, anon download lead 400, service 200. **Reviewer PASS** (SW-P2-MIGRATIONS-01) + 3 góp ý ghi nhận DECISIONS_LOG (R1 role admin chuyên biệt Phase 4, R2 site_settings không chứa secret, R3 seed case_studies Phase 3). Lưu ý: tắt public signup = thao tác UI dashboard (chưa làm — chờ Phase 4 khi có admin thật).
 
 **Deliverables**:
 - Tables: `products`, `product_media`, `services`, `testimonials`, `case_studies`, `faq`, `leads`, `lead_attachments`, `site_settings` (+ `ai_conversations` khi Release B)

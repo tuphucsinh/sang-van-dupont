@@ -22,3 +22,11 @@
 | D13 | **Turnstile** chống spam form public (đề xuất — chờ anh xác nhận Phase 5) | Anti-abuse chi phí thấp | file 1 §3.1 |
 
 **Mâu thuẫn 2 file đã giải quyết**: capabilities đề xuất bắt đầu bằng AI Content/CMS + image intake; file 1 §mục tiêu #6 nói "không đưa AI trước khi catalog + lead đủ chuẩn" → **file 1 (kế hoạch tinh gọn) là xương sống**: website Release A trước (P1–P7), AI nội bộ (content/operator) chỉ chạy khi có nền tảng + nhu cầu thật (P9); research (giá trị cao nhất theo capabilities) xếp Full AI giai đoạn cuối theo ROI.
+
+## 2026-08-14 — Reviewer SW-P2-MIGRATIONS-01: PASS + 3 góp ý ghi nhận
+
+| # | Góp ý | Xử lý |
+|---|---|---|
+| R1 | An toàn admin phụ thuộc "tắt signup" bằng UI — nếu bật lại, mọi authenticated thành admin | Ghi nhận → Phase 4 Admin sẽ cân nhắc claim/role chuyên biệt cho write (vd `is_admin` claim) |
+| R2 | site_settings public read toàn bộ — đừng đưa giá trị vận hành/secret vào bảng | Ghi nhận → rule: bảng này chỉ chứa content công khai; secret ở Edge Functions env |
+| R3 | case_studies chưa seed; nhãn `storage_bucket` lệch mermaid (cosmetic) | Ghi nhận → seed case_studies khi Phase 3 cần; nhãn không phải lỗi |
