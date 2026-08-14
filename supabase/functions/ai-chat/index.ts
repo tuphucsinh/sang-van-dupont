@@ -36,8 +36,9 @@ const SYSTEM_PROMPT = `BẠN LÀ NHÂN VIÊN BÁN HÀNG CỦA SANGDUPONT — sho
 - Ngoài phạm vi (chính trị/tin tức/code...) → lịch sự quay về sản phẩm.
 
 ## BỔ SUNG THÔNG TIN CHO YÊU CẦU (khi có mã yêu cầu)
-- Khi khách nói kèm mã yêu cầu (vd "#abc12345") hoặc đang bổ sung thông tin cho yêu cầu đã gửi (dòng quan tâm, nhu cầu chi tiết, ghi chú) → gọi tool **update_lead** với request_code + thông tin mới (need / line_interest / note).
-- Sau khi cập nhật thành công → xác nhận thân thiện: "Dạ em đã ghi chú thêm vào yêu cầu #xxx rồi ạ — chủ shop sẽ nắm đủ thông tin để tư vấn chuẩn nhất 😊" (ngắn gọn).
+- Khi khách bổ sung thông tin cho yêu cầu đã gửi (dòng quan tâm, nhu cầu, ghi chú) → gọi tool **update_lead** với request_code + thông tin mới.
+- Xác nhận: **NGẮN 1 câu, tự nhiên** (vd: "dạ em ghi chú thêm rồi nha 😊" hoặc "ok em note lại nhé~"). KHÔNG nhắc lại nội dung vừa ghi, KHÔNG nhắc mã yêu cầu trừ khi khách hỏi, KHÔNG lặp khuôn "chủ shop sẽ nắm..." ở mỗi lượt.
+- Các lượt chat sau (khách hỏi tiếp): chỉ trả lời câu hỏi mới như bình thường — KHÔNG xác nhận lại lần nữa, KHÔNG lặp lại điều đã ghi chú.
 - Nếu tool báo lỗi (không tìm thấy mã) → nói nhẹ: "dạ để em kiểm tra lại với chủ shop ạ" — không tự sửa.
 
 ## CHÍNH SÁCH (KHÔNG tự đưa — dẫn chủ shop)
@@ -97,12 +98,51 @@ export default {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    let body: { message?: string };
+    let body: { message?: string; action?: string; request_code?: string };
     try {
       body = await req.json();
     } catch {
       return json({ ok: false, error: "JSON không hợp lệ" }, 400);
     }
+    // Mã yêu cầu (khách bổ sung thông tin cho lead đã gửi qua form)
+    const requestCode = String(body.request_code || "").trim().slice(0, 8);
+
+    // Đóng chat widget → gửi tóm tắt lead lên Telegram cho chủ shop (không gọi model, không tốn quota chat)
+    if (body.action === "lead_summary") {
+      if (!requestCode) return json({ ok: false, error: "Thiếu request_code" }, 400);
+      const { data: leads, error: listErr } = await supabase
+        .from("leads")
+        .select("id, type, name, phone, budget, line_interest, need, meta, created_at")
+        .order("created_at", { ascending: false })
+        .limit(30);
+      if (listErr) return json({ ok: false, error: "Truy vấn lỗi" }, 500);
+      const lead = (leads || []).find((r: { id: string }) => r.id.startsWith(requestCode));
+      if (!lead) return json({ ok: false, error: "Không tìm thấy yêu cầu" }, 404);
+      const notes: { text?: string }[] = Array.isArray(lead.meta?.ai_notes) ? lead.meta.ai_notes : [];
+      const lines = [
+        `📋 <b>Lead ${lead.type === "maintenance" ? "BẢO DƯỠNG" : "MUA"} — #${lead.id.slice(0, 8)}</b>`,
+        `👤 ${lead.name} — ${lead.phone}`,
+        lead.budget ? `💰 Ngân sách: ${lead.budget}` : "",
+        lead.line_interest ? `🔹 Dòng quan tâm: ${lead.line_interest}` : "",
+        lead.need ? `📝 Nhu cầu: ${lead.need}` : "",
+        ...notes.slice(-3).map((n) => `💬 Ghi chú chat: ${n.text}`),
+      ].filter(Boolean).join("\n");
+      const token = Deno.env.get("TELEGRAM_BOT_TOKEN") || "";
+      const chatId = Deno.env.get("TELEGRAM_CHAT_ID") || "";
+      let sent = false;
+      try {
+        if (token && chatId) {
+          const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chat_id: Number(chatId), text: lines, parse_mode: "HTML" }),
+          });
+          sent = r.ok;
+        }
+      } catch { /* không fail chính */ }
+      return json({ ok: true, sent }, 200);
+    }
+
     let message = String(body.message || "").trim().slice(0, 1000);
     if (!message) return json({ ok: false, error: "Vui lòng nhập câu hỏi" }, 400);
     // UI gửi lang (vi/en) — buộc ngôn ngữ trả lời khi trang EN
@@ -110,8 +150,7 @@ export default {
     if (uiLang === "en") {
       message = message + " (Please reply in English)";
     }
-    // Mã yêu cầu (khách bổ sung thông tin cho lead đã gửi qua form)
-    const requestCode = String(body.request_code || "").trim().slice(0, 8);
+
     if (requestCode) {
       message = `[Yêu cầu #${requestCode}] ${message} — khách đang bổ sung thông tin cho yêu cầu này, dùng update_lead nếu có thông tin mới (dòng quan tâm/nhu cầu/ghi chú).`;
     }

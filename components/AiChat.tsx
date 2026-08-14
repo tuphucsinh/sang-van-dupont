@@ -45,6 +45,24 @@ export default function AiChat() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
+  // Đóng panel → nếu phiên chat có gắn lead (request_code) → gửi tóm tắt lead lên Telegram (không tốn quota chat)
+  const closeChat = () => {
+    setOpen(false);
+    const code = requestCodeRef.current;
+    if (code) {
+      requestCodeRef.current = "";
+      fetch(FUNC_URL, {
+        method: "POST",
+        headers: {
+          apikey: ANON_KEY,
+          Authorization: "Bearer " + ANON_KEY,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ action: "lead_summary", request_code: code }),
+      }).catch(() => {});
+    }
+  };
+
   const [loading, setLoading] = useState(false);
 
   const requestCodeRef = useRef<string>("");
@@ -203,7 +221,7 @@ export default function AiChat() {
                 {t.handoff}
               </a>
               <button
-                onClick={() => setOpen(false)}
+                onClick={closeChat}
                 aria-label={t.close}
                 style={{
                   background: "transparent",
