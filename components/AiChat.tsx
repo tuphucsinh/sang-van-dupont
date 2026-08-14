@@ -114,11 +114,8 @@ export default function AiChat() {
     return () => window.removeEventListener("sang-chat-prompt", openWithPrompt);
   }, []);
 
-  const handleSend = async (e?: FormEvent) => {
-    if (e) e.preventDefault();
-    const msg = input.trim();
+  const sendMessage = async (msg: string) => {
     if (!msg || loading) return;
-
     setMessages((prev) => [...prev, { role: "user", text: msg }]);
     setInput("");
     setLoading(true);
@@ -152,6 +149,70 @@ export default function AiChat() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSend = async (e?: FormEvent) => {
+    if (e) e.preventDefault();
+    const msg = input.trim();
+    if (!msg || loading) return;
+    await sendMessage(msg);
+  };
+
+  // Khách gửi ảnh qua chat — lưu vào lead (không AI xem ảnh), tối đa 3 ảnh/phiên, ≤1.5MB
+  const [photoCount, setPhotoCount] = useState(0);
+  const [uploading, setUploading] = useState(false);
+  const handlePhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || uploading) return;
+    if (!file.type.startsWith("image/")) {
+      setMessages((p) => [...p, { role: "ai", text: "Dạ chỉ nhận file ảnh thôi ạ." }]);
+      return;
+    }
+    if (file.size > 1.5 * 1024 * 1024) {
+      setMessages((p) => [...p, { role: "ai", text: "Dạ ảnh hơi lớn — anh gửi ảnh dưới 1.5MB nha." }]);
+      return;
+    }
+    if (photoCount >= 3) {
+      setMessages((p) => [...p, { role: "ai", text: "Dạ tối đa 3 ảnh cho 1 yêu cầu thôi ạ." }]);
+      return;
+    }
+    const code = requestCodeRef.current;
+    if (!code) {
+      setMessages((p) => [
+        ...p,
+        { role: "ai", text: "Dạ anh cho em xin tên + SĐT qua form bên dưới trước để em gắn ảnh vào yêu cầu nha — hoặc gửi qua Zalo 0905 076 886 ạ." },
+      ]);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const b64 = String(reader.result || "").split(",")[1] || "";
+      setUploading(true);
+      try {
+        const res = await fetch(FUNC_URL, {
+          method: "POST",
+          headers: buildAuthHeaders(ANON_KEY),
+          body: JSON.stringify({
+            action: "chat_photo",
+            request_code: code,
+            file_base64: b64,
+            filename: file.name,
+            mime: file.type,
+          }),
+        });
+        const d = await res.json();
+        if (!res.ok || !d.ok) throw new Error(d?.error || "upload fail");
+        setPhotoCount((c) => c + 1);
+        setMessages((p) => [...p, { role: "user", text: "[Ảnh] " + file.name }]);
+        await sendMessage(`em đã gửi ảnh: ${file.name}`);
+      } catch {
+        setMessages((p) => [...p, { role: "ai", text: "Dạ gửi ảnh chưa được — anh thử lại hoặc gửi qua Zalo 0905 076 886 nha." }]);
+      } finally {
+        setUploading(false);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -343,6 +404,26 @@ export default function AiChat() {
               gap: 8,
             }}
           >
+            <label
+              title="Gửi ảnh (≤3 ảnh, ≤1.5MB)"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 36,
+                cursor: uploading ? "wait" : "pointer",
+                fontSize: "1.05rem",
+                color: "#d4af37",
+                background: "rgba(212,175,55,.08)",
+                border: "1px solid rgba(212,175,55,.25)",
+                borderRadius: 6,
+                flexShrink: 0,
+                opacity: uploading ? 0.6 : 1,
+              }}
+            >
+              <input type="file" accept="image/*" style={{ display: "none" }} onChange={handlePhoto} />
+              📎
+            </label>
             <input
               type="text"
               value={input}

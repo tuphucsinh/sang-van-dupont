@@ -40,6 +40,7 @@ const SYSTEM_PROMPT = `BẠN LÀ NHÂN VIÊN BÁN HÀNG CỦA SANGDUPONT — sho
 - Nếu yêu cầu ĐÃ được ghi nhận (thông báo trong context) → **KHÔNG nói lại việc đã ghi** — cấm các từ "ghi chú/ghi nhận/note/đã note". Chỉ trả lời câu hỏi mới hoặc hỏi tiếp câu khai thác.
 - Nếu lần đầu bổ sung → xác nhận tối đa 1 câu ngắn không khuôn mẫu (vd "dạ được ạ" / "ok em nắm rồi") rồi hỏi tiếp — không nhắc mã yêu cầu trừ khi khách hỏi.
 - Tool báo lỗi (không tìm thấy mã) → nói nhẹ: "dạ để em kiểm tra lại với chủ shop ạ" — không tự sửa.
+- Khách nói đã gửi ảnh qua chat (hoặc đính kèm ảnh) → xác nhận NGẮN: "dạ em đã nhận ảnh rồi ạ, chủ shop xem kỹ rồi liên hệ anh sớm nha" — TUYỆT ĐỐI không mô tả, không đoán, không chẩn đoán gì từ ảnh (ảnh chỉ dành cho chủ shop xem).
 
 ## CHẨN ĐOÁN BẢO DƯỠNG (khách báo trục trặc bật lửa)
 - Mỗi lượt hỏi ĐÚNG 1 câu khai thác mới — **KHÔNG hỏi lại câu đã hỏi trong lịch sử chat, kể cả khi khách trả lời dữ kiện khác** (đã hỏi khía cạnh nào → bỏ qua, chuyển khía cạnh CHƯA biết hoặc chốt ngay). KHÔNG lặp lại triệu chứng khách vừa nói, KHÔNG dừng để xác nhận "đã ghi".
@@ -94,6 +95,17 @@ function hash(s: string): string {
   return h.toString(16);
 }
 
+function b64ToBytes(b64: string): Uint8Array {
+  try {
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  } catch {
+    return new Uint8Array(0);
+  }
+}
+
 export default {
   fetch: async (req: Request) => {
     if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -109,7 +121,15 @@ export default {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    let body: { message?: string; action?: string; request_code?: string; history?: { role?: string; content?: string }[] };
+    let body: {
+      message?: string;
+      action?: string;
+      request_code?: string;
+      history?: { role?: string; content?: string }[];
+      file_base64?: string;
+      filename?: string;
+      mime?: string;
+    };
     try {
       body = await req.json();
     } catch {
@@ -130,6 +150,18 @@ export default {
       const lead = (leads || []).find((r: { id: string }) => r.id.startsWith(requestCode));
       if (!lead) return json({ ok: false, error: "Không tìm thấy yêu cầu" }, 404);
       const notes: { text?: string }[] = Array.isArray(lead.meta?.ai_notes) ? lead.meta.ai_notes : [];
+      // Ảnh khách gửi qua chat — đếm + lấy link xem nhanh (signed 1h)
+      const { data: atts } = await supabase
+        .from("lead_attachments")
+        .select("storage_path")
+        .eq("lead_id", lead.id)
+        .order("created_at", { ascending: true });
+      let photoLine = "";
+      if (atts && atts.length > 0) {
+        const first = atts[0].storage_path as string;
+        const { data: signed } = await supabase.storage.from("lead-attachments").createSignedUrl(first, 3600);
+        photoLine = `[Ảnh: ${atts.length}]${signed?.signedUrl ? " " + signed.signedUrl : ""}`;
+      }
       const lines = [
         `[LEAD ${lead.type === "maintenance" ? "BẢO DƯỠNG" : "MUA"}] #${lead.id.slice(0, 8)}`,
         `Tên: ${lead.name} — ${lead.phone}`,
@@ -137,6 +169,7 @@ export default {
         lead.line_interest ? `Dòng quan tâm: ${lead.line_interest}` : "",
         lead.need ? `Nhu cầu: ${lead.need}` : "",
         ...notes.slice(-3).map((n) => `Ghi chú chat: ${n.text}`),
+        photoLine,
       ].filter(Boolean).join("\n");
       const token = Deno.env.get("TELEGRAM_BOT_TOKEN") || "";
       const chatId = Deno.env.get("TELEGRAM_CHAT_ID") || "";
@@ -155,6 +188,53 @@ export default {
     }
 
     let message = String(body.message || "").trim().slice(0, 1000);
+
+    // Khách gửi ảnh qua chat widget → lưu vào lead (KHÔNG AI xem/chẩn đoán — chỉ lưu + báo)
+    if (body.action === "chat_photo") {
+      if (!requestCode) return json({ ok: false, error: "Thiếu mã yêu cầu — khách cần gửi form trước" }, 400);
+      const fileB64 = String(body.file_base64 || "");
+      const filename = String(body.filename || "anh.jpg").replace(/[^a-zA-Z0-9._-]/g, "").slice(0, 60);
+      const mime = String(body.mime || "").slice(0, 60);
+      if (!fileB64) return json({ ok: false, error: "Thiếu dữ liệu ảnh" }, 400);
+      if (!mime.startsWith("image/")) return json({ ok: false, error: "Chỉ nhận file ảnh" }, 400);
+      const raw = b64ToBytes(fileB64);
+      if (raw.length === 0 || raw.length > 1.5 * 1024 * 1024) {
+        return json({ ok: false, error: "Ảnh phải ≤ 1.5MB" }, 400);
+      }
+      const { data: recent, error: listErr } = await supabase
+        .from("leads")
+        .select("id, meta")
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (listErr) return json({ ok: false, error: "Truy vấn lỗi" }, 500);
+      const lead = (recent || []).find((r: { id: string }) => r.id.startsWith(requestCode));
+      if (!lead) return json({ ok: false, error: "Không tìm thấy yêu cầu" }, 404);
+      const { count: existCount, error: cntErr } = await supabase
+        .from("lead_attachments")
+        .select("id", { count: "exact", head: true })
+        .eq("lead_id", lead.id);
+      if (cntErr) return json({ ok: false, error: "Truy vấn lỗi" }, 500);
+      if ((existCount || 0) >= 3) return json({ ok: false, error: "Tối đa 3 ảnh cho 1 yêu cầu" }, 400);
+      const ext = filename.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+      const path = `leads/${lead.id}/chat-${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("lead-attachments")
+        .upload(path, raw, { contentType: mime || "image/jpeg", upsert: false });
+      if (upErr) return json({ ok: false, error: `Upload lỗi: ${upErr.message}` }, 500);
+      const { error: attErr } = await supabase.from("lead_attachments").insert({
+        lead_id: lead.id,
+        storage_path: path,
+        storage_bucket: "lead-attachments",
+      });
+      if (attErr) return json({ ok: false, error: "Lưu ảnh lỗi" }, 500);
+      const notes: { text?: string; at?: string; source?: string }[] = Array.isArray(lead.meta?.ai_notes)
+        ? lead.meta.ai_notes
+        : [];
+      notes.push({ text: `Khách gửi ảnh qua chat: ${filename}`, at: new Date().toISOString(), source: "chat_widget" });
+      await supabase.from("leads").update({ meta: { ...lead.meta, ai_notes: notes } }).eq("id", lead.id);
+      return json({ ok: true, count: (existCount || 0) + 1 }, 200);
+    }
+
     if (!message) return json({ ok: false, error: "Vui lòng nhập câu hỏi" }, 400);
     // UI gửi lang (vi/en) — buộc ngôn ngữ trả lời khi trang EN
     const uiLang = body.lang === "en" ? "en" : "vi";
