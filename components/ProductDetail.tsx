@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import type { Product } from "../lib/catalog";
 
@@ -12,6 +15,8 @@ export default function ProductDetail({
   lang,
   similar,
 }: ProductDetailProps) {
+  const [hoverHome, setHoverHome] = useState(false);
+  const [hoverProducts, setHoverProducts] = useState(false);
   const t =
     lang === "en"
       ? {
@@ -68,38 +73,80 @@ export default function ProductDetail({
         <nav
           aria-label="Breadcrumb"
           style={{
-            marginBottom: "36px",
-            fontSize: "0.85rem",
-            color: "#a89f8a",
             display: "flex",
             alignItems: "center",
-            gap: "10px",
+            gap: "8px",
             flexWrap: "wrap",
+            marginBottom: "40px",
           }}
         >
           <Link
             href="/"
+            onMouseEnter={() => setHoverHome(true)}
+            onMouseLeave={() => setHoverHome(false)}
             style={{
-              color: "#a89f8a",
+              fontFamily: "var(--serif, 'Playfair Display', Georgia, serif)",
+              fontSize: "0.78rem",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: hoverHome ? "#d4af37" : "#a89f8a",
               textDecoration: "none",
-              transition: "color 0.2s",
+              transition: "color .2s",
             }}
           >
             {t.home}
           </Link>
-          <span style={{ color: "#6f6857" }}>/</span>
+          <span
+            style={{
+              color: "#6f6857",
+              fontSize: "0.9rem",
+              opacity: 0.6,
+              margin: "0 2px",
+            }}
+          >
+            ›
+          </span>
           <Link
             href="/#collection"
+            onMouseEnter={() => setHoverProducts(true)}
+            onMouseLeave={() => setHoverProducts(false)}
             style={{
-              color: "#a89f8a",
+              fontFamily: "var(--serif, 'Playfair Display', Georgia, serif)",
+              fontSize: "0.78rem",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: hoverProducts ? "#d4af37" : "#a89f8a",
               textDecoration: "none",
-              transition: "color 0.2s",
+              transition: "color .2s",
             }}
           >
             {t.products}
           </Link>
-          <span style={{ color: "#6f6857" }}>/</span>
-          <span style={{ color: "#d4af37" }}>{name}</span>
+          <span
+            style={{
+              color: "#6f6857",
+              fontSize: "0.9rem",
+              opacity: 0.6,
+              margin: "0 2px",
+            }}
+          >
+            ›
+          </span>
+          <span
+            style={{
+              color: "#d4af37",
+              fontFamily: "var(--serif, 'Playfair Display', Georgia, serif)",
+              fontSize: "0.82rem",
+              letterSpacing: "0.08em",
+              fontWeight: 600,
+              maxWidth: "min(60vw, 420px)",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {name}
+          </span>
         </nav>
 
         {/* Product Main Grid */}
