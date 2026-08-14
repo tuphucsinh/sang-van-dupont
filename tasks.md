@@ -40,7 +40,7 @@ _(5 task P2T01–P2T05 đã xong + Reviewer PASS SW-P2-MIGRATIONS-01 — chi ti�
 - Anon GET product_media trả đủ 9+ cover
 - Các file ảnh tham chiếu tồn tại trong `public/assets/img/`
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): apply OK, anon thấy 8 available (reserved ẩn đúng RLS), 16 media (8 cover+8 gallery), mọi ảnh tồn tại
 
 ---
 
