@@ -167,17 +167,11 @@
 
 **Gate**: `none` (không chạm security — policies public read, stats read-only admin)
 
-### Phase 9B: Full AI — GATED (chờ usage thật 2-4 tuần + GA4 số liệu)
-**Goal**: Chỉ mở khi Release B có sử dụng thật (file 1 §6) — đo qua ai_chat_logs + GA4.
-**Deliverables theo ROI**:
-1. **AI Vision intake** (ưu tiên 1): khách gửi ảnh form bảo dưỡng → AI mô tả sơ bộ (thiếu góc, đặc điểm) → lead.ai_summary. ⚠️ Bước 0: **verify provider vision** (deepseek-v4-flash text-only — cần Gemini flash free hoặc model vision khác; UNKNOWN → verify trước khi code)
-2. **AI admin draft**: mô tả VI/EN, caption, alt — AI tạo nháp, anh duyệt trước publish
-3. **Research**: sourcing/seller watchlist/price intelligence (tốn công nhất — khi anh muốn)
-4. **Recommendation**: filter deterministic chọn candidate + AI chỉ giải thích (KHÔNG để model tự chọn)
-**Gate**: usage thật có số liệu + vision provider verified + human-review gate + cost/kill switch
+### Phase 9B: Full AI — Vision intake + Admin draft + Recommendation — ✅ DONE 2026-08-14
+**Kết quả thực thi**: `vision-intake` Edge Function (opencode-go **qwen3.8-max** vision — verified; gpt-5.6-luna text-only KHÔNG dùng được; timeout 60s) — 2 mode: intake (mô tả sơ bộ + thiếu góc + khuyết điểm, không xác nhận thật/giả) + draft (desc VI/EN từ ảnh+tên); wire vào LeadForm maintenance (AI nhận xét preview + `leads.ai_summary` — verified API lưu chuẩn); nút "✨ Draft mô tả bằng AI" trong admin products; tool `recommend` trong ai-chat (deterministic filter line/material/budget/style — AI chỉ giới thiệu candidate, verified có/không kết quả). **Research để sau** (khi anh muốn). Gate: upload/private PASS (P5) + human-review (draft/summary chỉ nháp, không tự publish) + cost cap shared ai_chat_logs.
 
-**Dependencies**: Phase 8
-**Gate (đầy đủ, file 1)**: upload/private storage PASS; disclaimer rõ; human review kết luận quan trọng; usage/cost/kill switch PASS
+### Phase 9B-next: Research (sourcing/price intelligence) — khi anh muốn
+**Deliverables**: Research DB riêng (seller/listing/price/watchlist, URL+timestamp), opportunity alerts, marketing pipeline từ 1 nguồn dữ liệu. **Gate**: anh yêu cầu + usage thật.
 
 ---
 
