@@ -6,6 +6,8 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import { productsCmd } from "./products";
+import { publishCmd } from "./publish";
 
 const OPS_LOG = path.resolve(process.cwd(), ".tmp/ops.log");
 
@@ -41,8 +43,8 @@ export interface CmdContext {
 }
 
 const REGISTRY: { name: string; desc: string; impl?: (ctx: CmdContext, args: string[]) => Promise<number>; task: string }[] = [
-  { name: "products", desc: "CRUD sản phẩm (list|get|create|update|delete) — delete confirm 2 bước", task: "P12T03" },
-  { name: "publish", desc: "Build + deploy production (vercel --prod) — CHỜ ANH DUYỆT", task: "P12T03" },
+  { name: "products", desc: "CRUD sản phẩm (list|get|create|update|delete) — delete confirm 2 bước", impl: productsCmd, task: "P12T03" },
+  { name: "publish", desc: "Build + deploy production (vercel --prod) — CHỜ ANH DUYỆT", impl: publishCmd, task: "P12T03" },
   { name: "links", desc: "Crawl sitemap → check link/ảnh hỏng", task: "P12T04" },
   { name: "i18n", desc: "So sánh nội dung VI/EN trong DB", task: "P12T04" },
   { name: "seo", desc: "Audit SEO per-page (title/desc/canonical/hreflang/OG/JSON-LD/alt)", task: "P12T04" },
