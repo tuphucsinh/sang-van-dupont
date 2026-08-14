@@ -73,7 +73,7 @@ _(5 task P2T01–P2T05 đã xong + Reviewer PASS SW-P2-MIGRATIONS-01 — chi ti�
 - `npx tsx .tmp/test-catalog.ts` (import thật): getAllProducts trả ≥9, mỗi product có media cover
 - `npm run lint` + `npx tsc --noEmit` PASS
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): tsx test PASS (8 products, mọi cái có cover, bySlug/similar/ghost OK), lint 0 errors, tsc PASS; fix any + unused var
 
 ---
 
