@@ -57,6 +57,15 @@
 | R4-3 | Xóa product → file bucket orphan | ✅ Fix: storage.remove trước delete |
 | R4-4 | ADMIN_EMAIL lặp 3 nơi; ARCHITECT §4 ghi "signed URL qua Edge Function" nhưng thực tế createSignedUrl client-side | Ghi nhận: RLS là nguồn sự thật duy nhất (an toàn vì is_admin chặn); cập nhật ARCHITECT §4 khi Phase 7 (signed URL client-side OK vì RLS) |
 
+## 2026-08-14 — Reviewer SW-P5-LEADPIPE-01: PASS + 4 góp ý
+
+| # | Góp ý | Xử lý |
+|---|---|---|
+| R5-1 | clientIp tin entry đầu x-forwarded-for — client spoof IP qua rate limit | Ghi nhận: rủi ro chấp nhận (D13 dời Turnstile; giai đoạn thử nghiệm) — bổ sung Turnstile + IP platform khi public rộng |
+| R5-2 | Client 2MB vs server 1.5MB lệch — ảnh 1.5-2MB bị bỏ âm thầm | ✅ Fix: đồng bộ client 1.5MB |
+| R5-3 | storage.sql policy authenticated cho lead-attachments phụ thuộc thứ tự migration | ✅ Fix: bỏ policy khỏi storage.sql, chỉ tạo bucket; policy is_admin duy nhất ở admin_rls.sql; verify remote chỉ còn 3 policy đúng |
+| R5-4 | Không log Telegram response | ✅ Fix: log tgRes.status + body khi !ok |
+
 ## 2026-08-14 — Verify login thật production + bài học disable_signup
 
 **Kết quả verify end-to-end (production)**: GitHub OAuth login ✅ (user `tvccbod@gmail.com` provider github), CRUD create ✅ (product test), delete ✅ (DB sạch 9 products), RLS is_admin ✅. **Phase 4 hoàn tất 100%**.
