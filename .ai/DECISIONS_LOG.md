@@ -39,3 +39,11 @@
 | D15 | **Ảnh catalog hiện có serve static từ `public/assets/img/`** (URL tương đối trong `product_media.url`); KHÔNG upload Storage ở Phase 3 | Ảnh nhỏ ít, serve tĩnh nhanh nhất, không thêm dependency; chuyển Storage sau này chỉ đổi giá trị URL trong DB — code không đổi |
 | D16 | Product detail: URL riêng `/vi/products/[slug]` + `/en/products/[slug]` (2 route wrap chung component, lang prop); trang chủ giữ root (chưa refactor [lang] toàn site) | Đáp ứng SEO VI/EN cho detail mà không refactor lớn; canonical + hreflang hoàn thiện ở Phase 6 |
 | D17 | Dùng tên sản phẩm THẬT từ landing (I18N dict p1–p9) làm catalog seed (thay `[SEED]`), price NULL = "Liên hệ" (file 1: "giá hoặc Liên hệ") | Anh chốt ảnh hiện có + tên thật; không bịa giá khi chưa có giá thật |
+
+## 2026-08-14 — Phase 4 chốt: admin login GitHub OAuth + allowlist
+
+| # | Quyết định | Lý do |
+|---|---|---|
+| D18 | **Admin login = GitHub OAuth** (Supabase Auth provider) + **allowlist email** (chỉ `tvccbod@gmail.com` — email GitHub của anh) trong RLS | Anh login quen, 2FA GitHub sẵn; mọi authenticated khác chỉ đọc public (R1 reviewer xử lý — không ai khác write được kể cả khi authorize OAuth) |
+| D19 | Admin CRUD **client-side** (supabase-js + user session → PostgREST qua RLS) — static export KHÔNG có server actions/route handlers | `output:'export'` giới hạn; RLS là lớp enforce thật (không chỉ UI guard) |
+| D20 | Route admin: `/admin` (login) + `/admin/products` (CRUD) + `/admin/leads` (xem lead); client guard + RLS enforce | Tách rõ login vs CRUD vs lead; Phase 4 gồm luôn xem lead (anh chốt) |
