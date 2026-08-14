@@ -131,18 +131,35 @@ export default function AiChat() {
             >
               Trợ lý SangDupont
             </span>
-            <a
-              href="https://t.me/sangdupontbot"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                fontSize: "0.8rem",
-                color: "#a89f8a",
-                textDecoration: "none",
-              }}
-            >
-              Chat người thật →
-            </a>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <a
+                href="https://t.me/sangdupontbot"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontSize: "0.8rem",
+                  color: "#a89f8a",
+                  textDecoration: "none",
+                }}
+              >
+                Chat người thật →
+              </a>
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="Đóng chat"
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#a89f8a",
+                  fontSize: "1.1rem",
+                  cursor: "pointer",
+                  lineHeight: 1,
+                  padding: "2px 4px",
+                }}
+              >
+                ✕
+              </button>
+            </div>
           </div>
 
           {/* Messages list */}
