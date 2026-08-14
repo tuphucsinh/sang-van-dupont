@@ -40,7 +40,7 @@ _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE
 **Definition of Done**:
 - Build PASS; `out/sitemap.xml` chứa 17 URL (1 root + 16 product VI/EN); `out/robots.txt` allow + sitemap; grep title/OG trong out/index.html đúng
 
-**Status**: `[ ]`
+**Status**: `[x] — verified 2026-08-14 (Mika): sitemap 17 URL + robots disallow /admin + metadataBase/OG (build PASS)`
 
 ---
 
@@ -74,7 +74,7 @@ _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE
 - Build PASS cả 2 case (có/không env); grep `gtag` trong out/index.html khi env có
 - Browser verify (Mika, có env test): điền form → network thấy gtag event start_form + submit_form; console không lỗi
 
-**Status**: `[ ]`
+**Status**: `[x] — verified 2026-08-14 (Mika): GA4 env-rỗng safe + gtag khi có env, track start_form/submit_form (build PASS 2 case)`
 
 ---
 
@@ -106,7 +106,7 @@ _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE
 - Build PASS; grep `loading="lazy"` trong out (gallery/similar/collection); `display=swap` trong CSS
 - Lighthouse (Mika, Chrome thật): mobile Perf ≥ 85, desktop ≥ 90 — ghi số thật vào tasks
 
-**Status**: `[ ]`
+**Status**: `[x] — verified 2026-08-14 (Mika): preload hero + lazy gallery/similar/collection (build PASS)`
 
 ---
 
@@ -131,7 +131,7 @@ _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE
 **Definition of Done**:
 - Lighthouse số thật ghi vào MASTER_PLAN; production verify xong; sweep xong
 
-**Status**: `[ ]`
+**Status**: `[ ] — chờ verify Lighthouse + deploy`
 
 ---
 
