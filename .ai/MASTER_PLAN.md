@@ -100,8 +100,8 @@
 **Dependencies**: Phase 2
 **Gate**: lead hợp lệ được lưu + notification hoạt động; ảnh khách private; spam bị chặn
 
-### Phase 6: SEO + Tracking + Performance
-**Goal**: Chuẩn hóa SEO song ngữ, GA4 tối thiểu, tối ưu performance static.
+### Phase 6: SEO + Tracking + Performance — ✅ DONE 2026-08-14
+**Kết quả thực thi**: `sitemap.ts` (17 URL — root + 8×2 VI/EN product, alternates hreflang) + `robots.ts` (disallow /admin, sitemap link) + metadataBase/OG; GA4 tối thiểu (Ga4 component env-safe, track start_form/submit_form — KHÔNG PII; GA4 ID thật chờ anh cấp → set env Vercel + rebuild); perf: preload hero + lazy gallery/similar/collection (không lazy LCP), font không network-load. **Lighthouse thật (production)**: mobile Perf 94/SEO 100/A11y 96/BP 96, desktop Perf 100/SEO 100/A11y 96/BP 100 — vượt mọi ngưỡng (≥85/≥90). Verify production: sitemap 200 17 URL, robots 200 disallow admin, og:image đúng.
 
 **Deliverables**:
 - `/vi/...`, `/en/...`, canonical, hreflang, sitemap, robots, OG, structured data, semantic HTML
