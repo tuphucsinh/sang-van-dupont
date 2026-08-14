@@ -28,11 +28,10 @@ const T = {
     lineLabel: "Dòng quan tâm",
     linePh: "Ligne 2, Gatsby…",
     channelLabel: "Kênh liên hệ ưu tiên",
-    channelWeb: "Form web",
     channelZalo: "Zalo",
     channelTelegram: "Telegram",
-    channelCall: "Gọi điện thoại",
-    channelInbox: "Inbox FB",
+    channelCall: "Điện thoại",
+    channelWhatsApp: "WhatsApp",
     needLabel: "Nhu cầu chi tiết",
     needPh: "Mô tả tình trạng bật lửa, mẫu bạn tìm kiếm, hoặc câu hỏi chi tiết...",
     uploadLabel: "Gửi ảnh bật lửa (tối đa 3 ảnh, ≤1.5MB/ảnh)",
@@ -74,11 +73,10 @@ const T = {
     lineLabel: "Line of interest",
     linePh: "Ligne 2, Gatsby…",
     channelLabel: "Preferred contact channel",
-    channelWeb: "Web form",
     channelZalo: "Zalo",
     channelTelegram: "Telegram",
-    channelCall: "Phone call",
-    channelInbox: "Inbox FB",
+    channelCall: "Phone",
+    channelWhatsApp: "WhatsApp",
     needLabel: "Detailed request",
     needPh: "Describe lighter condition, model you are looking for, or detailed questions...",
     uploadLabel: "Upload lighter photos (up to 3 photos, ≤1.5MB each)",
@@ -128,7 +126,7 @@ const initialForm: FormData = {
   budget: "",
   need: "",
   line_interest: "",
-  channel: "web_form",
+  channel: "Zalo",
 };
 
 export default function LeadForm() {
@@ -275,7 +273,7 @@ export default function LeadForm() {
           ...form,
           name: trimmedName,
           phone: trimmedPhone,
-          channel: form.channel || "web_form",
+          channel: form.channel || "Zalo",
           ...(form.type === "maintenance"
             ? {
                 ai_summary: aiSummary || undefined,
@@ -512,11 +510,10 @@ export default function LeadForm() {
                 onChange={handleChange}
                 style={inputStyle}
               >
-                <option value="web_form">{t.channelWeb}</option>
                 <option value="Zalo">{t.channelZalo}</option>
-                <option value="Telegram">{t.channelTelegram}</option>
                 <option value="Call">{t.channelCall}</option>
-                <option value="Inbox FB">{t.channelInbox}</option>
+                <option value="Telegram">{t.channelTelegram}</option>
+                <option value="WhatsApp">{t.channelWhatsApp}</option>
               </select>
             </div>
           </div>
