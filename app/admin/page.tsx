@@ -4,12 +4,16 @@ import { supabase } from "@/lib/supabase-client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const ADMIN_EMAIL = "tvccbod@gmail.com";
+const ADMIN_EMAILS = ["tvccbod@gmail.com", "aivntps@gmail.com"];
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const [checking, setChecking] = useState<boolean>(true);
   const [email, setEmail] = useState<string | null>(null);
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPass, setLoginPass] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState("");
 
   useEffect(() => {
     let mounted = true;
@@ -35,7 +39,7 @@ export default function AdminLoginPage() {
   }, []);
 
   useEffect(() => {
-    if (!checking && email === ADMIN_EMAIL) {
+    if (!checking && email && ADMIN_EMAILS.includes(email)) {
       router.replace("/admin/products");
     }
   }, [checking, email, router]);
@@ -52,6 +56,26 @@ export default function AdminLoginPage() {
         redirectTo: window.location.origin + "/admin",
       },
     });
+  };
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loginEmail.trim() || !loginPass || loginLoading) return;
+    setLoginLoading(true);
+    setLoginError("");
+    const { error } = await supabase.auth.signInWithPassword({
+      email: loginEmail.trim(),
+      password: loginPass,
+    });
+    setLoginLoading(false);
+    if (error) {
+      setLoginError(
+        error.message.includes("Invalid login")
+          ? "Email hoặc mật khẩu không đúng"
+          : error.message
+      );
+    }
+    // thành công → onAuthStateChange tự cập nhật email → redirect
   };
 
   if (checking) {
@@ -71,7 +95,7 @@ export default function AdminLoginPage() {
     );
   }
 
-  if (email === ADMIN_EMAIL) {
+  if (email && ADMIN_EMAILS.includes(email)) {
     return (
       <div
         style={{
@@ -88,7 +112,7 @@ export default function AdminLoginPage() {
     );
   }
 
-  if (email && email !== ADMIN_EMAIL) {
+  if (email && !ADMIN_EMAILS.includes(email)) {
     return (
       <div
         style={{
@@ -269,6 +293,107 @@ export default function AdminLoginPage() {
           </svg>
           Đăng nhập với GitHub
         </button>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            margin: "20px 0 16px",
+            color: "#666",
+            fontSize: "12px",
+          }}
+        >
+          <div style={{ flex: 1, height: "1px", background: "rgba(212,175,55,.15)" }} />
+          hoặc
+          <div style={{ flex: 1, height: "1px", background: "rgba(212,175,55,.15)" }} />
+        </div>
+        <form onSubmit={handleEmailLogin} style={{ textAlign: "left" }}>
+          <label
+            style={{
+              display: "block",
+              fontSize: "13px",
+              color: "#a89f8a",
+              marginBottom: "6px",
+            }}
+          >
+            Email
+          </label>
+          <input
+            type="email"
+            value={loginEmail}
+            onChange={(e) => setLoginEmail(e.target.value)}
+            placeholder="admin@example.com"
+            autoComplete="username"
+            style={{
+              width: "100%",
+              background: "#0a0a0d",
+              color: "#f3ecd9",
+              border: "1px solid rgba(212,175,55,.25)",
+              borderRadius: "6px",
+              padding: "10px 12px",
+              fontSize: "14px",
+              marginBottom: "12px",
+              boxSizing: "border-box",
+            }}
+          />
+          <label
+            style={{
+              display: "block",
+              fontSize: "13px",
+              color: "#a89f8a",
+              marginBottom: "6px",
+            }}
+          >
+            Mật khẩu
+          </label>
+          <input
+            type="password"
+            value={loginPass}
+            onChange={(e) => setLoginPass(e.target.value)}
+            placeholder="••••••••"
+            autoComplete="current-password"
+            style={{
+              width: "100%",
+              background: "#0a0a0d",
+              color: "#f3ecd9",
+              border: "1px solid rgba(212,175,55,.25)",
+              borderRadius: "6px",
+              padding: "10px 12px",
+              fontSize: "14px",
+              marginBottom: "12px",
+              boxSizing: "border-box",
+            }}
+          />
+          {loginError && (
+            <p
+              style={{
+                color: "#ef4444",
+                fontSize: "13px",
+                marginBottom: "10px",
+              }}
+            >
+              {loginError}
+            </p>
+          )}
+          <button
+            type="submit"
+            disabled={loginLoading || !loginEmail.trim() || !loginPass}
+            style={{
+              background: "#0a0a0d",
+              color: "#d4af37",
+              border: "1px solid rgba(212,175,55,.45)",
+              fontWeight: "bold",
+              padding: "12px 24px",
+              borderRadius: "6px",
+              cursor: "pointer",
+              width: "100%",
+              fontSize: "14px",
+              opacity: loginLoading || !loginEmail.trim() || !loginPass ? 0.5 : 1,
+            }}
+          >
+            {loginLoading ? "Đang đăng nhập..." : "Đăng nhập"}
+          </button>
+        </form>
         <p
           style={{
             color: "#888",
