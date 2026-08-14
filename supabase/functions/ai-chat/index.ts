@@ -14,7 +14,7 @@ const SYSTEM_PROMPT = `BẠN LÀ NHÂN VIÊN BÁN HÀNG CỦA SANGDUPONT — sho
 ## CÁ TÍNH
 - Tận tâm, chuyên nghiệp, yêu sản phẩm, tự tin như người sành hàng 10 năm.
 - Xưng hô: khách = "anh" (trẻ có thể "bạn"), mình = "em". Giọng ấm, tự nhiên, chân thành — KHÔNG máy móc, KHÔNG lặp khuôn.
-- KHÔNG dùng dấu ~ (bỏ hẳn — không viết "nha~", "ạ~"). KHÔNG dùng emoji — tối đa 1 emoji duy nhất trong cả câu nếu thật cần cho thân thiện (vd 😊).
+- TUYỆT ĐỐI KHÔNG dùng emoji (không emoji nào — kể cả mặt cười, icon, ký hiệu màu). KHÔNG dùng dấu ~.
 - **KHÔNG dùng markdown** (không **, không *): viết text thường, xuống dòng gọn.
 - Trả lời NGẮN: 2-4 câu, tối đa 6 câu. Không phun danh sách; chi tiết chỉ khi khách hỏi.
 - Luôn kết bằng 1 câu hỏi/gợi ý hành động (bán hàng chủ động).
@@ -130,12 +130,12 @@ export default {
       if (!lead) return json({ ok: false, error: "Không tìm thấy yêu cầu" }, 404);
       const notes: { text?: string }[] = Array.isArray(lead.meta?.ai_notes) ? lead.meta.ai_notes : [];
       const lines = [
-        `📋 <b>Lead ${lead.type === "maintenance" ? "BẢO DƯỠNG" : "MUA"} — #${lead.id.slice(0, 8)}</b>`,
-        `👤 ${lead.name} — ${lead.phone}`,
-        lead.budget ? `💰 Ngân sách: ${lead.budget}` : "",
-        lead.line_interest ? `🔹 Dòng quan tâm: ${lead.line_interest}` : "",
-        lead.need ? `📝 Nhu cầu: ${lead.need}` : "",
-        ...notes.slice(-3).map((n) => `💬 Ghi chú chat: ${n.text}`),
+        `[LEAD ${lead.type === "maintenance" ? "BẢO DƯỠNG" : "MUA"}] #${lead.id.slice(0, 8)}`,
+        `Tên: ${lead.name} — ${lead.phone}`,
+        lead.budget ? `Ngân sách: ${lead.budget}` : "",
+        lead.line_interest ? `Dòng quan tâm: ${lead.line_interest}` : "",
+        lead.need ? `Nhu cầu: ${lead.need}` : "",
+        ...notes.slice(-3).map((n) => `Ghi chú chat: ${n.text}`),
       ].filter(Boolean).join("\n");
       const token = Deno.env.get("TELEGRAM_BOT_TOKEN") || "";
       const chatId = Deno.env.get("TELEGRAM_CHAT_ID") || "";
@@ -352,7 +352,7 @@ export default {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 chat_id: Number(chatId),
-                text: `🔔 Lead mới — AI CHAT\n👤 <b>${name}</b>\n📞 ${phone}\n📝 ${need || "-"}\n#${lead.id.slice(0, 8)}`,
+                text: `[LEAD MỚI — AI CHAT]\nTên: <b>${name}</b>\nSĐT: ${phone}\nNhu cầu: ${need || "-"}\n#${lead.id.slice(0, 8)}`,
                 parse_mode: "HTML",
               }),
             });
@@ -464,9 +464,9 @@ export default {
                   const price = r.price ? `${r.price} ${r.price_unit || ""}` : null;
                   return `- ${r.name_vi} (${r.line || "dòng vintage"}) — ${avail}${price ? ", " + price : ""}`;
                 }).join("\n");
-                lastToolSummary = `Dạ, bên em đang có mấy mẫu phù hợp nè:\n${lines}\n\nVề giá, để em xác nhận với chủ shop rồi báo anh chính xác nhất ạ. Anh/chị cho em xin SĐT để bên em liên hệ trong ngày nha 😊`;
+                lastToolSummary = `Dạ, bên em đang có mấy mẫu phù hợp nè:\n${lines}\n\nVề giá, để em xác nhận với chủ shop rồi báo anh chính xác nhất ạ. Anh/chị cho em xin SĐT để bên em liên hệ trong ngày nha`;
               } else {
-                lastToolSummary = "Rất tiếc, hiện bên em không có mẫu phù hợp ạ. Anh/chị có thể xem thêm bộ sưu tập trên website sangdupont.vercel.app, hoặc cho em biết anh đang tìm dòng nào — em gợi ý mẫu gần nhất nè~";
+                lastToolSummary = "Rất tiếc, hiện bên em không có mẫu phù hợp ạ. Anh/chị có thể xem thêm bộ sưu tập trên website sangdupont.vercel.app, hoặc cho em biết anh đang tìm dòng nào — em gợi ý mẫu gần nhất nè";
               }
             } catch { /* giữ nguyên */ }
           } else if (tc.function.name === "get_product" && !toolResult.includes('"error"')) {
@@ -475,7 +475,7 @@ export default {
               if (p && p.name_vi) {
                 const price = p.price ? `${p.price} ${p.price_unit || ""}` : "đang cập nhật — để em xác nhận với chủ shop rồi báo anh chính xác nhất ạ";
                 const desc = p.desc_vi ? " " + p.desc_vi.slice(0, 200) : "";
-                lastToolSummary = `Dạ, mẫu ${p.name_vi} (${p.line || "dòng vintage"}) bên em ${p.status === "available" ? "đang còn hàng" : "hiện đã hết"} ạ.${desc}\n\nGiá: ${price}. Anh/chị để lại SĐT để bên em liên hệ tư vấn thêm nha 😊`;
+                lastToolSummary = `Dạ, mẫu ${p.name_vi} (${p.line || "dòng vintage"}) bên em ${p.status === "available" ? "đang còn hàng" : "hiện đã hết"} ạ.${desc}\n\nGiá: ${price}. Anh/chị để lại SĐT để bên em liên hệ tư vấn thêm nha`;
               }
             } catch { /* giữ nguyên */ }
           } else if (tc.function.name === "create_lead") {
