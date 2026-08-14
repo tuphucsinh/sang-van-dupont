@@ -37,7 +37,7 @@ _(4 task P1T01–P1T04 đã xong — chi tiết: `.ai/MASTER_PLAN.md` Phase 1; t
 - `supabase status` (hoặc `link --project-ref`) báo linked
 - `.env.local` tồn tại + gitignored; `git status` không lộ secret
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): CLI 2.114.0, project `sangwebsite` đã tồn tại (ACTIVE_HEALTHY, PG17, ap-northeast-1 — anh tạo sẵn), link OK, .env.local gitignored (anon+service key, chmod 600, không commit)
 
 ---
 
