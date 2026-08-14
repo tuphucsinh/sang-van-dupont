@@ -157,19 +157,27 @@
 
 **PHASE 8 GATE — KẾT QUẢ (2026-08-14, verified)**: ✅ 4/4 — eval 5 câu (L2 đúng data / Gold 2024 không có — không bịa / giá null → không tự báo / bảo hành → không cam kết / giới thiệu bản thân); policy thật/giả/giá hoạt động (test "hàng thật không" → không khẳng định, dẫn chủ shop); handoff E2E PASS (AI create_lead → DB channel=ai_chat + Telegram + admin xem); cost cap + rate limit + kill switch verified (429 thật khi vượt cap 5, 503 khi AI_ENABLED=false). Chat widget production e2e PASS (hỏi "có L2 không" → trả lời đúng data). Bot Telegram sangbot SOUL.md restricted + online.
 
-### Phase 9: Full AI — AI nội bộ + Vision + Research (theo ROI)
-**Goal**: Chỉ triển khai khi Release B có sử dụng thật (file 1 §6): AI nội bộ trong admin, vision intake, market/sourcing research.
-
+### Phase 9A: Ops hoàn thiện (KHÔNG gated — ROI ngay, làm khi anh muốn)
+**Lý do tách** (Sequential Thinking 2026-08-14): 4 việc nhỏ tăng conversion ngay, không cần chờ usage — nếu để chung với Full AI (gated) sẽ bị chết chờ vô thời hạn.
 **Deliverables**:
-- AI nội bộ: draft mô tả VI/EN, caption, alt text, tóm tắt tình trạng, draft case study — **AI chỉ tạo draft, admin duyệt trước publish**
-- AI vision: "Trợ lý tiếp nhận và đánh giá hình ảnh sơ bộ" — kiểm tra thiếu góc, mô tả đặc điểm, yêu cầu ảnh bổ sung; **không** xác nhận thật/giả, định giá cuối, thay chuyên gia
-- Research (giá trị cao nhất): sourcing, seller/competitor watchlist, price intelligence, opportunity alerts — Research DB riêng (seller/listing/price/watchlist), URL+timestamp
-- Marketing pipeline: một nguồn dữ liệu → listing/bài/FB/TikTok/EN/SEO/alt
-- Recommendation (gợi ý sản phẩm): filter deterministic chọn candidate, AI chỉ giải thích — không cho model tự chọn ngoài dữ liệu thật (file 1 §6.3)
-- Hardening: usage/cost/kill switch hoàn chỉnh, disclaimer, human-review gate, audit an toàn
+- **9A-1** `shop_policies` bảng + tool `get_policies` — AI trả lời COD/đổi trả/giao hàng chính xác (B1) — ~30 phút
+- **9A-2** `/admin/stats` — view usage: ai_chat_logs theo ngày + leads theo status (anh xem AI hoạt động/conversion) — ~30 phút
+- **9A-3** GA4 bật thật — chờ anh cấp Measurement ID (B3)
+- **9A-4** Nhập giá thật qua `/admin/products` — anh tự làm, không code (B2)
+
+**Gate**: `none` (không chạm security — policies public read, stats read-only admin)
+
+### Phase 9B: Full AI — GATED (chờ usage thật 2-4 tuần + GA4 số liệu)
+**Goal**: Chỉ mở khi Release B có sử dụng thật (file 1 §6) — đo qua ai_chat_logs + GA4.
+**Deliverables theo ROI**:
+1. **AI Vision intake** (ưu tiên 1): khách gửi ảnh form bảo dưỡng → AI mô tả sơ bộ (thiếu góc, đặc điểm) → lead.ai_summary. ⚠️ Bước 0: **verify provider vision** (deepseek-v4-flash text-only — cần Gemini flash free hoặc model vision khác; UNKNOWN → verify trước khi code)
+2. **AI admin draft**: mô tả VI/EN, caption, alt — AI tạo nháp, anh duyệt trước publish
+3. **Research**: sourcing/seller watchlist/price intelligence (tốn công nhất — khi anh muốn)
+4. **Recommendation**: filter deterministic chọn candidate + AI chỉ giải thích (KHÔNG để model tự chọn)
+**Gate**: usage thật có số liệu + vision provider verified + human-review gate + cost/kill switch
 
 **Dependencies**: Phase 8
-**Gate**: upload/private storage PASS; disclaimer rõ; human review kết luận quan trọng; usage/cost/kill switch PASS
+**Gate (đầy đủ, file 1)**: upload/private storage PASS; disclaimer rõ; human review kết luận quan trọng; usage/cost/kill switch PASS
 
 ---
 

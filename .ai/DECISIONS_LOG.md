@@ -54,6 +54,8 @@
 |---|---|---|
 | D21 | **Host tạm thời = Vercel** (`sangdupont.vercel.app`) — KHÔNG deploy TENTEN trong Release A. TENTEN dời lại: chỉ khi (a) cần domain Việt Nam / giảm chi phí / Vercel Free hết hạn, hoặc (b) anh yêu cầu → làm sub-phase "migrate TENTEN" riêng | Anh chỉnh kế hoạch 2026-08-14: Vercel đang chạy ổn + free, không cần thêm bước deploy ngay; Phase 7 giờ = Release A Gate + deploy Vercel ổn định + rollback |
 
+| D22 | **Tách Phase 9 thành 9A + 9B** (Sequential Thinking 2026-08-14): 9A = Ops hoàn thiện (shop_policies, /admin/stats, GA4, nhập giá) — KHÔNG gated, ROI ngay; 9B = Full AI (Vision/Admin draft/Research/Recommendation) — GATED chờ 2-4 tuần usage thật + GA4 | Tránh backlog chết chờ; nguyên tắc MVP-first + ROI của anh |
+
 ## 2026-08-14 — Backlog post-Release B
 
 | # | Việc | Trạng thái |

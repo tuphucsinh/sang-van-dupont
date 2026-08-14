@@ -14,8 +14,9 @@
 ## Phase 8: AI Concierge — Release B — ✅ DONE 2026-08-14 (Gate 4/4: eval 5/5, policy, handoff E2E, cost cap)
 _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE 3 sweep)_
 
-## Phase 9: Full AI — nội bộ + Vision + Research
-_(chưa băm task — gated: chờ ROI Release B; hướng: AI nội bộ admin draft, vision intake, market research theo ROI)_
+## Phase 9A: Ops hoàn thiện — ✅ DONE (tách 2026-08-14, D22) — chưa băm task
+## Phase 9B: Full AI — GATED (chờ usage thật 2-4 tuần + GA4)
+_(chưa băm task — gated: chờ ROI Release B; hướng: Vision intake → Admin draft → Research → Recommendation)_
 
 ## Vận hành (post-release — không phải phase)
 - GA4: code sẵn sàng — chờ anh cấp Measurement ID (G-XXXX) → set env Vercel + rebuild
