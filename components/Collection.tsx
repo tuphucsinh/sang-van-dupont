@@ -25,7 +25,7 @@ export default function Collection({ products }: { products: Product[] }) {
 
             return (
               <Link key={p.id} href={`/vi/products/${p.slug}`} className={cardClass}>
-                <img src={p.media[0]?.url} alt={p.name_vi} loading="lazy" />
+                <img src={p.media[0]?.url} alt={p.name_vi} loading="lazy" decoding="async" />
                 {p.status !== "available" && (
                   <span
                     className="badge"

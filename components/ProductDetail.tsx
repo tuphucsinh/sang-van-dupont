@@ -331,6 +331,8 @@ export default function ProductDetail({
                   <img
                     src={m.url}
                     alt={`${name} - ${idx + 2}`}
+                    loading="lazy"
+                    decoding="async"
                     style={{
                       width: "100%",
                       height: "100%",
@@ -398,6 +400,8 @@ export default function ProductDetail({
                       <img
                         src={sim.media[0]?.url}
                         alt={simName}
+                        loading="lazy"
+                        decoding="async"
                         style={{
                           width: "100%",
                           height: "100%",

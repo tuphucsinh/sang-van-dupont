@@ -17,6 +17,7 @@ export default async function Home() {
 
   return (
     <I18nProvider>
+      <link rel="preload" as="image" href="/assets/img/hero.jpg" />
       <Nav />
       <Hero />
       <Marquee />
