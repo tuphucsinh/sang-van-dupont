@@ -112,8 +112,8 @@
 **Dependencies**: Phase 3 + Phase 5 (GA4 events `start_form`/`submit_form`/`qualified_lead` cần form từ P5)
 **Gate**: Lighthouse mobile Perf ≥ 85, desktop ≥ 90; A11y/SEO/BP ≥ 90
 
-### Phase 7: Release A Gate + Deploy Vercel (host tạm thời — TENTEN HOÃN, D21)
-**Goal**: Full regression + production artifact gọn + deploy ổn định trên Vercel (host hiện tại) + rollback sẵn sàng.
+### Phase 7: Release A Gate + Deploy Vercel (host tạm thời — TENTEN HOÃN, D21) — ✅ DONE 2026-08-14
+**Kết quả thực thi**: Full regression PASS (lint/tsc/build, 17 routes production đúng, browser CDP NO_JS_ERRORS); Security regression PASS (anon 401/400, leads [], service 200, rate limit 429, secret scan CLEAN); **RELEASE A GATE 10/10 PASS** (bảng chi tiết trên); artifact gọn (84 files), backup DB 20K mới, tag `v1.0-release-a` + rollback doc 3 đường; deploy chốt Vercel + smoke production 200. **→ RELEASE A COMPLETE 2026-08-14.**
 
 **Deliverables**:
 - Full regression: typecheck/lint/build, route/404/VI-EN, admin CRUD, RLS, private storage, lead/Telegram, analytics, mobile/desktop
