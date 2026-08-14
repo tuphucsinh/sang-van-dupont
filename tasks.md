@@ -128,7 +128,7 @@ _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE
 **Constraints**: KHÔNG mở rộng quyền (chỉ hạn chế); KHÔNG sửa core Hermes — chỉ profile sangbot
 **Definition of Done**: bot trả lời đúng 3 câu test (có sản phẩm / giá null / handoff); log không thấy shell/web tự do
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): SOUL.md restricted (role concierge + cấm shell/file/git/web, backup .bak-p8); gateway sangbot restart + bot online; chờ anh test 3 câu qua Telegram (xác nhận cuối)
 
 ---
 
