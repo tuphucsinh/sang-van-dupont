@@ -9,7 +9,7 @@
 
 ## 0. GOAL & BOUNDARIES
 
-**Mục tiêu tổng thể**: Nâng landing page static hiện tại (`sangdupont.vercel.app`, 8,5 triệu đồng) thành website công ty/bán hàng nhỏ có catalog, quản trị sản phẩm, lead pipeline, SEO và AI mở rộng được — **static-first, compute offload, build off-host, không Node thường trực khi chưa cần**.
+**Mục tiêu tổng thể**: Nâng landing page static hiện tại (`sangdupont.vercel.app`) thành website công ty/bán hàng nhỏ có catalog, quản trị sản phẩm, lead pipeline, SEO và AI mở rộng được — **static-first, compute offload, build off-host, không Node thường trực khi chưa cần**.
 
 **In-scope**:
 - Chuyển UI hiện tại sang Next.js + TypeScript, giữ visual parity đen-vàng luxury
@@ -32,14 +32,6 @@
 5. Public Hermes (Telegram concierge) tối thiểu quyền; internal Hermes mới có quyền code/git
 6. Research chỉ truy cập nguồn công khai/được phép; lưu URL + timestamp
 
-**Ngân sách tham chiếu (file 1 §12, chưa gồm VAT/ảnh chuyên nghiệp/nhập liệu/quảng cáo)**:
-
-| Mốc | Phạm vi | Tổng giá trị |
-|---|---|---:|
-| Hiện tại | Landing page static | 8,5 triệu |
-| **Release A** | Catalog + product detail + CMS + lead + SEO/perf/tracking | **27–29 triệu** |
-| **Release B** | Release A + AI concierge + tool calling + handoff + guard | **34–36 triệu** |
-| **Full AI** | Release B + AI nội bộ + vision + recommendation + hardening | **43–44 triệu** |
 ---
 
 ## 1. PHASES
@@ -182,7 +174,7 @@
 3. **GA4**: tài khoản Analytics có sẵn hay tạo mới? (Phase 6)
 4. **Turnstile**: dùng Cloudflare Turnstile Free cho form — xác nhận? (Phase 5)
 5. **Telegram**: bot token dùng `sangdupontbot` hiện có (đã gắn live chat)? (Phase 5)
-6. **Ngân sách**: duyệt theo mốc nào — chỉ Release A (27–29tr) hay lên kế hoạch Release B ngay? (ảnh hưởng plan2task scope)
+6. **Scope triển khai**: chỉ lên kế hoạch Release A (P1–P7) hay bao gồm cả Release B AI (P8)? (ảnh hưởng plan2task scope)
 
 ---
 

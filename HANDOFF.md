@@ -8,7 +8,7 @@
 - Repo: landing page static đang live trên Vercel (sangdupont.vercel.app); git sạch sau commit chuẩn hóa.
 
 ## Đã làm
-- `.ai/MASTER_PLAN.md` (P1–P9, gates, ngân sách, rủi ro, open decisions)
+- `.ai/MASTER_PLAN.md` (P1–P9, gates, rủi ro, open decisions)
 - `.ai/ARCHITECT.md` (static-first, data model core, security, deploy flow, AI arch)
 - `.ai/DECISIONS_LOG.md` (D1–D13; giải quyết mâu thuẫn thứ tự ưu tiên 2 file)
 - `tasks.md` skeleton (9 phases, chưa băm task)
@@ -17,7 +17,7 @@
 ## Blockers / chờ anh
 1. Reviewer verdict masterplan + kiến trúc.
 2. Anh duyệt masterplan → mới `/plan2task` Phase 1.
-3. Open decisions (host/domain/GA4/Turnstile/Telegram/ngân sách scope) — cần khi tới phase tương ứng.
+3. Open decisions (host/domain/GA4/Turnstile/Telegram/scope) — cần khi tới phase tương ứng.
 
 ## Next
 - Reviewer review gói thiết kế → xử lý góp ý → trình anh duyệt → `/plan2task` Phase 1.
