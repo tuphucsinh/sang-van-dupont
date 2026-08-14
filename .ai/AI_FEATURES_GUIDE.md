@@ -17,7 +17,7 @@ AI xem ảnh (qwen3.7-plus, ~5-15s) → hiện "🤖 AI nhận xét sơ bộ" ng
         ↓
 Khách điền tên + ĐT → Gửi
         ↓
-Lead lưu vào DB kèm cột ai_summary + ảnh private → Telegram báo anh (text + ảnh)
+Lead lưu vào DB kèm cột ai_summary + ảnh private → Telegram báo anh (text + ảnh + **🤖 AI sơ bộ** trong message — verified demo 14-08)
 ```
 
 ### Cách dùng (vai trò admin)
