@@ -19,7 +19,11 @@ _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE
 ## Phase 9B-next: Research (sourcing/price intelligence) — khi anh muốn
 _(chưa băm task — gate: anh yêu cầu + usage thật; hướng: Research DB riêng + opportunity alerts + marketing pipeline; marketing pipeline đã tách sang Phase 11 — 14-08)_
 
-## Phase 10: Sangbot Internal Setup — PLAN (chờ /do)
+## Phase 10: Sangbot Internal Setup — ✅ DONE 2026-08-14 (SOUL internal + toolsets + pairing chỉ anh + gateway Telegram connected; anh test chat khi tiện)
+
+## Phase 11: AI Marketing Pipeline — ✅ CODE DONE 2026-08-14 (P11T01-04; P11T03 generator verified với black-lacquer — xem marketing/drafts/; Reviewer không bắt buộc — không chạm backend/production)
+
+## Phase 12: AI Website Operator — ✅ CODE DONE 2026-08-14 (P12T01-06; **chờ Reviewer gate** — chạm DB write + production)
 
 ### [#P10T01] [sangbot/SOUL.md] Backup + SOUL internal operator mới
 
