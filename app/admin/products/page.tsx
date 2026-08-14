@@ -80,10 +80,10 @@ export default function AdminProductsPage() {
   const [editing, setEditing] = useState<ProductRow | null>(null);
   const [showForm, setShowForm] = useState<boolean>(false);
   const [formData, setFormData] = useState<ProductFormData>(INITIAL_FORM);
-  const [isSlugManual, setIsSlugManual] = useState<boolean>(false);
   const [saving, setSaving] = useState<boolean>(false);
   const [uploadingMedia, setUploadingMedia] = useState<boolean>(false);
   const [staticImgPath, setStaticImgPath] = useState<string>("");
+  const [pendingMedia, setPendingMedia] = useState<{ url: string; kind: string }[]>([]);
   const [toast, setToast] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
   const [drafting, setDrafting] = useState<boolean>(false);
   const [draftError, setDraftError] = useState<string>("");
@@ -123,9 +123,9 @@ export default function AdminProductsPage() {
   const handleOpenCreate = () => {
     setEditing(null);
     setFormData(INITIAL_FORM);
-    setIsSlugManual(false);
     setStaticImgPath("");
     setDraftError("");
+    setPendingMedia([]);
     setShowForm(true);
   };
 
@@ -143,9 +143,9 @@ export default function AdminProductsPage() {
       price: p.price !== null && p.price !== undefined ? String(p.price) : "",
       status: p.status || "available",
     });
-    setIsSlugManual(true);
     setStaticImgPath("");
     setDraftError("");
+    setPendingMedia([]);
     setShowForm(true);
   };
 
@@ -153,9 +153,9 @@ export default function AdminProductsPage() {
     setShowForm(false);
     setEditing(null);
     setFormData(INITIAL_FORM);
-    setIsSlugManual(false);
     setStaticImgPath("");
     setDraftError("");
+    setPendingMedia([]);
   };
 
   const handleAiDraft = async () => {
@@ -233,19 +233,29 @@ export default function AdminProductsPage() {
     setFormData((prev) => ({
       ...prev,
       name_vi: val,
-      slug: !editing && !isSlugManual ? slugify(val) : prev.slug,
+      slug: !editing ? slugify(val) : prev.slug,
     }));
   };
 
-  const handleSlugChange = (val: string) => {
-    setIsSlugManual(true);
-    setFormData((prev) => ({ ...prev, slug: val }));
+  const ensureUniqueSlug = async (baseSlug: string): Promise<string> => {
+    if (!baseSlug.trim()) return "";
+    let candidate = baseSlug.trim();
+    for (let i = 0; i < 10; i++) {
+      const { data } = await supabase
+        .from("products")
+        .select("id")
+        .eq("slug", candidate)
+        .maybeSingle();
+      if (!data) return candidate;
+      candidate = `${baseSlug.trim()}-${i + 2}`;
+    }
+    return candidate;
   };
 
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name_vi.trim() || !formData.name_en.trim() || !formData.slug.trim()) {
-      showToastMsg("err", "Vui lòng nhập đầy đủ tên tiếng Việt, tiếng Anh và slug!");
+    if (!formData.name_vi.trim() || !formData.name_en.trim()) {
+      showToastMsg("err", "Vui lòng nhập đầy đủ tên tiếng Việt và tiếng Anh!");
       return;
     }
 
@@ -273,9 +283,33 @@ export default function AdminProductsPage() {
         if (error) throw error;
         showToastMsg("ok", `Đã cập nhật sản phẩm "${payload.name_vi}"`);
       } else {
-        const { error } = await supabase.from("products").insert([payload]);
+        const uniqueSlug = await ensureUniqueSlug(formData.slug);
+        payload.slug = uniqueSlug;
+        setFormData((prev) => ({ ...prev, slug: uniqueSlug }));
+
+        const { data: newProd, error } = await supabase
+          .from("products")
+          .insert([payload])
+          .select("id")
+          .single();
 
         if (error) throw error;
+
+        if (newProd && pendingMedia.length > 0) {
+          const mediaRows = pendingMedia.map((m, i) => ({
+            product_id: newProd.id,
+            url: m.url,
+            kind: m.kind,
+            sort_order: i,
+          }));
+          const { error: mediaErr } = await supabase
+            .from("product_media")
+            .insert(mediaRows);
+          if (mediaErr) {
+            console.error("Lỗi khi lưu ảnh sản phẩm:", mediaErr);
+          }
+        }
+        setPendingMedia([]);
         showToastMsg("ok", `Đã tạo sản phẩm mới "${payload.name_vi}"`);
       }
 
@@ -319,7 +353,7 @@ export default function AdminProductsPage() {
 
   const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !editing) return;
+    if (!file) return;
 
     if (file.size > 2 * 1024 * 1024) {
       showToastMsg("err", "Ảnh tối đa 2MB");
@@ -348,30 +382,35 @@ export default function AdminProductsPage() {
         data: { publicUrl },
       } = supabase.storage.from("product-images").getPublicUrl(path);
 
-      const nextSortOrder = (editing.product_media?.length || 0) + 1;
-      const isFirst = (editing.product_media?.length || 0) === 0;
+      if (editing) {
+        const nextSortOrder = (editing.product_media?.length || 0) + 1;
+        const isFirst = (editing.product_media?.length || 0) === 0;
 
-      const { data: insertedMedia, error: insertError } = await supabase
-        .from("product_media")
-        .insert([
-          {
-            product_id: editing.id,
-            url: publicUrl,
-            kind: isFirst ? "cover" : "gallery",
-            sort_order: nextSortOrder,
-          },
-        ])
-        .select()
-        .single();
+        const { data: insertedMedia, error: insertError } = await supabase
+          .from("product_media")
+          .insert([
+            {
+              product_id: editing.id,
+              url: publicUrl,
+              kind: isFirst ? "cover" : "gallery",
+              sort_order: nextSortOrder,
+            },
+          ])
+          .select()
+          .single();
 
-      if (insertError) throw insertError;
+        if (insertError) throw insertError;
 
-      const updatedMediaList = [...(editing.product_media || []), insertedMedia as ProductMedia].filter(
-        (m): m is ProductMedia => !!m
-      );
-      setEditing({ ...editing, product_media: updatedMediaList });
-      showToastMsg("ok", "Đã tải lên và gắn ảnh mới thành công");
-      await loadProducts();
+        const updatedMediaList = [...(editing.product_media || []), insertedMedia as ProductMedia].filter(
+          (m): m is ProductMedia => !!m
+        );
+        setEditing({ ...editing, product_media: updatedMediaList });
+        showToastMsg("ok", "Đã tải lên và gắn ảnh mới thành công");
+        await loadProducts();
+      } else {
+        setPendingMedia((prev) => [...prev, { url: publicUrl, kind: "cover" }]);
+        showToastMsg("ok", "Đã tải lên và gắn ảnh mới thành công");
+      }
     } catch (err) {
       console.error("Lỗi khi tải ảnh lên:", err);
       showToastMsg("err", errMsg(err) || "Lỗi tải ảnh lên storage");
@@ -382,7 +421,17 @@ export default function AdminProductsPage() {
   };
 
   const handleAddStaticImage = async () => {
-    if (!staticImgPath.trim() || !editing) return;
+    if (!staticImgPath.trim()) return;
+
+    if (!editing) {
+      setPendingMedia((prev) => [
+        ...prev,
+        { url: staticImgPath.trim(), kind: "cover" },
+      ]);
+      setStaticImgPath("");
+      showToastMsg("ok", "Đã thêm ảnh có sẵn thành công");
+      return;
+    }
 
     setUploadingMedia(true);
     try {
@@ -437,6 +486,10 @@ export default function AdminProductsPage() {
       console.error("Lỗi khi xóa media:", err);
       showToastMsg("err", errMsg(err) || "Không thể xóa ảnh");
     }
+  };
+
+  const handleRemovePendingMedia = (idx: number) => {
+    setPendingMedia((prev) => prev.filter((_, i) => i !== idx));
   };
 
   const handleSignOut = async () => {
@@ -973,6 +1026,18 @@ export default function AdminProductsPage() {
                         boxSizing: "border-box",
                       }}
                     />
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        color: "rgba(243, 236, 217, 0.6)",
+                        marginTop: "4px",
+                      }}
+                    >
+                      Slug URL (tự động):{" "}
+                      <code style={{ color: "#d4af37" }}>
+                        {formData.slug || "..."}
+                      </code>
+                    </div>
                   </div>
 
                   <div>
@@ -1001,38 +1066,6 @@ export default function AdminProductsPage() {
                         borderRadius: "6px",
                         padding: "8px 12px",
                         color: "#f3ecd9",
-                        fontSize: "14px",
-                        outline: "none",
-                        boxSizing: "border-box",
-                      }}
-                    />
-                  </div>
-
-                  <div style={{ gridColumn: "span 2" }}>
-                    <label
-                      style={{
-                        display: "block",
-                        fontSize: "13px",
-                        marginBottom: "4px",
-                        color: "rgba(243, 236, 217, 0.85)",
-                      }}
-                    >
-                      Slug URL <span style={{ color: "#ef4444" }}>*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.slug}
-                      onChange={(e) => handleSlugChange(e.target.value)}
-                      placeholder="vd: dupont-ligne-2-vang-ke-soc"
-                      style={{
-                        width: "100%",
-                        background: "#18181e",
-                        border: "1px solid rgba(212, 175, 55, 0.25)",
-                        borderRadius: "6px",
-                        padding: "8px 12px",
-                        color: "#d4af37",
-                        fontFamily: "monospace",
                         fontSize: "14px",
                         outline: "none",
                         boxSizing: "border-box",
@@ -1343,10 +1376,10 @@ export default function AdminProductsPage() {
                     )}
                   </div>
 
-                  {editing ? (
-                    <div>
-                      {/* Current media list */}
-                      {editing.product_media && editing.product_media.length > 0 ? (
+                  <div>
+                    {/* Media list */}
+                    {editing ? (
+                      editing.product_media && editing.product_media.length > 0 ? (
                         <div
                           style={{
                             display: "flex",
@@ -1437,103 +1470,182 @@ export default function AdminProductsPage() {
                         >
                           Chưa có ảnh nào được gán cho sản phẩm này.
                         </p>
-                      )}
-
-                      {/* Add media actions */}
+                      )
+                    ) : pendingMedia.length > 0 ? (
                       <div
                         style={{
                           display: "flex",
                           flexDirection: "column",
-                          gap: "10px",
+                          gap: "8px",
+                          marginBottom: "14px",
                         }}
                       >
-                        {/* File Upload */}
-                        <div>
-                          <label
+                        {pendingMedia.map((m, idx) => (
+                          <div
+                            key={idx}
                             style={{
-                              display: "block",
-                              fontSize: "12px",
-                              marginBottom: "4px",
-                              color: "rgba(243, 236, 217, 0.7)",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "10px",
+                              background: "#14141a",
+                              padding: "8px 10px",
+                              borderRadius: "6px",
+                              border: "1px solid rgba(212, 175, 55, 0.1)",
                             }}
                           >
-                            Tải ảnh mới từ máy (tối đa 2MB, lưu vào storage product-images):
-                          </label>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            disabled={uploadingMedia}
-                            onChange={handleUploadImage}
-                            style={{
-                              fontSize: "13px",
-                              color: "rgba(243, 236, 217, 0.8)",
-                            }}
-                          />
-                        </div>
-
-                        {/* Static Path Input */}
-                        <div>
-                          <label
-                            style={{
-                              display: "block",
-                              fontSize: "12px",
-                              marginBottom: "4px",
-                              color: "rgba(243, 236, 217, 0.7)",
-                            }}
-                          >
-                            Hoặc dùng đường dẫn ảnh có sẵn trong dự án:
-                          </label>
-                          <div style={{ display: "flex", gap: "8px" }}>
-                            <input
-                              type="text"
-                              value={staticImgPath}
-                              onChange={(e) => setStaticImgPath(e.target.value)}
-                              placeholder="/assets/img/img_01.jpg"
+                            <img
+                              src={m.url}
+                              alt="thumb"
                               style={{
-                                flex: 1,
-                                background: "#18181e",
-                                border: "1px solid rgba(212, 175, 55, 0.25)",
-                                borderRadius: "6px",
-                                padding: "6px 10px",
-                                color: "#f3ecd9",
-                                fontSize: "13px",
-                                outline: "none",
+                                width: "40px",
+                                height: "40px",
+                                objectFit: "cover",
+                                borderRadius: "4px",
+                                background: "#000",
+                              }}
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src =
+                                  "/assets/img/img_01.jpg";
                               }}
                             />
-                            <button
-                              type="button"
-                              disabled={uploadingMedia || !staticImgPath.trim()}
-                              onClick={handleAddStaticImage}
+                            <div
                               style={{
-                                background: "rgba(212, 175, 55, 0.2)",
-                                border: "1px solid #d4af37",
-                                color: "#d4af37",
-                                borderRadius: "6px",
-                                padding: "6px 14px",
-                                fontSize: "13px",
-                                cursor: "pointer",
-                                fontWeight: 500,
+                                flex: 1,
+                                minWidth: 0,
+                                fontSize: "12px",
                               }}
                             >
-                              Thêm
+                              <div
+                                style={{
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                  color: "#f3ecd9",
+                                }}
+                              >
+                                {m.url}
+                              </div>
+                              <div
+                                style={{
+                                  color: "rgba(243, 236, 217, 0.5)",
+                                  marginTop: "2px",
+                                }}
+                              >
+                                Loại: <span style={{ color: "#d4af37" }}>{m.kind}</span>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleRemovePendingMedia(idx)}
+                              style={{
+                                background: "transparent",
+                                border: "1px solid rgba(220, 38, 38, 0.4)",
+                                color: "#ef4444",
+                                borderRadius: "4px",
+                                padding: "4px 8px",
+                                fontSize: "12px",
+                                cursor: "pointer",
+                              }}
+                            >
+                              Xóa
                             </button>
                           </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p
+                        style={{
+                          fontSize: "13px",
+                          color: "rgba(243, 236, 217, 0.5)",
+                          margin: "0 0 12px",
+                        }}
+                      >
+                        Chưa có ảnh nào được gán cho sản phẩm này.
+                      </p>
+                    )}
+
+                    {/* Add media actions */}
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "10px",
+                      }}
+                    >
+                      {/* File Upload */}
+                      <div>
+                        <label
+                          style={{
+                            display: "block",
+                            fontSize: "12px",
+                            marginBottom: "4px",
+                            color: "rgba(243, 236, 217, 0.7)",
+                          }}
+                        >
+                          Tải ảnh mới từ máy (tối đa 2MB, lưu vào storage product-images):
+                        </label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          disabled={uploadingMedia}
+                          onChange={handleUploadImage}
+                          style={{
+                            fontSize: "13px",
+                            color: "rgba(243, 236, 217, 0.8)",
+                          }}
+                        />
+                      </div>
+
+                      {/* Static Path Input */}
+                      <div>
+                        <label
+                          style={{
+                            display: "block",
+                            fontSize: "12px",
+                            marginBottom: "4px",
+                            color: "rgba(243, 236, 217, 0.7)",
+                          }}
+                        >
+                          Hoặc dùng đường dẫn ảnh có sẵn trong dự án:
+                        </label>
+                        <div style={{ display: "flex", gap: "8px" }}>
+                          <input
+                            type="text"
+                            value={staticImgPath}
+                            onChange={(e) => setStaticImgPath(e.target.value)}
+                            placeholder="/assets/img/img_01.jpg"
+                            style={{
+                              flex: 1,
+                              background: "#18181e",
+                              border: "1px solid rgba(212, 175, 55, 0.25)",
+                              borderRadius: "6px",
+                              padding: "6px 10px",
+                              color: "#f3ecd9",
+                              fontSize: "13px",
+                              outline: "none",
+                            }}
+                          />
+                          <button
+                            type="button"
+                            disabled={uploadingMedia || !staticImgPath.trim()}
+                            onClick={handleAddStaticImage}
+                            style={{
+                              background: "rgba(212, 175, 55, 0.2)",
+                              border: "1px solid #d4af37",
+                              color: "#d4af37",
+                              borderRadius: "6px",
+                              padding: "6px 14px",
+                              fontSize: "13px",
+                              cursor: "pointer",
+                              fontWeight: 500,
+                            }}
+                          >
+                            Thêm
+                          </button>
                         </div>
                       </div>
                     </div>
-                  ) : (
-                    <div
-                      style={{
-                        fontSize: "13px",
-                        color: "rgba(243, 236, 217, 0.6)",
-                        lineHeight: 1.5,
-                      }}
-                    >
-                      ℹ️ Hãy lưu thông tin sản phẩm trước. Sau đó bạn có thể bấm{" "}
-                      <strong style={{ color: "#d4af37" }}>Sửa</strong> để thêm và
-                      quản lý danh sách hình ảnh.
-                    </div>
-                  )}
+                  </div>
                 </div>
 
                 {/* Form Buttons */}
