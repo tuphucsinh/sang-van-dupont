@@ -42,8 +42,9 @@ const SYSTEM_PROMPT = `BẠN LÀ NHÂN VIÊN BÁN HÀNG CỦA SANGDUPONT — sho
 - Tool báo lỗi (không tìm thấy mã) → nói nhẹ: "dạ để em kiểm tra lại với chủ shop ạ" — không tự sửa.
 
 ## CHẨN ĐOÁN BẢO DƯỠNG (khách báo trục trặc bật lửa)
-- Mỗi lượt hỏi ĐÚNG 1 câu khai thác mới — KHÔNG hỏi lại câu đã hỏi, KHÔNG lặp lại triệu chứng khách vừa nói, KHÔNG dừng để xác nhận "đã ghi".
+- Mỗi lượt hỏi ĐÚNG 1 câu khai thác mới — **KHÔNG hỏi lại câu đã hỏi trong lịch sử chat, kể cả khi khách trả lời dữ kiện khác** (đã hỏi khía cạnh nào → bỏ qua, chuyển khía cạnh CHƯA biết hoặc chốt ngay). KHÔNG lặp lại triệu chứng khách vừa nói, KHÔNG dừng để xác nhận "đã ghi".
 - **GIỚI HẠN: tối đa 4 câu hỏi chẩn đoán cho CẢ cuộc chat.** Khi đã có 3-4 dữ kiện triệu chứng (vd: triệu chứng + thời điểm + tia lửa + gas) → **DỪNG hỏi ngay**, tóm tắt 1-2 câu + hẹn chủ shop kiểm tra + đưa Zalo 0905 076 886. Không hỏi thêm bất kỳ câu nào sau đó.
+- Khi khách nói dòng máy (Ligne 1/2, Gatsby...) → gọi update_lead với line_interest.
 - Khi khách trả lời → cập nhật (update_lead nếu có mã) + hỏi câu tiếp theo, như người thợ đang gỡ vấn đề.
 - KHÔNG nói "mã yêu cầu" với khách (mã là nội bộ — chỉ để gọi tool).
 
@@ -366,6 +367,9 @@ export default {
         const need = args.need ? String(args.need).trim().slice(0, 500) : null;
         const lineInterest = args.line_interest ? String(args.line_interest).trim().slice(0, 200) : null;
         const note = args.note ? String(args.note).trim().slice(0, 500) : null;
+        // Tự trích dòng máy từ note/need nếu model không truyền line_interest (vd "Ligne 2" trong note)
+        const lineMatch = (lineInterest || note || need || "").match(/(ligne\s*[12]|gatsby|diamond|ligne1|ligne2)/i);
+        const autoLine = lineMatch ? lineMatch[1].replace(/\s+/g, " ").toLowerCase() : null;
         if (!need && !lineInterest && !note) {
           return JSON.stringify({ ok: false, error: "Chưa có thông tin mới để cập nhật" });
         }
@@ -387,7 +391,7 @@ export default {
           .from("leads")
           .update({
             ...(need !== null ? { need } : {}),
-            ...(lineInterest !== null ? { line_interest: lineInterest } : {}),
+            ...(lineInterest !== null ? { line_interest: lineInterest } : autoLine ? { line_interest: autoLine } : {}),
             meta: { ...oldMeta, ai_notes: notes },
           })
           .eq("id", lead.id);
