@@ -138,7 +138,7 @@ _(4 task P3T01–P3T04 đã xong — chi tiết: `.ai/MASTER_PLAN.md` Phase 3; t
 - Build PASS; browser verify (Mika): login admin → list 9 products hiện; tạo product mới (available) → xuất hiện public catalog sau rebuild? (KHÔNG — SSG cần rebuild, ghi chú!) → verify DB row mới tồn tại qua REST; sửa status 1 product → DB đổi; xóa product test → DB sạch
 - RLS check: user khác login → không thấy form (chỉ list đọc được? KHÔNG — cũng 401 qua RLS)
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): lint/tsc/build PASS, /admin/products static; fix 7 lint errors (any→unknown, set-state-in-effect defer); verify CRUD thật cần deploy (OAuth) — cùng P4T03/P4T05 khi push
 
 ---
 
