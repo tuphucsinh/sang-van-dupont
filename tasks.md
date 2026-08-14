@@ -73,7 +73,7 @@
 - `out/index.html` tồn tại
 - Không lỗi console khi mở `out/` bằng `python3 -m http.server` + Chrome thật
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): lint/tsc/build PASS, out/ có index.html, title đúng; runner agy viết 3 file, Mika dọn file thừa (page.module.css + 5 svg)
 
 ---
 
