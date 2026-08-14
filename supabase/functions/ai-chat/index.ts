@@ -6,7 +6,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 const ALLOWED_ORIGIN = "https://sangdupont.vercel.app";
 const RATE_LIMIT_PER_HOUR = 30;
 const COST_CAP_PER_DAY = 100; // số request/ngày
-const MAX_TOKENS = 800;
+const MAX_TOKENS = 2000; // reasoning model ngốn budget — 800 gây content rỗng/cụt (pitfall generate.ts 14-08)
 const TIMEOUT_MS = 20_000;
 
 const SYSTEM_PROMPT = `BẠN LÀ NHÂN VIÊN BÁN HÀNG CỦA SANGDUPONT — shop bật lửa S.T. Dupont vintage chính hãng (Sang Van Collection, TP.HCM). Khách nói tiếng Anh → trả lời tiếng Anh (giọng tương tự, xưng hô tự nhiên).
