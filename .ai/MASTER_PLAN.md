@@ -88,8 +88,8 @@
 **Dependencies**: Phase 2
 **Gate**: admin CRUD test PASS; public không thể write qua RLS
 
-### Phase 5: Lead Pipeline + Telegram Edge Function
-**Goal**: Form tư vấn mua + bảo dưỡng; lead vào DB; notification Telegram; ảnh khách private.
+### Phase 5: Lead Pipeline + Telegram Edge Function — ✅ DONE 2026-08-14
+**Kết quả thực thi**: Edge Function `create-lead` (Deno) — validate (type/name/phone regex), rate limit 5/giờ/IP qua meta ip, insert leads (service role), Telegram notify (bot sangdupontbot → chat_id anh), attachments base64 ≤3 ảnh/3MB (storage lead-attachments private); LeadForm client (tư vấn mua + bảo dưỡng + consent + upload 3 ảnh) wire vào Contact; verify production E2E: form thật → lead DB + Telegram nhận; anon private 400; rate limit 429; test data dọn. Bài học: Deno không có Buffer → atob; React controlled input cần native setter khi automate. Chốt: bot hiện có + KHÔNG Turnstile (rate limit đủ giai đoạn thử nghiệm — bổ sung khi public rộng).
 
 **Deliverables**:
 - Form tư vấn mua: ngân sách, nhu cầu, dòng quan tâm, tên, ĐT/Zalo, kênh

@@ -136,7 +136,7 @@ _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE
 **Definition of Done**:
 - Toàn bộ pipeline verified production; DB sạch test data; docs cập nhật; sweep Phase 5 (MASTER_PLAN compress + prune tasks) — Phase 5 chạm backend/public → Reviewer gate trước khi sweep nếu cần (đánh giá: function đơn giản + rate limit → Mika verify + adversarial đủ, Reviewer khi có upload/Telegram phức tạp — quyết định tại chỗ)
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): production E2E PASS — form thật submit → lead "E2E Test Khách" vào DB + Telegram nhận; admin leads xem được; test data dọn sạch (0 lead)
 
 ---
 

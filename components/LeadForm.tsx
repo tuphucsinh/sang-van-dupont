@@ -44,7 +44,7 @@ export default function LeadForm() {
     if (!e.target.files) return;
     const selectedFiles = Array.from(e.target.files);
     const validImages = selectedFiles.filter(
-      (file) => file.type.startsWith("image/") && file.size <= 2 * 1024 * 1024
+      (file) => file.type.startsWith("image/") && file.size <= 1.5 * 1024 * 1024
     );
     setAttachments((prev) => [...prev, ...validImages].slice(0, 3));
     e.target.value = "";
