@@ -11,11 +11,26 @@ import Footer from "@/components/Footer";
 import SparksClient from "@/components/SparksClient";
 import RevealClient from "@/components/RevealClient";
 import { getAllProducts } from "../../lib/catalog";
+import type { Metadata } from "next";
 
 export const dynamicParams = false;
 
 export function generateStaticParams() {
   return [{ lang: "vi" }, { lang: "en" }];
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  const { lang } = await params;
+  const isEn = lang === "en";
+  return {
+    alternates: {
+      canonical: isEn ? "/en" : "/vi",
+      languages: {
+        vi: "https://sangdupont.vercel.app/vi",
+        en: "https://sangdupont.vercel.app/en",
+      },
+    },
+  };
 }
 
 export default async function Home({
