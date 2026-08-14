@@ -50,6 +50,7 @@ const T = {
     phoneReq: "Vui lòng nhập số điện thoại",
     phoneInvalid: "Số điện thoại không hợp lệ (8–15 chữ số).",
     consentReq: "Vui lòng đồng ý chia sẻ thông tin",
+    needReq: "Vui lòng mô tả nhu cầu chi tiết để em tư vấn đúng hơn",
     rateLimit: "Quá nhiều yêu cầu — vui lòng thử lại sau 1 giờ",
     network: "Không kết nối được — thử lại",
     submitError: "Lỗi gửi",
@@ -95,6 +96,7 @@ const T = {
     phoneReq: "Please enter your phone number",
     phoneInvalid: "Invalid phone number (8–15 digits).",
     consentReq: "Please agree to share information",
+    needReq: "Please describe your request so we can advise you better",
     rateLimit: "Too many requests — please try again in 1 hour",
     network: "Cannot connect — please try again",
     submitError: "Failed to send request",
@@ -223,6 +225,21 @@ export default function LeadForm() {
     setRequestCode("");
   };
 
+  const chatFieldLabel: Record<"vi" | "en", Record<string, string>> = {
+    vi: { need: "nhu cầu chi tiết", line: "dòng quan tâm", photo: "vài tấm ảnh bật lửa" },
+    en: { need: "request details", line: "preferred line", photo: "a few photos of the lighter" },
+  };
+
+  // Sau khi gửi THÀNH CÔNG nhưng thiếu thông tin phụ → mở chat widget nhắc bổ sung nhẹ nhàng
+  const dispatchChatPrompt = (missing: string[], requestCode: string) => {
+    const labels = missing.map((k) => chatFieldLabel[lang][k] || k).join(", ");
+    const text =
+      lang === "vi"
+        ? `Dạ em đã nhận yêu cầu của anh/chị (mã #${requestCode}) 👍 Anh/chị cho em biết thêm ${labels} để em tư vấn chuẩn hơn nha — gõ ngay ở đây cũng được ạ 😊`
+        : `I've received your request (code #${requestCode}) 👍 Could you tell me more: ${labels}? Just type here and I'll help right away 😊`;
+    window.dispatchEvent(new CustomEvent("sang-chat-prompt", { detail: { text, requestCode } }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -310,6 +327,14 @@ export default function LeadForm() {
         setAiSummary("");
         setAiLoading(false);
         setAiError("");
+        // Thiếu thông tin phụ → vẫn gửi OK, mở widget nhắc bổ sung nhẹ nhàng (không chặn)
+        const missing: string[] = [];
+        if (!form.need.trim()) missing.push("need");
+        if (!form.line_interest.trim()) missing.push("line");
+        if (form.type === "maintenance" && attachments.length === 0) missing.push("photo");
+        if (missing.length > 0 && d.request_code) {
+          window.setTimeout(() => dispatchChatPrompt(missing, d.request_code), 600);
+        }
       } else if (res.status === 429) {
         setStatus("error");
         setErrorMsg(t.rateLimit);
@@ -404,7 +429,7 @@ export default function LeadForm() {
           </button>
         </div>
       ) : (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           <div
             style={{
               display: "grid",

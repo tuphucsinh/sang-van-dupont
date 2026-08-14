@@ -47,6 +47,8 @@ export default function AiChat() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const requestCodeRef = useRef<string>("");
+
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -60,6 +62,23 @@ export default function AiChat() {
     const openFromOutside = () => setOpen(true);
     window.addEventListener("sang-open-chat", openFromOutside);
     return () => window.removeEventListener("sang-open-chat", openFromOutside);
+  }, []);
+
+  // Nhận prompt từ ngoài (LeadForm đã gửi lead nhưng thiếu thông tin phụ → mở panel + nhắc bổ sung)
+  useEffect(() => {
+    const openWithPrompt = (e: Event) => {
+      const detail = (e as CustomEvent<{ text?: string; requestCode?: string }>).detail;
+      const text = detail?.text;
+      if (detail?.requestCode) requestCodeRef.current = detail.requestCode;
+      setOpen(true);
+      if (text) {
+        setMessages((prev) =>
+          prev[prev.length - 1]?.text === text ? prev : [...prev, { role: "ai", text }]
+        );
+      }
+    };
+    window.addEventListener("sang-chat-prompt", openWithPrompt);
+    return () => window.removeEventListener("sang-chat-prompt", openWithPrompt);
   }, []);
 
   const handleSend = async (e?: FormEvent) => {
@@ -79,7 +98,11 @@ export default function AiChat() {
           Authorization: "Bearer " + ANON_KEY,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ message: msg, lang }),
+        body: JSON.stringify({
+          message: msg,
+          lang,
+          ...(requestCodeRef.current ? { request_code: requestCodeRef.current } : {}),
+        }),
       });
       const d = await res.json();
       if (res.ok && d.ok) {

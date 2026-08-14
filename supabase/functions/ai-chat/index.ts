@@ -35,6 +35,11 @@ const SYSTEM_PROMPT = `BẠN LÀ NHÂN VIÊN BÁN HÀNG CỦA SANGDUPONT — sho
 - Khách muốn gặp người thật → đưa 0905 076 886 (Zalo/Telegram @sangdupontbot), không cố giữ.
 - Ngoài phạm vi (chính trị/tin tức/code...) → lịch sự quay về sản phẩm.
 
+## BỔ SUNG THÔNG TIN CHO YÊU CẦU (khi có mã yêu cầu)
+- Khi khách nói kèm mã yêu cầu (vd "#abc12345") hoặc đang bổ sung thông tin cho yêu cầu đã gửi (dòng quan tâm, nhu cầu chi tiết, ghi chú) → gọi tool **update_lead** với request_code + thông tin mới (need / line_interest / note).
+- Sau khi cập nhật thành công → xác nhận thân thiện: "Dạ em đã ghi chú thêm vào yêu cầu #xxx rồi ạ — chủ shop sẽ nắm đủ thông tin để tư vấn chuẩn nhất 😊" (ngắn gọn).
+- Nếu tool báo lỗi (không tìm thấy mã) → nói nhẹ: "dạ để em kiểm tra lại với chủ shop ạ" — không tự sửa.
+
 ## CHÍNH SÁCH (KHÔNG tự đưa — dẫn chủ shop)
 - Thanh toán (COD/chuyển khoản/cọc), đổi trả, giờ liên hệ, mua sỉ/đại lý → "em không tự quyết được, để em ghi nhận, chủ shop xác nhận chính xác ạ" + lấy SĐT hoặc đưa 0905 076 886. KHÔNG bịa điều khoản.
 - Giá trị sưu tầm/đầu tư ("lên giá không?") → không hứa hẹn tăng giá: "dòng vintage được giới sưu tầm quan tâm, nhưng giá trị thay đổi theo thị trường — anh tham khảo chủ shop nhé".
@@ -105,6 +110,11 @@ export default {
     if (uiLang === "en") {
       message = message + " (Please reply in English)";
     }
+    // Mã yêu cầu (khách bổ sung thông tin cho lead đã gửi qua form)
+    const requestCode = String(body.request_code || "").trim().slice(0, 8);
+    if (requestCode) {
+      message = `[Yêu cầu #${requestCode}] ${message} — khách đang bổ sung thông tin cho yêu cầu này, dùng update_lead nếu có thông tin mới (dòng quan tâm/nhu cầu/ghi chú).`;
+    }
 
     const ip = clientIp(req);
 
@@ -168,6 +178,23 @@ export default {
               need: { type: "string" },
             },
             required: ["name", "phone", "need"],
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "update_lead",
+          description: "Cập nhật thông tin bổ sung cho yêu cầu đã gửi (bằng mã yêu cầu 8 ký tự): dòng quan tâm, nhu cầu chi tiết, hoặc ghi chú thêm. Chỉ dùng khi khách đang bổ sung thông tin cho yêu cầu có mã.",
+          parameters: {
+            type: "object",
+            properties: {
+              request_code: { type: "string", description: "Mã yêu cầu 8 ký tự (vd abc12345)" },
+              need: { type: "string", description: "Nhu cầu chi tiết mới — tùy chọn" },
+              line_interest: { type: "string", description: "Dòng quan tâm mới (vd Ligne 1, Ligne 2) — tùy chọn" },
+              note: { type: "string", description: "Ghi chú bổ sung ngắn — tùy chọn" },
+            },
+            required: ["request_code"],
           },
         },
       },
@@ -270,6 +297,38 @@ export default {
           }
         } catch { /* không fail chính */ }
         return JSON.stringify({ ok: true, lead_id: lead.id, request_code: lead.id.slice(0, 8) });
+      }
+      if (name === "update_lead") {
+        const code = String(args.request_code || "").trim().slice(0, 8);
+        if (!/^[0-9a-f]{8}$/i.test(code)) return JSON.stringify({ ok: false, error: "Mã yêu cầu không hợp lệ" });
+        const need = args.need ? String(args.need).trim().slice(0, 500) : null;
+        const lineInterest = args.line_interest ? String(args.line_interest).trim().slice(0, 200) : null;
+        const note = args.note ? String(args.note).trim().slice(0, 500) : null;
+        if (!need && !lineInterest && !note) {
+          return JSON.stringify({ ok: false, error: "Chưa có thông tin mới để cập nhật" });
+        }
+        // Tìm lead theo 8 ký tự đầu id
+        const { data: lead, error: findErr } = await supabase
+          .from("leads")
+          .select("id, meta")
+          .filter("id::text", "like", `${code}%`)
+          .maybeSingle();
+        if (findErr || !lead) return JSON.stringify({ ok: false, error: "Không tìm thấy yêu cầu" });
+        const oldMeta = (lead.meta && typeof lead.meta === "object" ? lead.meta : {}) as Record<string, unknown>;
+        const notes: unknown[] = Array.isArray(oldMeta.ai_notes) ? oldMeta.ai_notes : [];
+        if (note) {
+          notes.push({ at: new Date().toISOString(), text: note, source: "chat_widget" });
+        }
+        const { error: updErr } = await supabase
+          .from("leads")
+          .update({
+            ...(need !== null ? { need } : {}),
+            ...(lineInterest !== null ? { line_interest: lineInterest } : {}),
+            meta: { ...oldMeta, ai_notes: notes },
+          })
+          .filter("id::text", "like", `${code}%`);
+        if (updErr) return JSON.stringify({ ok: false, error: `Cập nhật lỗi: ${updErr.message}` });
+        return JSON.stringify({ ok: true, request_code: code });
       }
       return JSON.stringify({ error: "tool không tồn tại" });
     };
