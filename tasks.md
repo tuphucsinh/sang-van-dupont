@@ -73,7 +73,7 @@ _(4 task P3T01–P3T04 đã xong — chi tiết: `.ai/MASTER_PLAN.md` Phase 3; t
 - Email signup disabled
 - Test login thật: mở `/admin` (sau P4T03) → click GitHub → authorize `tvccbod@gmail.com` → session về (Mika verify qua browser thật)
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): PATCH auth config 200 (github enabled, client_id Ov23liy90t..., disable_signup true, site_url sangdupont.vercel.app); auth/v1/settings xác nhận github=True + signup=False
 
 ---
 
