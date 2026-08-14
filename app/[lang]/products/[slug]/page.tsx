@@ -6,6 +6,7 @@ import {
   getAllProducts,
 } from "../../../../lib/catalog";
 import ProductDetail from "../../../../components/ProductDetail";
+import Contact from "@/components/Contact";
 
 export const dynamicParams = false; // 404 cho slug lạ (static export)
 
@@ -58,10 +59,13 @@ export default async function ProductPage({
 
   const similar = await getSimilarProducts(product, 3);
   return (
-    <ProductDetail
-      product={product}
-      lang={lang as "vi" | "en"}
-      similar={similar}
-    />
+    <>
+      <ProductDetail
+        product={product}
+        lang={lang as "vi" | "en"}
+        similar={similar}
+      />
+      <Contact />
+    </>
   );
 }

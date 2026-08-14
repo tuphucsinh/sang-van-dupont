@@ -69,6 +69,73 @@ export default function ProductDetail({
           padding: "120px 24px 80px",
         }}
       >
+        {/* Language switcher */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginBottom: "12px",
+          }}
+        >
+          <div
+            style={{
+              display: "inline-flex",
+              border: "1px solid rgba(212, 175, 55, 0.35)",
+              borderRadius: "6px",
+              overflow: "hidden",
+              fontSize: "0.75rem",
+            }}
+          >
+            {lang === "vi" ? (
+              <>
+                <span
+                  style={{
+                    padding: "5px 12px",
+                    background: "#d4af37",
+                    color: "#0a0a0d",
+                    fontWeight: 700,
+                  }}
+                >
+                  VI
+                </span>
+                <Link
+                  href={`/en/products/${product.slug}`}
+                  style={{
+                    padding: "5px 12px",
+                    color: "#a89f8a",
+                    textDecoration: "none",
+                  }}
+                >
+                  EN
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href={`/vi/products/${product.slug}`}
+                  style={{
+                    padding: "5px 12px",
+                    color: "#a89f8a",
+                    textDecoration: "none",
+                  }}
+                >
+                  VI
+                </Link>
+                <span
+                  style={{
+                    padding: "5px 12px",
+                    background: "#d4af37",
+                    color: "#0a0a0d",
+                    fontWeight: 700,
+                  }}
+                >
+                  EN
+                </span>
+              </>
+            )}
+          </div>
+        </div>
+
         {/* Breadcrumb */}
         <nav
           aria-label="Breadcrumb"

@@ -1,11 +1,107 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { track } from "./Ga4";
 
 const FUNC_URL = "https://iloaeaoojxdovedjtowt.supabase.co/functions/v1/create-lead";
 const VISION_URL = "https://iloaeaoojxdovedjtowt.supabase.co/functions/v1/vision-intake";
 const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+
+const T = {
+  vi: {
+    title: "Gửi yêu cầu tư vấn",
+    typeLabel: "Loại yêu cầu",
+    typeBuy: "Mua",
+    typeMaintenance: "Bảo dưỡng",
+    nameLabel: "Tên *",
+    namePh: "Họ và tên của bạn",
+    phoneLabel: "ĐT / Zalo *",
+    phonePh: "0905 xxx xxx",
+    budgetLabel: "Ngân sách",
+    budgetPh: "-- Chọn ngân sách --",
+    budgetUnder5m: "< 5 triệu",
+    budget5to10m: "5–10 triệu",
+    budget10to20m: "10–20 triệu",
+    budget20to50m: "20–50 triệu",
+    budgetOver50m: "> 50 triệu",
+    lineLabel: "Dòng quan tâm",
+    linePh: "Ligne 2, Gatsby…",
+    channelLabel: "Kênh liên hệ ưu tiên",
+    channelWeb: "Form web",
+    channelZalo: "Zalo",
+    channelTelegram: "Telegram",
+    channelCall: "Gọi điện thoại",
+    channelInbox: "Inbox FB",
+    needLabel: "Nhu cầu chi tiết",
+    needPh: "Mô tả tình trạng bật lửa, mẫu bạn tìm kiếm, hoặc câu hỏi chi tiết...",
+    uploadLabel: "Gửi ảnh bật lửa (tối đa 3 ảnh, ≤1.5MB/ảnh)",
+    removeFile: "✕ Xóa",
+    aiLoading: "🤖 AI đang xem ảnh...",
+    aiLabel: "🤖 AI nhận xét sơ bộ:",
+    aiErr: "AI chưa nhận xét được — không sao, vẫn gửi được",
+    consentText: "Tôi đồng ý cung cấp thông tin và ảnh để được hỗ trợ bảo dưỡng",
+    submit: "Gửi yêu cầu",
+    sending: "Đang gửi…",
+    successTitle: "✅ Đã nhận yêu cầu",
+    successCode: "Mã yêu cầu:",
+    successNote: "Mình sẽ liên hệ lại sớm nhất.",
+    again: "Gửi yêu cầu khác",
+    nameReq: "Vui lòng nhập họ và tên.",
+    phoneReq: "Vui lòng nhập số điện thoại",
+    phoneInvalid: "Số điện thoại không hợp lệ (8–15 chữ số).",
+    consentReq: "Vui lòng đồng ý chia sẻ thông tin",
+    rateLimit: "Quá nhiều yêu cầu — vui lòng thử lại sau 1 giờ",
+    network: "Không kết nối được — thử lại",
+    submitError: "Lỗi gửi",
+  },
+  en: {
+    title: "Send consultation request",
+    typeLabel: "Request type",
+    typeBuy: "Buy",
+    typeMaintenance: "Maintenance",
+    nameLabel: "Name *",
+    namePh: "Your full name",
+    phoneLabel: "Phone / Zalo *",
+    phonePh: "0905 xxx xxx",
+    budgetLabel: "Budget",
+    budgetPh: "-- Select budget --",
+    budgetUnder5m: "< 5 million VND",
+    budget5to10m: "5–10 million VND",
+    budget10to20m: "10–20 million VND",
+    budget20to50m: "20–50 million VND",
+    budgetOver50m: "> 50 million VND",
+    lineLabel: "Line of interest",
+    linePh: "Ligne 2, Gatsby…",
+    channelLabel: "Preferred contact channel",
+    channelWeb: "Web form",
+    channelZalo: "Zalo",
+    channelTelegram: "Telegram",
+    channelCall: "Phone call",
+    channelInbox: "Inbox FB",
+    needLabel: "Detailed request",
+    needPh: "Describe lighter condition, model you are looking for, or detailed questions...",
+    uploadLabel: "Upload lighter photos (up to 3 photos, ≤1.5MB each)",
+    removeFile: "✕ Remove",
+    aiLoading: "🤖 AI is analyzing photos...",
+    aiLabel: "🤖 Preliminary AI assessment:",
+    aiErr: "AI assessment unavailable — no problem, you can still submit",
+    consentText: "I agree to provide information and photos for maintenance support",
+    submit: "Send request",
+    sending: "Sending...",
+    successTitle: "✅ Request received",
+    successCode: "Request code:",
+    successNote: "We will contact you soon.",
+    again: "Send another request",
+    nameReq: "Please enter your full name.",
+    phoneReq: "Please enter your phone number",
+    phoneInvalid: "Invalid phone number (8–15 digits).",
+    consentReq: "Please agree to share information",
+    rateLimit: "Too many requests — please try again in 1 hour",
+    network: "Cannot connect — please try again",
+    submitError: "Failed to send request",
+  },
+} as const;
 
 const toBase64 = (f: File) =>
   new Promise<string>((res, rej) => {
@@ -36,6 +132,10 @@ const initialForm: FormData = {
 };
 
 export default function LeadForm() {
+  const pathname = usePathname();
+  const lang: "vi" | "en" = pathname?.startsWith("/en") ? "en" : "vi";
+  const t = T[lang];
+
   const [form, setForm] = useState<FormData>(initialForm);
   const [attachments, setAttachments] = useState<File[]>([]);
   const [consent, setConsent] = useState<boolean>(false);
@@ -68,10 +168,10 @@ export default function LeadForm() {
       if (res.ok && d.ok && d.summary) {
         setAiSummary(d.summary);
       } else {
-        setAiError("AI chưa nhận xét được — không sao, vẫn gửi được");
+        setAiError(t.aiErr);
       }
     } catch {
-      setAiError("AI chưa nhận xét được — không sao, vẫn gửi được");
+      setAiError(t.aiErr);
     } finally {
       setAiLoading(false);
     }
@@ -133,19 +233,25 @@ export default function LeadForm() {
 
     if (!trimmedName) {
       setStatus("error");
-      setErrorMsg("Vui lòng nhập họ và tên.");
+      setErrorMsg(t.nameReq);
+      return;
+    }
+
+    if (!trimmedPhone) {
+      setStatus("error");
+      setErrorMsg(t.phoneReq);
       return;
     }
 
     if (!/^[0-9+\s-]{8,15}$/.test(trimmedPhone)) {
       setStatus("error");
-      setErrorMsg("Số điện thoại không hợp lệ (8–15 chữ số).");
+      setErrorMsg(t.phoneInvalid);
       return;
     }
 
     if (form.type === "maintenance" && !consent) {
       setStatus("error");
-      setErrorMsg("Vui lòng đồng ý chia sẻ thông tin");
+      setErrorMsg(t.consentReq);
       return;
     }
 
@@ -206,14 +312,17 @@ export default function LeadForm() {
         setAiSummary("");
         setAiLoading(false);
         setAiError("");
+      } else if (res.status === 429) {
+        setStatus("error");
+        setErrorMsg(t.rateLimit);
       } else {
         setStatus("error");
-        setErrorMsg(d.error || "Lỗi gửi");
+        setErrorMsg(d.error || t.submitError);
       }
     } catch {
       track("submit_form", { type: form.type, status: "network_error" });
       setStatus("error");
-      setErrorMsg("Không kết nối được — thử lại");
+      setErrorMsg(t.network);
     }
   };
 
@@ -258,7 +367,7 @@ export default function LeadForm() {
           textAlign: "center",
         }}
       >
-        Gửi yêu cầu tư vấn
+        {t.title}
       </h3>
 
       {status === "success" ? (
@@ -271,13 +380,13 @@ export default function LeadForm() {
               margin: "0 0 12px",
             }}
           >
-            ✅ Đã nhận yêu cầu
+            {t.successTitle}
           </p>
           <p style={{ color: "#f3ecd9", margin: "0 0 8px", fontSize: "0.95rem" }}>
-            Mã yêu cầu: <b>#{requestCode}</b>
+            {t.successCode} <b>#{requestCode}</b>
           </p>
           <p style={{ color: "#a89f8a", margin: "0 0 20px", fontSize: "0.9rem" }}>
-            Mình sẽ liên hệ lại sớm nhất.
+            {t.successNote}
           </p>
           <button
             type="button"
@@ -293,7 +402,7 @@ export default function LeadForm() {
               fontSize: "0.9rem",
             }}
           >
-            Gửi yêu cầu khác
+            {t.again}
           </button>
         </div>
       ) : (
@@ -309,7 +418,7 @@ export default function LeadForm() {
             {/* Row 1: Type + Name */}
             <div>
               <label htmlFor="lead-type" style={labelStyle}>
-                Loại yêu cầu
+                {t.typeLabel}
               </label>
               <select
                 id="lead-type"
@@ -318,14 +427,14 @@ export default function LeadForm() {
                 onChange={handleChange}
                 style={inputStyle}
               >
-                <option value="buy">Mua</option>
-                <option value="maintenance">Bảo dưỡng</option>
+                <option value="buy">{t.typeBuy}</option>
+                <option value="maintenance">{t.typeMaintenance}</option>
               </select>
             </div>
 
             <div>
               <label htmlFor="lead-name" style={labelStyle}>
-                Tên *
+                {t.nameLabel}
               </label>
               <input
                 id="lead-name"
@@ -334,7 +443,7 @@ export default function LeadForm() {
                 required
                 value={form.name}
                 onChange={handleChange}
-                placeholder="Họ và tên của bạn"
+                placeholder={t.namePh}
                 style={inputStyle}
               />
             </div>
@@ -342,7 +451,7 @@ export default function LeadForm() {
             {/* Row 2: Phone + Budget */}
             <div>
               <label htmlFor="lead-phone" style={labelStyle}>
-                ĐT / Zalo *
+                {t.phoneLabel}
               </label>
               <input
                 id="lead-phone"
@@ -351,14 +460,14 @@ export default function LeadForm() {
                 required
                 value={form.phone}
                 onChange={handleChange}
-                placeholder="0905 xxx xxx"
+                placeholder={t.phonePh}
                 style={inputStyle}
               />
             </div>
 
             <div>
               <label htmlFor="lead-budget" style={labelStyle}>
-                Ngân sách
+                {t.budgetLabel}
               </label>
               <select
                 id="lead-budget"
@@ -367,19 +476,19 @@ export default function LeadForm() {
                 onChange={handleChange}
                 style={inputStyle}
               >
-                <option value="">-- Chọn ngân sách --</option>
-                <option value="< 5 triệu">&lt; 5 triệu</option>
-                <option value="5–10 triệu">5–10 triệu</option>
-                <option value="10–20 triệu">10–20 triệu</option>
-                <option value="20–50 triệu">20–50 triệu</option>
-                <option value="> 50 triệu">&gt; 50 triệu</option>
+                <option value="">{t.budgetPh}</option>
+                <option value="< 5 triệu">{t.budgetUnder5m}</option>
+                <option value="5–10 triệu">{t.budget5to10m}</option>
+                <option value="10–20 triệu">{t.budget10to20m}</option>
+                <option value="20–50 triệu">{t.budget20to50m}</option>
+                <option value="> 50 triệu">{t.budgetOver50m}</option>
               </select>
             </div>
 
             {/* Row 3: Line of interest + Channel */}
             <div>
               <label htmlFor="lead-line-interest" style={labelStyle}>
-                Dòng quan tâm
+                {t.lineLabel}
               </label>
               <input
                 id="lead-line-interest"
@@ -387,14 +496,14 @@ export default function LeadForm() {
                 name="line_interest"
                 value={form.line_interest}
                 onChange={handleChange}
-                placeholder="Ligne 2, Gatsby…"
+                placeholder={t.linePh}
                 style={inputStyle}
               />
             </div>
 
             <div>
               <label htmlFor="lead-channel" style={labelStyle}>
-                Kênh liên hệ ưu tiên
+                {t.channelLabel}
               </label>
               <select
                 id="lead-channel"
@@ -403,11 +512,11 @@ export default function LeadForm() {
                 onChange={handleChange}
                 style={inputStyle}
               >
-                <option value="web_form">Form web</option>
-                <option value="Zalo">Zalo</option>
-                <option value="Telegram">Telegram</option>
-                <option value="Call">Gọi điện thoại</option>
-                <option value="Inbox FB">Inbox FB</option>
+                <option value="web_form">{t.channelWeb}</option>
+                <option value="Zalo">{t.channelZalo}</option>
+                <option value="Telegram">{t.channelTelegram}</option>
+                <option value="Call">{t.channelCall}</option>
+                <option value="Inbox FB">{t.channelInbox}</option>
               </select>
             </div>
           </div>
@@ -415,7 +524,7 @@ export default function LeadForm() {
           {/* Full width: Need */}
           <div style={{ marginBottom: "16px" }}>
             <label htmlFor="lead-need" style={labelStyle}>
-              Nhu cầu chi tiết
+              {t.needLabel}
             </label>
             <textarea
               id="lead-need"
@@ -423,7 +532,7 @@ export default function LeadForm() {
               rows={3}
               value={form.need}
               onChange={handleChange}
-              placeholder="Mô tả tình trạng bật lửa, mẫu bạn tìm kiếm, hoặc câu hỏi chi tiết..."
+              placeholder={t.needPh}
               style={{ ...inputStyle, resize: "vertical" }}
             />
           </div>
@@ -433,7 +542,7 @@ export default function LeadForm() {
               {/* Attachments */}
               <div style={{ marginBottom: "16px" }}>
                 <label htmlFor="lead-attachments" style={labelStyle}>
-                  Ảnh sản phẩm (tối đa 3)
+                  {t.uploadLabel}
                 </label>
                 <input
                   id="lead-attachments"
@@ -493,7 +602,7 @@ export default function LeadForm() {
                             padding: "2px 6px",
                           }}
                         >
-                          ✕ Xóa
+                          {t.removeFile}
                         </button>
                       </div>
                     ))}
@@ -509,7 +618,7 @@ export default function LeadForm() {
                       fontStyle: "italic",
                     }}
                   >
-                    🤖 AI đang xem ảnh...
+                    {t.aiLoading}
                   </p>
                 )}
 
@@ -526,7 +635,7 @@ export default function LeadForm() {
                       lineHeight: "1.4",
                     }}
                   >
-                    🤖 AI nhận xét sơ bộ: {aiSummary}
+                    {t.aiLabel} {aiSummary}
                   </div>
                 )}
 
@@ -567,7 +676,7 @@ export default function LeadForm() {
                     cursor: "pointer",
                   }}
                 >
-                  Tôi đồng ý cung cấp thông tin và ảnh để được hỗ trợ bảo dưỡng
+                  {t.consentText}
                 </label>
               </div>
             </>
@@ -590,7 +699,7 @@ export default function LeadForm() {
               transition: "opacity 0.2s",
             }}
           >
-            {status === "sending" ? "Đang gửi…" : "Gửi yêu cầu"}
+            {status === "sending" ? t.sending : t.submit}
           </button>
 
           {status === "error" && errorMsg && (
