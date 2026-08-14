@@ -43,7 +43,7 @@ _(4 task P3T01–P3T04 đã xong — chi tiết: `.ai/MASTER_PLAN.md` Phase 3; t
 - Apply migration sạch; `\dp`/policy list: mọi `*_admin_all` dùng `is_admin()`
 - Test REST: anon INSERT products → 401 (vẫn chặn); authenticated KHÔNG phải admin → 401; service role → 200 (bypass RLS đúng)
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): applied, anon read 200 (giữ nguyên), anon write 401, service bypass 200; policy list dùng is_admin()
 
 ---
 
