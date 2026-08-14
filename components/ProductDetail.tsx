@@ -393,18 +393,19 @@ export default function ProductDetail({
                 >
                   {t.call}
                 </a>
-                <a
-                  href="https://t.me/sangdupontbot"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  type="button"
                   className="btn"
                   style={{
                     textAlign: "center",
                     justifyContent: "center",
                   }}
+                  onClick={() =>
+                    window.dispatchEvent(new CustomEvent("sang-open-chat"))
+                  }
                 >
                   {t.chat}
-                </a>
+                </button>
               </div>
             </div>
           </div>
