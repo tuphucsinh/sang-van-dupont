@@ -40,7 +40,6 @@
 | **Release A** | Catalog + product detail + CMS + lead + SEO/perf/tracking | **27–29 triệu** |
 | **Release B** | Release A + AI concierge + tool calling + handoff + guard | **34–36 triệu** |
 | **Full AI** | Release B + AI nội bộ + vision + recommendation + hardening | **43–44 triệu** |
-
 ---
 
 ## 1. PHASES
@@ -49,6 +48,7 @@
 **Goal**: Chuẩn hóa repo theo quy trình; chuyển landing page static → Next.js + TypeScript giữ visual parity desktop/mobile; cấu hình static export + lint/typecheck/build.
 
 **Deliverables**:
+- Backup repo trước khi dọn/migration (git tag/archive — file 1 §13 bước 1)
 - Cấu trúc chuẩn hoạt động: `.ai/`, `tasks.md`, `HANDOFF.md`, `.tmp/`, gitignore đầy đủ
 - Next.js App Router + TS (strict), component hóa tối thiểu, Client Component chỉ khi cần tương tác
 - `output: 'export'`, build sạch, không lỗi console nghiêm trọng
@@ -117,7 +117,7 @@
 - Ảnh WebP/AVIF pre-optimize, srcset/sizes, lazy-load dưới fold, `prefers-reduced-motion`, giảm JS bundle
 - Không runtime `next/image` optimization trên TENTEN
 
-**Dependencies**: Phase 3
+**Dependencies**: Phase 3 + Phase 5 (GA4 events `start_form`/`submit_form`/`qualified_lead` cần form từ P5)
 **Gate**: Lighthouse mobile Perf ≥ 85, desktop ≥ 90; A11y/SEO/BP ≥ 90
 
 ### Phase 7: Release A Gate + Deploy TENTEN
@@ -130,7 +130,7 @@
 - Quyết định host chờ anh chốt: hiện đang Vercel live — TENTEN target theo kế hoạch (xem OPEN DECISIONS)
 
 **Dependencies**: Phase 1–6
-**Gate**: RELEASE A GATE (file 1 §4.7) đủ 10 tiêu chí — chỉ production khi tất cả PASS
+**Gate**: RELEASE A GATE (file 1 "RELEASE A GATE" — 10 tiêu chí) đủ — chỉ production khi tất cả PASS
 
 ### Phase 8: AI Concierge — Release B (khi có sử dụng thật)
 **Goal**: AI public qua Edge Function proxy + tool calling; Hermes Telegram concierge restricted; lead/CRM nhẹ.
@@ -154,6 +154,8 @@
 - AI vision: "Trợ lý tiếp nhận và đánh giá hình ảnh sơ bộ" — kiểm tra thiếu góc, mô tả đặc điểm, yêu cầu ảnh bổ sung; **không** xác nhận thật/giả, định giá cuối, thay chuyên gia
 - Research (giá trị cao nhất): sourcing, seller/competitor watchlist, price intelligence, opportunity alerts — Research DB riêng (seller/listing/price/watchlist), URL+timestamp
 - Marketing pipeline: một nguồn dữ liệu → listing/bài/FB/TikTok/EN/SEO/alt
+- Recommendation (gợi ý sản phẩm): filter deterministic chọn candidate, AI chỉ giải thích — không cho model tự chọn ngoài dữ liệu thật (file 1 §6.3)
+- Hardening: usage/cost/kill switch hoàn chỉnh, disclaimer, human-review gate, audit an toàn
 
 **Dependencies**: Phase 8
 **Gate**: upload/private storage PASS; disclaimer rõ; human review kết luận quan trọng; usage/cost/kill switch PASS

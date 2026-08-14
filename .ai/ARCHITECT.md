@@ -13,7 +13,7 @@
 LỚP 1 — PUBLIC WEBSITE (khách)
 Browser
   ├── HTML/CSS/JS static (Next.js export) ───────────► TENTEN (hoặc Vercel hiện tại)
-  ├── product/content data ──────────────────────────► Supabase (đọc qua RLS)
+  ├── product/content data ──────────────────────────► Supabase (đọc data LÚC BUILD ở Release A; RLS-read chỉ là đường fallback sau này)
   ├── admin auth / CRUD ─────────────────────────────► Supabase Auth + RLS (admin only)
   ├── product media ─────────────────────────────────► Supabase Storage (public bucket)
   └── sensitive actions (lead/Telegram/AI) ──────────► Supabase Edge Functions (server-side)
@@ -159,6 +159,7 @@ sequenceDiagram
     participant E as Edge Function (AI proxy)
     participant P as AI provider
     participant D as Supabase (RLS)
+    participant S as Telegram admin (handoff)
     U->>E: question (rate-limited)
     E->>P: prompt + policy guard
     P->>E: answer + tool calls
