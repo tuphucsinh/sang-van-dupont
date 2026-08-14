@@ -109,8 +109,15 @@ const I18nContext = createContext<I18nContextType>({
   setLang: () => {},
 });
 
-export function I18nProvider({ children }: { children: React.ReactNode }) {
+export function I18nProvider({
+  children,
+  initialLang,
+}: {
+  children: React.ReactNode;
+  initialLang?: "vi" | "en";
+}) {
   const [lang, setLangState] = useState<Lang>(() => {
+    if (initialLang) return initialLang;
     if (typeof window === "undefined") return "vi";
     try {
       const stored = localStorage.getItem("sang_lang");

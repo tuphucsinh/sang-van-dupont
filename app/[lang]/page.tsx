@@ -10,13 +10,24 @@ import Lightbox from "@/components/Lightbox";
 import Footer from "@/components/Footer";
 import SparksClient from "@/components/SparksClient";
 import RevealClient from "@/components/RevealClient";
-import { getAllProducts } from "../lib/catalog";
-import AiChat from "../components/AiChat";
-export default async function Home() {
+import { getAllProducts } from "../../lib/catalog";
+
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return [{ lang: "vi" }, { lang: "en" }];
+}
+
+export default async function Home({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
   const products = await getAllProducts();
 
   return (
-    <I18nProvider>
+    <I18nProvider initialLang={(lang === "en" ? "en" : "vi") as "vi" | "en"}>
       <link rel="preload" as="image" href="/assets/img/hero.jpg" />
       <Nav />
       <Hero />

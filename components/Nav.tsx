@@ -56,7 +56,7 @@ export default function Nav() {
           <button
             id="langVi"
             className={lang === "vi" ? "active" : ""}
-            onClick={() => setLang("vi")}
+            onClick={() => (window.location.href = "/vi/")}
             type="button"
           >
             VI
@@ -64,7 +64,7 @@ export default function Nav() {
           <button
             id="langEn"
             className={lang === "en" ? "active" : ""}
-            onClick={() => setLang("en")}
+            onClick={() => (window.location.href = "/en/")}
             type="button"
           >
             EN
