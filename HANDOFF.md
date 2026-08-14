@@ -1,23 +1,13 @@
-# HANDOFF — SangDupont
+# HANDOFF — SangDupont (2026-08-14, phiên khép)
 
-> Cập nhật: 2026-08-14 · Trạng thái: PLAN — chờ duyệt
+**Trạng thái**: ✅ COMPLETE — Release A (Gate 10/10) + Release B (Gate 4/4) + Phase 9A/9B (Vision/Admin draft/Recommend) + vô số fix UX/i18n/mobile. Repo sync GitHub `main`.
 
-## Trạng thái
-- Project đã chuẩn hóa theo quy trình: AGENTS.md + `.ai/` + `tasks.md` + `.tmp/` (gitignored) + HANDOFF.
-- Masterplan (9 phases) + kiến trúc + decisions log viết xong từ 2 file kế hoạch → **đang chờ Reviewer + anh duyệt**.
-- Repo: landing page static đang live trên Vercel (sangdupont.vercel.app); git sạch sau commit chuẩn hóa.
+**Chạy được**: `sangdupont.vercel.app` — catalog 8 SP VI/EN + admin (GitHub OAuth tvccbod / email aivntps) + lead→Telegram (text+ảnh+AI sơ bộ) + AI chat widget (deepseek-v4-flash, i18n VI/EN) + vision (qwen3.7-plus) + Recommend + backup cron CN.
 
-## Đã làm
-- `.ai/MASTER_PLAN.md` (P1–P9, gates, rủi ro, open decisions)
-- `.ai/ARCHITECT.md` (static-first, data model core, security, deploy flow, AI arch)
-- `.ai/DECISIONS_LOG.md` (D1–D13; giải quyết mâu thuẫn thứ tự ưu tiên 2 file)
-- `tasks.md` skeleton (9 phases, chưa băm task)
-- `.gitignore` thêm `.tmp/`
+**Còn mở (không chặn)**: B1 shop_policies (để sau) · B2 giá thật (anh nhập /admin) · B3 GA4 ID (chờ anh) · Research 9B-next (khi anh muốn).
 
-## Blockers / chờ anh
-1. Reviewer verdict masterplan + kiến trúc.
-2. Anh duyệt masterplan → mới `/plan2task` Phase 1.
-3. Open decisions (host/domain/GA4/Turnstile/Telegram/scope) — cần khi tới phase tương ứng.
+**Ops**: Publish = /admin → rebuild deploy. Kill AI = `supabase secrets set AI_ENABLED=false`. Backup CN 08:00 tự động. Keepalive T7/CN đa-project.
 
-## Next
-- Reviewer review gói thiết kế → xử lý góp ý → trình anh duyệt → `/plan2task` Phase 1.
+**Bài học phiên** → skill `static-website-supabase` (9 pitfalls phổ quát + workflow 7 bước).
+
+**Next**: chờ anh — GA4 ID / giá thật / policies / Research.
