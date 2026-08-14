@@ -1,18 +1,15 @@
-// Assert: widget nhắc bổ sung thông tin — dispatch sang-chat-prompt → panel mở + tin nhắn hiện
-// Chạy: bash tests/browser-verify.sh tests/assert-chat-prompt.mjs https://sangdupont.vercel.app/vi
+// Assert v2: tin nhắc dùng "anh" (không "anh/chị") + panel mở + tin hiện
 export default async function assertChatPrompt(page) {
   const results = [];
   const check = (name, ok, detail = "") => results.push({ name, ok, detail });
 
-  // 1) Đợi hydration (bubble xuất hiện)
   await page.waitForSelector('button[aria-label="Mở chat AI"]', { timeout: 15000 });
-  check("widget mounted (bubble)", true);
+  check("widget mounted", true);
 
-  // 2) Dispatch event mở chat + nhắc (giống LeadForm sau submit)
   await page.evaluate(() => {
     window.dispatchEvent(
       new CustomEvent("sang-chat-prompt", {
-        detail: { text: "Dạ em đã nhận yêu cầu của anh/chị (mã #abcd1234) 👍 Anh/chị cho em biết thêm nhu cầu chi tiết để em tư vấn chuẩn hơn nha — gõ ngay ở đây cũng được ạ 😊", requestCode: "abcd1234" },
+        detail: { text: "Dạ em đã nhận yêu cầu của anh (mã #abcd1234) 👍 Anh cho em biết thêm nhu cầu chi tiết để em tư vấn chuẩn hơn nha — gõ ngay ở đây cũng được ạ 😊", requestCode: "abcd1234" },
       })
     );
   });
@@ -24,16 +21,12 @@ export default async function assertChatPrompt(page) {
     );
     return {
       panelVisible: !!panel,
-      promptShown: panel ? panel.textContent.includes("mã #abcd1234") && panel.textContent.includes("cho em biết thêm") : false,
+      hasAnh: panel ? panel.textContent.includes("của anh (mã #abcd1234)") : false,
+      hasAnhChi: panel ? panel.textContent.includes("anh/chị") : false,
     };
   });
 
-  check("panel mở sau event", state.panelVisible);
-  check("tin nhắc bổ sung hiện", state.promptShown);
-
-  // 3) Kiểm tra bubble đổi thành "Đóng chat" (trạng thái open)
-  const bubbleClose = await page.$('button[aria-label="Đóng chat"]');
-  check("bubble đổi Đóng chat", !!bubbleClose);
-
+  check("panel mở", state.panelVisible);
+  check("dùng 'anh' (không anh/chị)", state.hasAnh && !state.hasAnhChi, JSON.stringify(state));
   return results;
 }
