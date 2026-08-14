@@ -25,6 +25,7 @@ const SYSTEM_PROMPT = `BẠN LÀ NHÂN VIÊN BÁN HÀNG CỦA SANGDUPONT — sho
 3. GIỚI THIỆU ĐÚNG DATA: gọi search_products/get_product → chọn 2-3 mẫu hợp nhất. Nhấn điểm bán THẬT (dòng, chất liệu, tình trạng, phụ kiện). Thêm 1 câu kể chuyện ngắn về era/dòng nếu khách quan tâm (vd dòng Diamond Head 80s, guilloché thủ công) — làm sản phẩm sống động, vẫn KHÔNG bịa thông số.
 4. CHỐT SALE: khách có ý mua ("bao nhiêu", "lấy được", "gửi đi đâu") → lấy tên + SĐT → gọi create_lead → báo mã + "bên em liên hệ trong ngày" + cảm ơn.
 5. BẢO DƯỠNG: hỏi kỹ triệu chứng (yếu lửa/không bắt/kêu đá?), hướng dẫn gửi ảnh + mô tả qua form hoặc gọi 0905 076 886.
+6. TÌM THEO TIÊU CHÍ: khách đưa điều kiện (dòng/giá/chất liệu/phong cách) → gọi tool recommend và CHỈ giới thiệu candidate trả về — không tự thêm/bớt sản phẩm.
 
 ## XỬ LÝ TÌNH HUỐNG
 - Search không ra → nói thật "hiện không có mẫu này" + gợi ý mẫu tương tự có sẵn (tông màu/dòng gần nhất) + mời xem website.
@@ -165,6 +166,22 @@ export default {
           },
         },
       },
+      {
+        type: "function",
+        function: {
+          name: "recommend",
+          description: "Gợi ý sản phẩm theo tiêu chí khách đưa (dòng/ chất liệu/ màu/ ngân sách). LUÔN dùng tool này khi khách tìm theo tiêu chí; chỉ giới thiệu sản phẩm tool trả về.",
+          parameters: {
+            type: "object",
+            properties: {
+              line: { type: "string", description: "Dòng (vd Ligne 1, Ligne 2) — tùy chọn" },
+              material: { type: "string", description: "Chất liệu/tông màu (vd vàng, đen, sơn mài) — tùy chọn" },
+              budget_max: { type: "number", description: "Ngân sách tối đa (VND) — tùy chọn" },
+              style: { type: "string", description: "Phong cách (gọn/cổ điển/sang...) — tùy chọn" },
+            },
+          },
+        },
+      },
     ];
 
     const callTool = async (name: string, args: Record<string, unknown>) => {
@@ -187,6 +204,36 @@ export default {
           .eq("status", "available")
           .maybeSingle();
         return JSON.stringify(data || null);
+      }
+      if (name === "recommend") {
+        // Deterministic filter — chọn candidate chính xác, AI chỉ giới thiệu
+        const line = String(args.line || "").trim();
+        const material = String(args.material || "").trim();
+        const budgetMax = Number(args.budget_max) > 0 ? Number(args.budget_max) : null;
+        const style = String(args.style || "").trim().toLowerCase();
+
+        let q = supabase
+          .from("products")
+          .select("slug, name_vi, name_en, line, material, status, price, price_unit")
+          .eq("status", "available");
+        if (line) q = q.eq("line", line);
+        if (material) q = q.or(`material.ilike.%${material}%,name_vi.ilike.%${material}%,name_en.ilike.%${material}%`);
+        if (budgetMax) q = q.lte("price", budgetMax);
+        const { data } = await q.limit(5);
+
+        let candidates = data || [];
+        // Lọc thêm theo style nếu có (từ khóa trong name/line/material)
+        if (style) {
+          const styleKw = style.includes("gọn") ? ["ligne 1", "ligne1", "guilloch"] : style.includes("sang") || style.includes("cao cấp") ? ["ligne 2", "diamond", "gold"] : [];
+          if (styleKw.length > 0) {
+            const kw = styleKw.join("|");
+            candidates = candidates.filter((p: Record<string, unknown>) =>
+              new RegExp(kw, "i").test(`${p.line} ${p.name_vi} ${p.name_en} ${p.material}`)
+            );
+          }
+          if (candidates.length === 0) candidates = data || [];
+        }
+        return JSON.stringify(candidates.slice(0, 3));
       }
       if (name === "create_lead") {
         const name = String(args.name || "").trim().slice(0, 200);
