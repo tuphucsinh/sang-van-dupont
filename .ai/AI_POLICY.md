@@ -23,3 +23,25 @@
 - Mọi call: rate limit 20/h/IP · token cap 800/lượt · timeout 20s · cost cap/ngày · kill switch `AI_ENABLED`.
 - Log usage: chỉ `prompt_hash` + response preview — KHÔNG lưu PII khách (tên/ĐT) vào `ai_chat_logs`.
 - Không tool nào khác ngoài: `search_products` · `get_product` · `create_lead`.
+
+---
+
+# INTERNAL AI POLICY (Phase 10-12 — sangbot nội bộ + Marketing + Operator)
+
+Áp dụng cho Hermes NỘI BỘ (profile `sangbot`, chỉ anh qua Telegram) và Mika khi chạy tool nội bộ. Bổ sung (không thay thế) các nguyên tắc trên.
+
+## Marketing Pipeline (Phase 11)
+1. Nội dung marketing **chỉ từ dữ liệu thật** (Supabase `products` + `product_media`) — không bịa giá/tồn kho/tình trạng/năm/thông số.
+2. Giá NULL → luôn "Liên hệ 0905 076 886" (không tự nêu con số).
+3. AI chỉ tạo **draft** (`marketing/drafts/<slug>/`) — anh duyệt trước publish (D11/D27).
+4. Không tự đăng bài lên mạng xã hội (out-of-scope).
+
+## Website Operator (Phase 12)
+5. **push / deploy / delete = chờ anh duyệt qua Telegram** — không tự push GitHub, không tự `vercel --prod`, không tự xóa dữ liệu.
+6. Mọi write có log (`.tmp/ops.log`) + reversible; delete confirm 2 bước.
+7. Phát hiện lỗi deploy → thu bằng chứng (log CI/Vercel) → báo nguyên nhân + đề xuất — không đoán.
+8. Service role key chỉ trong `.env.local` — không in ra chat/log.
+
+## Chung
+9. Không in secret (API key, token, .env) ra chat/file công khai.
+10. Chỉ làm việc trong phạm vi project Sangwebsite + profile sangbot — không tự ý đụng hệ thống khác.

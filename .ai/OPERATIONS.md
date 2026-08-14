@@ -65,3 +65,19 @@ Không PASS 1 mục → KHÔNG coi là deploy thành công; xử lý theo mục 
 - Nghi ngờ → thu bằng chứng thật trước khi kết luận (2-Strike rule AGENTS.md).
 - Không tự ý mở rộng scope; đề xuất thì báo anh.
 - Push/deploy/delete — luôn 3 chữ: **hỏi anh trước**.
+
+## 7. Command map (anh nhắn sangbot → lệnh)
+
+| Anh nhắn | Lệnh (trong `/home/pi5/projects/Sangwebsite`) |
+|---|---|
+| "sinh marketing cho <slug>" | `npm run marketing -- <slug>` → báo draft, chờ duyệt publish |
+| "check site" / "kiểm tra website" | `npm run ops -- smoke` |
+| "audit seo" | `npm run ops -- seo` |
+| "kiểm tra VI/EN" | `npm run ops -- i18n` |
+| "check link/ảnh hỏng" | `npm run ops -- links` |
+| "thêm/sửa sản phẩm" | `npm run ops -- products create\|update <json>` |
+| "xóa sản phẩm <slug>" | `npm run ops -- products delete <slug> <slug>` — delete = GUARD |
+| "xem sản phẩm" | `npm run ops -- products list` |
+| "theo dõi CI" | `npm run ops -- ci` (gh cần auth) |
+| "publish / deploy" | `npm run ops -- publish --confirm` — CHỈ khi anh duyệt |
+| "rollback" | `npm run ops -- rollback` (dry-run) → đề xuất → chờ duyệt |
