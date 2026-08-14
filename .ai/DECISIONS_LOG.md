@@ -30,3 +30,12 @@
 | R1 | An toàn admin phụ thuộc "tắt signup" bằng UI — nếu bật lại, mọi authenticated thành admin | Ghi nhận → Phase 4 Admin sẽ cân nhắc claim/role chuyên biệt cho write (vd `is_admin` claim) |
 | R2 | site_settings public read toàn bộ — đừng đưa giá trị vận hành/secret vào bảng | Ghi nhận → rule: bảng này chỉ chứa content công khai; secret ở Edge Functions env |
 | R3 | case_studies chưa seed; nhãn `storage_bucket` lệch mermaid (cosmetic) | Ghi nhận → seed case_studies khi Phase 3 cần; nhãn không phải lỗi |
+
+## 2026-08-14 — Phase 3 chốt: SSG catalog + ảnh hiện có
+
+| # | Quyết định | Lý do |
+|---|---|---|
+| D14 | **Catalog = static generation tại build** (SSG, `generateStaticParams` + fetch build-time); không ISR (static export không hỗ trợ); publish → rebuild/redeploy | Catalog nhỏ, thay đổi hiếm; SEO + tốc độ tối ưu; đúng static-first đã duyệt (file 1 §4.2). Khi publish dày → tự động rebuild (Phase 7) hoặc chuyển 1 phần client-fetch (schema không đổi) |
+| D15 | **Ảnh catalog hiện có serve static từ `public/assets/img/`** (URL tương đối trong `product_media.url`); KHÔNG upload Storage ở Phase 3 | Ảnh nhỏ ít, serve tĩnh nhanh nhất, không thêm dependency; chuyển Storage sau này chỉ đổi giá trị URL trong DB — code không đổi |
+| D16 | Product detail: URL riêng `/vi/products/[slug]` + `/en/products/[slug]` (2 route wrap chung component, lang prop); trang chủ giữ root (chưa refactor [lang] toàn site) | Đáp ứng SEO VI/EN cho detail mà không refactor lớn; canonical + hreflang hoàn thiện ở Phase 6 |
+| D17 | Dùng tên sản phẩm THẬT từ landing (I18N dict p1–p9) làm catalog seed (thay `[SEED]`), price NULL = "Liên hệ" (file 1: "giá hoặc Liên hệ") | Anh chốt ảnh hiện có + tên thật; không bịa giá khi chưa có giá thật |
