@@ -168,7 +168,7 @@ _(4 task P3T01–P3T04 đã xong — chi tiết: `.ai/MASTER_PLAN.md` Phase 3; t
 - Build PASS; browser verify (Mika): admin login → list lead `[SEED] Khách Mẫu` (nếu còn) hoặc tạo 1 lead test; đổi status → DB đổi; user khác → 401
 - RLS verify: anon GET leads → [] (đã có)
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): lint/tsc/build PASS, /admin/leads static; verify thật cần deploy (OAuth) — cùng P4T03/P4T04 khi push
 
 ---
 
