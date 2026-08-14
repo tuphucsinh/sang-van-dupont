@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Cormorant_Garamond, Inter } from "next/font/google";
 import Ga4 from "@/components/Ga4";
+import AiChat from "@/components/AiChat";
 import "./globals.css";
 
 const gaId = process.env.NEXT_PUBLIC_GA4_ID || "";
@@ -57,6 +58,7 @@ export default function RootLayout({
     >
       <body>
         {children}
+        <AiChat />
         {gaId ? <Ga4 gaId={gaId} /> : null}
       </body>
     </html>

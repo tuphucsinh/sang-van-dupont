@@ -100,6 +100,11 @@ export default {
     }
     const message = String(body.message || "").trim().slice(0, 1000);
     if (!message) return json({ ok: false, error: "Vui lòng nhập câu hỏi" }, 400);
+    // UI gửi lang (vi/en) — buộc ngôn ngữ trả lời khi trang EN
+    const uiLang = body.lang === "en" ? "en" : "vi";
+    if (uiLang === "en") {
+      message = message + " (Please reply in English)";
+    }
 
     const ip = clientIp(req);
 

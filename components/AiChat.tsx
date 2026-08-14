@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, FormEvent } from "react";
+import { usePathname } from "next/navigation";
 
 const FUNC_URL = "https://iloaeaoojxdovedjtowt.supabase.co/functions/v1/ai-chat";
 const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
@@ -10,7 +11,37 @@ interface Message {
   text: string;
 }
 
+const T = {
+  vi: {
+    label: "Trợ lý SangDupont",
+    handoff: "Chat chủ shop →",
+    greeting:
+      "Chào anh, em là trợ lý AI của SangDupont, anh cần em tư vấn về mẫu bật lửa Dupont nào?",
+    placeholder: "Nhập câu hỏi...",
+    send: "Gửi",
+    close: "Đóng chat",
+    open: "Mở chat AI",
+    error: "Tạm thời không liên hệ được — thử lại",
+    fail: "Không kết nối được — thử lại",
+  },
+  en: {
+    label: "SangDupont Assistant",
+    handoff: "Chat with the shop owner →",
+    greeting:
+      "Hi there! I'm SangDupont's AI assistant. Which Dupont lighter model would you like me to help you with?",
+    placeholder: "Type your question...",
+    send: "Send",
+    close: "Close chat",
+    open: "Open AI chat",
+    error: "Something went wrong — please try again",
+    fail: "Cannot connect — please try again",
+  },
+} as const;
+
 export default function AiChat() {
+  const pathname = usePathname();
+  const lang: "vi" | "en" = pathname?.startsWith("/en") ? "en" : "vi";
+  const t = T[lang];
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -41,7 +72,7 @@ export default function AiChat() {
           Authorization: "Bearer " + ANON_KEY,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ message: msg }),
+        body: JSON.stringify({ message: msg, lang }),
       });
       const d = await res.json();
       if (res.ok && d.ok) {
@@ -49,14 +80,11 @@ export default function AiChat() {
       } else {
         setMessages((prev) => [
           ...prev,
-          { role: "ai", text: d.error || "Tạm thời không liên hệ được — thử lại" },
+          { role: "ai", text: d.error || t.error },
         ]);
       }
     } catch {
-      setMessages((prev) => [
-        ...prev,
-        { role: "ai", text: "Tạm thời không liên hệ được — thử lại" },
-      ]);
+      setMessages((prev) => [...prev, { role: "ai", text: t.fail }]);
     } finally {
       setLoading(false);
     }
@@ -67,7 +95,7 @@ export default function AiChat() {
       {/* Nút nổi */}
       <button
         type="button"
-        aria-label={open ? "Đóng chat" : "Mở chat AI"}
+        aria-label={open ? t.close : t.open}
         onClick={() => setOpen((prev) => !prev)}
         style={{
           position: "fixed",
@@ -129,7 +157,7 @@ export default function AiChat() {
                 fontWeight: 600,
               }}
             >
-              Trợ lý SangDupont
+              {t.label}
             </span>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <a
@@ -142,11 +170,11 @@ export default function AiChat() {
                   textDecoration: "none",
                 }}
               >
-                Chat chủ shop →
+                {t.handoff}
               </a>
               <button
                 onClick={() => setOpen(false)}
-                aria-label="Đóng chat"
+                aria-label={t.close}
                 style={{
                   background: "transparent",
                   border: "none",
@@ -188,7 +216,7 @@ export default function AiChat() {
                   lineHeight: 1.55,
                 }}
               >
-                Chào anh, em là trợ lý AI của SangDupont, anh cần em tư vấn về mẫu bật lửa Dupont nào?
+                {t.greeting}
               </div>
             )}
             {messages.map((m, idx) => (
@@ -255,7 +283,7 @@ export default function AiChat() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Nhập câu hỏi..."
+              placeholder={t.placeholder}
               style={{
                 flex: 1,
                 background: "#0a0a0d",
@@ -282,7 +310,7 @@ export default function AiChat() {
                 fontWeight: 600,
               }}
             >
-              Gửi
+              {t.send}
             </button>
           </form>
 
