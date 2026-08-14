@@ -75,8 +75,8 @@
 **Dependencies**: Phase 2
 **Gate**: 100% sản phẩm published có slug/cover/status/metadata hợp lệ; VI/EN URL hoạt động
 
-### Phase 4: Admin/CMS tối giản — ✅ DONE 2026-08-14 (code + Reviewer PASS — chờ verify login thật sau deploy)
-**Kết quả thực thi**: migration `admin_rls.sql` — helper `is_admin()` (allowlist `tvccbod@gmail.com`, D18), drop 11 policy write cũ theo role → recreate bằng is_admin (anon write 401 verified); GitHub OAuth provider bật + tắt email signup + site_url (PATCH 200 + auth/v1/settings verify); `/admin` login GitHub + AdminGuard (client UX, RLS là quyền thật — D19/D20); `/admin/products` CRUD đầy đủ (VI/EN, status 5 giá trị, price NULL="Liên hệ", media upload Storage + ảnh static + xóa dọn file); `/admin/leads` list/filter/status update/signed URL attachment. **Reviewer PASS** (SW-P4-ADMIN-01) + 4 góp ý: 3 fix ngay (sanitize path, MIME, storage orphan), R4-4 ghi nhận. Lint/tsc/build PASS toàn bộ. ⚠️ Login flow + CRUD thật CHƯA verify browser (cần deploy domain có HTTPS — localhost không callback được GitHub OAuth) → verify khi push/deploy (Phase 7 gate hoặc trước).
+### Phase 4: Admin/CMS tối giản — ✅ DONE 2026-08-14 (verify end-to-end production)
+**Kết quả thực thi**: migration `admin_rls.sql` — helper `is_admin()` (allowlist `tvccbod@gmail.com`, D18), drop 11 policy write cũ theo role → recreate bằng is_admin (anon write 401 verified); GitHub OAuth provider bật + email provider tắt + site_url (verify auth config); `/admin` login GitHub + AdminGuard (client UX, RLS là quyền thật — D19/D20); `/admin/products` CRUD đầy đủ (VI/EN, status 5 giá trị, price NULL="Liên hệ", media upload Storage + ảnh static + xóa dọn file); `/admin/leads` list/filter/status update/signed URL attachment. **Reviewer PASS** (SW-P4-ADMIN-01) + 4 góp ý xử lý hết. **Verify production end-to-end**: login GitHub thật ✅ (user tvccbod@gmail.com), CRUD create/delete thật ✅ (DB sạch 9 products), deploy Vercel alias `sangdupont.vercel.app` ✅. Bài học ghi DECISIONS_LOG: L1 `disable_signup` chặn cả OAuth → fix email provider tắt riêng; L2 GitHub redirect_uri khớp chính xác.
 
 **Deliverables**:
 - Login admin (Supabase Auth)

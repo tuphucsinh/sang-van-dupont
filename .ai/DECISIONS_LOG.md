@@ -56,3 +56,12 @@
 | R4-2 | Upload chỉ check size, không check MIME | ✅ Fix: `file.type.startsWith('image/')` |
 | R4-3 | Xóa product → file bucket orphan | ✅ Fix: storage.remove trước delete |
 | R4-4 | ADMIN_EMAIL lặp 3 nơi; ARCHITECT §4 ghi "signed URL qua Edge Function" nhưng thực tế createSignedUrl client-side | Ghi nhận: RLS là nguồn sự thật duy nhất (an toàn vì is_admin chặn); cập nhật ARCHITECT §4 khi Phase 7 (signed URL client-side OK vì RLS) |
+
+## 2026-08-14 — Verify login thật production + bài học disable_signup
+
+**Kết quả verify end-to-end (production)**: GitHub OAuth login ✅ (user `tvccbod@gmail.com` provider github), CRUD create ✅ (product test), delete ✅ (DB sạch 9 products), RLS is_admin ✅. **Phase 4 hoàn tất 100%**.
+
+| # | Bài học | Chi tiết |
+|---|---|---|
+| L1 | **`disable_signup: true` chặn CẢ GitHub OAuth tạo user mới** (lỗi `signup_disabled` khi login lần đầu) | Fix đúng: `disable_signup: false` + `external_email_enabled: false` (tắt hẳn email provider) + `external_github_enabled: true` → chỉ GitHub là đường vào, email không login được. An toàn vì RLS is_admin() chặn write cho mọi người khác |
+| L2 | GitHub OAuth redirect_uri phải khớp CHÍNH XÁC `https://<ref>.supabase.co/auth/v1/callback` — dán nhầm URL lỗi (`localhost:3000/?error=...`) → GitHub báo "redirect_uri is not associated" | Khi gặp lỗi này: kiểm tra Redirect URIs trong GitHub settings app, xóa URL lạ, dán đúng callback, bấm Update application |
