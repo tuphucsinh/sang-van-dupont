@@ -36,8 +36,8 @@ export async function generateMetadata({
     alternates: {
       canonical: `/vi/products/${p.slug}`,
       languages: {
-        vi: `/vi/products/${p.slug}`,
-        en: `/en/products/${p.slug}`,
+        vi: `https://sangdupont.vercel.app/vi/products/${p.slug}`,
+        en: `https://sangdupont.vercel.app/en/products/${p.slug}`,
       },
     },
     openGraph: {
