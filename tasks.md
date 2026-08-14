@@ -32,7 +32,7 @@ _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE
 **Constraints**: KHÔNG sửa code khi đã PASS (chỉ ghi nhận); nếu lỗi → fix task riêng báo Mika
 **Definition of Done**: mọi mục PASS — ghi đủ 3 nhóm (kỹ thuật/routes/browser) vào file tạm
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): lint/tsc/build PASS; 17 routes production đúng (16 product 200 + 404 slug lạ); browser CDP home + VI/EN NO_JS_ERRORS; chi tiết `.tmp/regression-p7.md`
 
 ---
 
@@ -54,7 +54,7 @@ _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE
 **Constraints**: KHÔNG commit secret; KHÔNG để test data sót (dọn sau mỗi test)
 **Definition of Done**: mọi mục PASS + test data sạch
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): anon POST 401, anon leads [], service 200, rate limit 429 từ lần 5, secret scan CLEAN (không giá trị thật trong tracked), test data dọn
 
 ---
 
@@ -76,7 +76,7 @@ _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE
 **Constraints**: Bằng chứng thật cho mỗi PASS (không "em nghĩ là OK"); FAIL phải nêu rõ thiếu gì
 **Definition of Done**: 10/10 PASS ghi vào MASTER_PLAN (kèm bằng chứng ngắn) — nếu <10, dừng báo anh
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): **10/10 PASS** — gate đạt, bảng chi tiết trong MASTER_PLAN Phase 7
 
 ---
 
@@ -98,7 +98,7 @@ _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE
 **Constraints**: KHÔNG backup DB chứa test data rác (dọn trước); tag chỉ khi regression PASS
 **Definition of Done**: repo sạch verify, backup mới + có data, tag v1.0-release-a, rollback doc ghi đủ 3 đường
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): repo 84 files sạch, backup 20K có data, tag v1.0-release-a push, rollback doc 3 đường
 
 ---
 

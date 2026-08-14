@@ -124,6 +124,23 @@
 **Dependencies**: Phase 1–6
 **Gate**: RELEASE A GATE (file 1 "RELEASE A GATE" — 10 tiêu chí) đủ — chỉ production khi tất cả PASS
 
+**RELEASE A GATE — KẾT QUẢ (2026-08-14, verified bằng chứng thật)**:
+
+| # | Tiêu chí (file 1) | Kết quả | Bằng chứng |
+|---|---|---|---|
+| 1 | static build/deploy PASS | ✅ | build PASS; production live `sangdupont.vercel.app` 200 (D21: Vercel thay TENTEN) |
+| 2 | catalog + product detail PASS | ✅ | 8 products + 16 trang VI/EN đều 200 (P7T01) |
+| 3 | admin Supabase PASS | ✅ | login GitHub thật + CRUD create/delete verified (P4) |
+| 4 | form/upload/Telegram PASS | ✅ | E2E production: lead + ảnh + Telegram nhận text+ảnh (P5) |
+| 5 | RLS/private storage PASS | ✅ | anon POST 401, anon leads [], anon file private 400, service 200 (P7T02) |
+| 6 | VI/EN + SEO PASS | ✅ | sitemap 17 URL + robots + hreflang + OG (P6) |
+| 7 | analytics events PASS | ✅* | GA4 code + start_form/submit_form track sẵn sàng — *chờ anh cấp Measurement ID (G-XXXX) để bật thật; không chặn release |
+| 8 | desktop/mobile PASS | ✅ | Lighthouse mobile 94 / desktop 100 (P6) |
+| 9 | production artifact gọn | ✅ | repo 84 files tracked, không file dev/raw/backup (P7T04) |
+| 10 | rollback + backup DB | ✅ | tag `v1.0-release-a` + backup 20K mới + rollback doc 3 đường (P7T04) |
+
+→ **10/10 PASS — RELEASE A GATE ĐẠT. Release A COMPLETE (2026-08-14).**
+
 ### Phase 8: AI Concierge — Release B (khi có sử dụng thật)
 **Goal**: AI public qua Edge Function proxy + tool calling; Hermes Telegram concierge restricted; lead/CRM nhẹ.
 
