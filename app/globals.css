@@ -10,9 +10,9 @@
   --gold-bright:#f3d77a;
   --gold-deep:#9a7b1e;
   --line:rgba(212,175,55,.18);
-  --serif:'Playfair Display', 'Cormorant Garamond', Georgia, serif;
-  --serif-2:'Cormorant Garamond', Georgia, serif;
-  --sans:'Inter', system-ui, sans-serif;
+  --serif:var(--font-serif), 'Playfair Display', Georgia, serif;
+  --serif-2:var(--font-serif-2), 'Cormorant Garamond', Georgia, serif;
+  --sans:var(--font-sans), 'Inter', system-ui, sans-serif;
   --ease:cubic-bezier(.22,.61,.36,1);
 }
 *{margin:0;padding:0;box-sizing:border-box}
