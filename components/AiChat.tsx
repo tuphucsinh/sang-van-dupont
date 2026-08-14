@@ -73,7 +73,7 @@ export default function AiChat() {
         onClick={() => setOpen((prev) => !prev)}
         style={{
           position: "fixed",
-          bottom: 20,
+          bottom: 88,
           right: 20,
           width: 56,
           height: 56,
@@ -98,7 +98,7 @@ export default function AiChat() {
         <div
           style={{
             position: "fixed",
-            bottom: 84,
+            bottom: 120,
             right: 20,
             width: 360,
             maxWidth: "calc(100vw - 32px)",

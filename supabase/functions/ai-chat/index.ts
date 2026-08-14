@@ -202,6 +202,7 @@ export default {
     let finalText = "";
     let usedTokens = 0;
     let ok = false;
+    let lastToolSummary = ""; // fallback deterministic khi model trả content rỗng (pitfall deepseek tool-calling)
 
     for (let round = 0; round < 3; round++) {
       const ctrl = new AbortController();
@@ -236,6 +237,29 @@ export default {
           let args: Record<string, unknown> = {};
           try { args = JSON.parse(tc.function.arguments || "{}"); } catch { args = {}; }
           const toolResult = await callTool(tc.function.name, args);
+          // Ghi summary fallback (nội dung thật từ tool)
+          if (tc.function.name === "search_products") {
+            try {
+              const rows = JSON.parse(toolResult);
+              if (Array.isArray(rows) && rows.length > 0) {
+                lastToolSummary = "Hiện có " + rows.length + " sản phẩm phù hợp:\n" + rows.map((r: Record<string, unknown>) => `- ${r.name_vi} (${r.line || "?"}) — ${r.status === "available" ? "còn hàng" : "hết hàng"}`).join("\n") + "\n\nGiá từng mẫu vui lòng liên hệ 0905 076 886 để được báo giá chính xác.";
+              } else {
+                lastToolSummary = "Rất tiếc, hiện không tìm thấy sản phẩm phù hợp. Bạn có thể xem bộ sưu tập trên website sangdupont.vercel.app hoặc liên hệ 0905 076 886.";
+              }
+            } catch { /* giữ nguyên */ }
+          } else if (tc.function.name === "get_product" && !toolResult.includes('"error"')) {
+            try {
+              const p = JSON.parse(toolResult);
+              if (p && p.name_vi) {
+                lastToolSummary = `${p.name_vi} — ${p.line || ""}${p.material ? ", " + p.material : ""}\nTình trạng: ${p.status === "available" ? "còn hàng" : "không còn hàng"}\nGiá: ${p.price ? p.price + " " + (p.price_unit || "") : "đang cập nhật — liên hệ 0905 076 886 để được báo giá"}\n${p.desc_vi ? p.desc_vi.slice(0, 300) : ""}`;
+              }
+            } catch { /* giữ nguyên */ }
+          } else if (tc.function.name === "create_lead") {
+            try {
+              const r = JSON.parse(toolResult);
+              if (r.ok) lastToolSummary = "Đã ghi nhận yêu cầu của bạn (mã #" + r.request_code + "). SangDupont sẽ liên hệ sớm nhất — cảm ơn bạn!";
+            } catch { /* giữ nguyên */ }
+          }
           messages.push({ role: "tool", content: toolResult, tool_call_id: tc.id } as never);
         }
         continue;
@@ -246,7 +270,9 @@ export default {
     }
 
     if (!ok) {
-      finalText = "Xin lỗi, tôi chưa trả lời được — vui lòng liên hệ 0905 076 886 để được hỗ trợ trực tiếp.";
+      // Model trả content rỗng (pitfall tool-calling) → fallback deterministic từ tool data thật
+      finalText = lastToolSummary ||
+        "Xin lỗi, tôi chưa trả lời được — vui lòng liên hệ 0905 076 886 để được hỗ trợ trực tiếp.";
     }
 
     await supabase.from("ai_chat_logs").insert({
