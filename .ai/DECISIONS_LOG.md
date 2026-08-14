@@ -95,3 +95,12 @@
 |---|---|---|
 | L1 | **`disable_signup: true` chặn CẢ GitHub OAuth tạo user mới** (lỗi `signup_disabled` khi login lần đầu) | Fix đúng: `disable_signup: false` + `external_email_enabled: false` (tắt hẳn email provider) + `external_github_enabled: true` → chỉ GitHub là đường vào, email không login được. An toàn vì RLS is_admin() chặn write cho mọi người khác |
 | L2 | GitHub OAuth redirect_uri phải khớp CHÍNH XÁC `https://<ref>.supabase.co/auth/v1/callback` — dán nhầm URL lỗi (`localhost:3000/?error=...`) → GitHub báo "redirect_uri is not associated" | Khi gặp lỗi này: kiểm tra Redirect URIs trong GitHub settings app, xóa URL lạ, dán đúng callback, bấm Update application |
+
+## 2026-08-14 — Phase 10-12: sangbot nội bộ + Marketing Pipeline + Website Operator
+
+| # | Quyết định | Lý do | Nguồn |
+|---|---|---|---|
+| D26 | **sangbot chuyển vai trò: internal operator thuần** — chỉ anh điều khiển qua Telegram (pairing allowlist), khách KHÔNG dùng Telegram bot nữa; AI chat khách = website widget duy nhất (đã có, không đụng) | Anh chốt 14-08; D9 tách quyền: internal có shell/git, public tối thiểu — không 2 vai trò chung 1 profile | anh chốt + D9 |
+| D27 | **AI Marketing Pipeline = tool internal sangbot**: prompt templates + gọi opencode-go (deepseek-v4-flash text / qwen3.7-plus vision) từ Pi5; input data Supabase thật; output draft git-tracked `marketing/drafts/<slug>/`; human review trước publish; **KHÔNG tự đăng bài** | D11 AI chỉ tạo draft; out-of-scope file nguồn §11 ("AI tự đăng bài") | D11 + file nguồn §11 |
+| D28 | **Website Operator = CLI `sangops` local** (scripts/ops/): service role từ `.env.local` (không vào git), gh CLI theo dõi Actions, Vercel deploy hook (reuse P4), smoke CDP (reuse P7); **push/deploy/delete = approval gate** anh duyệt qua Telegram | An toàn production; quy tắc git dự án: push chỉ khi anh báo | AGENTS.md GIT & SECRETS |
+| D29 | **Internal AI Policy mở rộng** (append AI_POLICY.md): nội dung marketing/operator chỉ từ data thật; mọi write có log + reversible; operator tuân thủ guard approval | Nhất quán AI_POLICY nguyên tắc 1 + 5 | AI_POLICY.md |

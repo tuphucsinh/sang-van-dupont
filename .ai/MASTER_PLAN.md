@@ -172,6 +172,64 @@
 
 ### Phase 9B-next: Research (sourcing/price intelligence) — khi anh muốn
 **Deliverables**: Research DB riêng (seller/listing/price/watchlist, URL+timestamp), opportunity alerts, marketing pipeline từ 1 nguồn dữ liệu. **Gate**: anh yêu cầu + usage thật.
+> Ghi chú 14-08: phần "marketing pipeline" đã tách thành **Phase 11** theo yêu cầu mới của anh.
+
+### Phase 10: Sangbot Internal Setup — [PLAN — chờ anh duyệt plan2task]
+**Mục đích**: chuyển profile `sangbot` (đang RESTRICTED public concierge, gateway stopped) thành **Hermes NỘI BỘ** — anh điều khiển qua Telegram; nền cho AI Marketing (P11) + Website Operator (P12). Anh chốt 14-08: sangbot = internal operator thuần, khách không dùng Telegram bot — AI chat khách chuyển hẳn về website widget (đã có, không đụng).
+
+**Deliverables**:
+- Backup trước khi đổi: SOUL.md → `SOUL.md.bak-p10` + config.yaml → hermes-artifacts
+- SOUL.md mới: internal operator persona — được terminal/file/git/web NHƯNG guard: push/deploy/delete = chờ anh duyệt; tuân thủ `.ai/AI_POLICY.md` (mở rộng Internal AI) + `.ai/OPERATIONS.md` (P12)
+- Mở toolsets cho profile sangbot: terminal, file, web, git (giữ model deepseek-v4-flash)
+- Pairing/authorization: **chỉ approve anh** — user khác không vào được profile (khách cũ không còn dùng bot)
+- Gateway sangbot bật lại: Telegram reconnect `@sangdupontbot` (giờ chỉ phục vụ anh); verify không còn đường public nào vào profile
+- Verify: sangbot online, anh nhắn → tool cơ bản chạy; user lạ bị chặn; secret không rò
+
+**Dependencies**: `none` (profile đã tồn tại)
+**Gate**: sangbot online + chỉ anh được approve; user khác bị chặn; SOUL/guard đúng; không rò secret
+
+### Phase 11: AI Marketing Pipeline — [PLAN — chờ anh duyệt plan2task]
+**Mục tiêu**: một nguồn (sản phẩm + ảnh) → **nhiều đầu ra marketing**, giảm nhập nội dung lặp lại. Chạy trên sangbot internal qua Telegram.
+
+**Deliverables**:
+- Generator 1 sản phẩm → **8 đầu ra, mỗi đầu ra VI + EN**:
+  1. Product listing (draft cho /admin/products)
+  2. Bài website (draft nội dung trang)
+  3. Facebook post
+  4. TikTok caption
+  5. Story/reel ngắn
+  6. Bản tiếng Anh (mọi đầu ra có sẵn EN)
+  7. SEO metadata (title/description/OG VI+EN — JSON dán vào admin)
+  8. Alt text cho từng ảnh `product_media`
+- Nguồn dữ liệu: Supabase THẬT (`products` + `product_media`, chỉ `available`) — **không bịa giá/tồn kho/tình trạng** (AI_POLICY nguyên tắc 1)
+- Model: text deepseek-v4-flash + vision qwen3.7-plus (opencode-go, chạy Pi5 — reuse pattern Phase 9B); key từ env, không vào git
+- Prompt templates chuẩn: persona luxury đen-vàng, CTA Zalo/Telegram, hashtag, disclaimer — `marketing/templates/`
+- Output: `marketing/drafts/<slug>/` git-tracked (md VI/EN + SEO json + alt txt) — human review qua git diff
+- Publish: draft → dán vào /admin (hoặc sangbot P12 cập nhật) — **KHÔNG tự đăng bài** (out-of-scope file nguồn §11)
+- Cập nhật `.ai/AI_FEATURES_GUIDE.md` mục Marketing
+
+**Dependencies**: Phase 10 (sangbot internal) · Phase 3 (product data) · Phase 9B (pattern vision/draft)
+**Gate**: chạy thật 1 sản phẩm → đủ 8 đầu ra VI/EN; không bịa thông số/giá; draft review OK; báo chi phí gọi model
+
+### Phase 12: AI Website Operator — [PLAN — chờ anh duyệt plan2task]
+**Mục tiêu**: Hermes nội bộ (sangbot/Telegram) vận hành website trọn vòng: nội dung sản phẩm → kiểm tra → CI/deploy → phát hiện lỗi → rollback.
+**Workflow**: Hermes trên Pi5 → Project local → GitHub → GitHub Actions build/test → Vercel
+
+**Deliverables**:
+- `.ai/OPERATIONS.md` — playbook: checklist post-deploy, xử lý deploy lỗi, rollback (3 đường từ P7)
+- CLI `scripts/ops/sangops.ts` (subcommands, service role từ `.env.local` — không vào git):
+  - `products list|get|create|update|delete` — CRUD qua service role (delete: confirm 2 bước); publish = trigger Vercel deploy hook (reuse cơ chế P4)
+  - `links` — crawl sitemap production → check status link + ảnh hỏng (img src HTTP)
+  - `i18n` — so sánh VI/EN (name/desc/meta) từ DB → report lệch
+  - `seo` — audit per-page: title/desc length, canonical, hreflang, OG, JSON-LD (Product schema), alt img
+  - `smoke` — post-deploy: HTTP status các route (17 routes P7) + NO_JS_ERRORS CDP + sitemap.xml/robots valid
+  - `ci` — gh CLI: `gh run list/watch/view --log-failed` → trạng thái build
+  - `rollback` — chuẩn bị sẵn: git revert + push (sau anh duyệt) hoặc redeploy artifact cũ; backup DB trước write quan trọng
+- Deploy lỗi → thu log CI/Vercel → phân loại nguyên nhân (build/test/deploy/runtime) → báo anh kèm evidence + đề xuất rollback
+- Guard: **push/deploy/delete = approval gate** (anh duyệt qua Telegram); mọi write có log + reversible
+
+**Dependencies**: Phase 10 · Phase 4 (CRUD/publish) · Phase 6 (SEO/sitemap) · Phase 7 (deploy/rollback) · gh CLI + Vercel
+**Gate**: 1 release thật — operator chạy đủ checklist post-deploy; phát hiện lỗi deploy + nguyên nhân đúng (test 1 lỗi giả); CRUD + publish verified production; rollback doc hoạt động; **Reviewer PASS** (chạm DB write + production)
 
 ---
 
