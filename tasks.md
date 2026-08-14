@@ -69,7 +69,7 @@ _(4 task P1T01–P1T04 đã xong — chi tiết: `.ai/MASTER_PLAN.md` Phase 1; t
 - SQL parse được: `supabase db reset` (local) hoặc apply lên project chạy sạch không lỗi
 - `\dt`/information_schema: đủ 9 bảng + 2 enum + index đúng
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): db push PASS, dump remote đủ 9 bảng + 2 enum; runner agy viết file chuẩn 104 dòng
 
 ---
 
