@@ -13,7 +13,7 @@
 ## Phase 7: Release A Gate + Deploy Vercel — ✅ DONE 2026-08-14 (Gate 10/10 + tag v1.0-release-a)
 ## Phase 8: AI Concierge — Release B — ✅ DONE 2026-08-14 (Gate 4/4)
 ## Phase 9A: Ops hoàn thiện — ✅ DONE (tách 2026-08-14, D22)
-## Phase 9B: Full AI (Vision + Admin draft + Recommend) — ✅ DONE 2026-08-14 (qwen3.8-max vision verified)
+## Phase 9B: Full AI (Vision + Admin draft + Recommend) — ✅ DONE 2026-08-14 (qwen3.7-plus vision — chốt sau so sánh 2 model)
 _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE 3 sweep)_
 
 ## Phase 9B-next: Research (sourcing/price intelligence) — khi anh muốn
@@ -24,4 +24,4 @@ _(chưa băm task — gate: anh yêu cầu + usage thật; hướng: Research DB
 - Backup: cron CN 08:00 (ping + backup sangwebsite giữ 7 bản); T7 21:00 ping thuần; KURABE backup tắt (chờ link)
 - Publish sản phẩm: /admin thêm/sửa → rebuild + deploy (`vercel --prod`)
 - AI chat: kill switch = `supabase secrets set AI_ENABLED=false`; cost cap 100 req/ngày
-- AI vision: model qwen3.8-max (AI_VISION_MODEL secret); draft chỉ nháp — anh duyệt trước save
+- AI vision: model qwen3.7-plus (AI_VISION_MODEL secret — chốt 14-08: thận trọng hơn qwen3.8-max); draft chỉ nháp — anh duyệt trước save
