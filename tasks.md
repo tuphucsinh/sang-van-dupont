@@ -48,7 +48,7 @@ _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE
 - curl test: POST hợp lệ → 201 + lead trong DB + Telegram nhận message; POST thiếu phone → 400; POST lần 6 trong giờ → 429
 - Test data dọn sau verify
 
-**Status**: `[x]` — verified 2026-08-14 (Mika): deploy OK; curl test 201 (lead + DB + Telegram nhận), 400 (thiếu phone), 429 (rate limit lần 5/giờ); test data đã dọn
+**Status**: `[x]` — verified 2026-08-14 (Mika): build PASS; backend verify: maintenance+1 ảnh → 201 + attachment trong DB + anon private 400; test data dọn; Deno fix Buffer→atob
 
 ---
 
@@ -80,7 +80,7 @@ _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE
 - Build PASS; browser verify (Mika): điền form → submit → success "mã yêu cầu"; DB có lead mới; Telegram nhận
 - Client validation: submit trống tên → lỗi inline không gọi API
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): LeadForm + wire Contact build PASS; verify production ở P5T04 (cần deploy)
 
 ---
 
@@ -111,7 +111,7 @@ _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE
 - Browser verify: gửi form bảo dưỡng kèm 2 ảnh → lead tạo + 2 attachment trong DB; admin `/admin/leads` tải được ảnh (signed URL); anon KHÔNG truy cập được file trực tiếp (400)
 - Test data dọn sau verify
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): UI maintenance (3 ảnh + consent) build PASS; backend create-lead attachments verified 201/400/private; production verify ở P5T04
 
 ---
 
