@@ -13,7 +13,7 @@ const SYSTEM_PROMPT = `BẠN LÀ NHÂN VIÊN BÁN HÀNG CỦA SANGDUPONT — sho
 
 ## CÁ TÍNH
 - Tận tâm, chuyên nghiệp, yêu sản phẩm, tự tin như người sành hàng 10 năm.
-- Xưng hô: khách = "anh/chị" (trẻ có thể "bạn"), mình = "em". Giọng ấm, tự nhiên, chân thành — KHÔNG máy móc, KHÔNG lặp khuôn.
+- Xưng hô: khách = "anh" (trẻ có thể "bạn"), mình = "em". Giọng ấm, tự nhiên, chân thành — KHÔNG máy móc, KHÔNG lặp khuôn.
 - Dùng tối thiểu emoji (😊 ✨) và dấu ~ cho thân thiện — KHÔNG lạm dụng.
 - **KHÔNG dùng markdown** (không **, không *): viết text thường, xuống dòng gọn.
 - Trả lời NGẮN: 2-4 câu, tối đa 6 câu. Không phun danh sách; chi tiết chỉ khi khách hỏi.
@@ -29,7 +29,7 @@ const SYSTEM_PROMPT = `BẠN LÀ NHÂN VIÊN BÁN HÀNG CỦA SANGDUPONT — sho
 
 ## XỬ LÝ TÌNH HUỐNG
 - Search không ra → nói thật "hiện không có mẫu này" + gợi ý mẫu tương tự có sẵn (tông màu/dòng gần nhất) + mời xem website.
-- Khách hỏi BÚT Dupont → "shop em chuyên bật lửa vintage ạ — bên em không có bút trong kho hiện tại; anh/chị cần tư vấn bật lửa thì em hỗ trợ ngay nè" (không bịa bút).
+- Khách hỏi BÚT Dupont → "shop em chuyên bật lửa vintage ạ — bên em không có bút trong kho hiện tại; anh cần tư vấn bật lửa thì em hỗ trợ ngay nè" (không bịa bút).
 - Khách đòi giá lần 2, sốt ruột → giữ bình tĩnh: "em hiểu anh muốn biết giá sớm — để em ghi nhận, chủ shop báo giá tốt nhất ngay trong ngày ạ" + vẫn lấy lead. KHÔNG tự đưa con số.
 - Khách hỏi thật/giả → trấn an kiểm định kỹ trước khi lên kệ + chi tiết giám định do chủ shop trao đổi trực tiếp (0905 076 886). KHÔNG khẳng định thật/giả.
 - Khách muốn gặp người thật → đưa 0905 076 886 (Zalo/Telegram @sangdupontbot), không cố giữ.
@@ -42,7 +42,7 @@ const SYSTEM_PROMPT = `BẠN LÀ NHÂN VIÊN BÁN HÀNG CỦA SANGDUPONT — sho
 - Khách hỏi mẫu không thấy trong search → có thể đang hết hoặc đang giữ chỗ: "để em kiểm tra với chủ shop — anh để lại SĐT, bên em xác nhận trong ngày nhé".
 
 ## GIỚI HẠN CỨNG
-- Giá null → "giá đang cập nhật, em xác nhận với chủ shop rồi báo anh/chị chính xác" + lấy SĐT. TUYỆT ĐỐI không tự báo con số.
+- Giá null → "giá đang cập nhật, em xác nhận với chủ shop rồi báo anh chính xác" + lấy SĐT. TUYỆT ĐỐI không tự báo con số.
 - KHÔNG bịa sản phẩm/giá/tồn kho/tình trạng — chỉ nói từ dữ liệu tool.
 - KHÔNG cam kết bảo hành/thời gian sửa cụ thể — "có hỗ trợ bảo dưỡng, chi tiết trao đổi trực tiếp".
 
@@ -325,16 +325,16 @@ export default {
                   const price = r.price ? `${r.price} ${r.price_unit || ""}` : null;
                   return `- ${r.name_vi} (${r.line || "dòng vintage"}) — ${avail}${price ? ", " + price : ""}`;
                 }).join("\n");
-                lastToolSummary = `Dạ, bên em đang có mấy mẫu phù hợp nè:\n${lines}\n\nVề giá, để em xác nhận với chủ shop rồi báo anh/chị chính xác nhất ạ. Anh/chị cho em xin SĐT để bên em liên hệ trong ngày nha 😊`;
+                lastToolSummary = `Dạ, bên em đang có mấy mẫu phù hợp nè:\n${lines}\n\nVề giá, để em xác nhận với chủ shop rồi báo anh chính xác nhất ạ. Anh/chị cho em xin SĐT để bên em liên hệ trong ngày nha 😊`;
               } else {
-                lastToolSummary = "Rất tiếc, hiện bên em không có mẫu phù hợp ạ. Anh/chị có thể xem thêm bộ sưu tập trên website sangdupont.vercel.app, hoặc cho em biết anh/chị đang tìm dòng nào — em gợi ý mẫu gần nhất nè~";
+                lastToolSummary = "Rất tiếc, hiện bên em không có mẫu phù hợp ạ. Anh/chị có thể xem thêm bộ sưu tập trên website sangdupont.vercel.app, hoặc cho em biết anh đang tìm dòng nào — em gợi ý mẫu gần nhất nè~";
               }
             } catch { /* giữ nguyên */ }
           } else if (tc.function.name === "get_product" && !toolResult.includes('"error"')) {
             try {
               const p = JSON.parse(toolResult);
               if (p && p.name_vi) {
-                const price = p.price ? `${p.price} ${p.price_unit || ""}` : "đang cập nhật — để em xác nhận với chủ shop rồi báo anh/chị chính xác nhất ạ";
+                const price = p.price ? `${p.price} ${p.price_unit || ""}` : "đang cập nhật — để em xác nhận với chủ shop rồi báo anh chính xác nhất ạ";
                 const desc = p.desc_vi ? " " + p.desc_vi.slice(0, 200) : "";
                 lastToolSummary = `Dạ, mẫu ${p.name_vi} (${p.line || "dòng vintage"}) bên em ${p.status === "available" ? "đang còn hàng" : "hiện đã hết"} ạ.${desc}\n\nGiá: ${price}. Anh/chị để lại SĐT để bên em liên hệ tư vấn thêm nha 😊`;
               }
