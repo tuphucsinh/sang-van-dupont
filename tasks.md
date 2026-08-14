@@ -12,8 +12,8 @@
 ## Phase 6: SEO + GA4 + Performance — ✅ DONE 2026-08-14 (Lighthouse mobile 94 / desktop 100)
 _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE 3 sweep)_
 
-## Phase 7: Release A Gate + Deploy TENTEN
-_(chưa băm task — phase cuối của Release A; cần quyết định host khi tới)_
+## Phase 7: Release A Gate + Deploy Vercel (TENTEN hoãn — D21)
+_(chưa băm task — phase cuối của Release A: full regression + RELEASE A GATE 10 tiêu chí + deploy Vercel ổn định + rollback + backup DB)_
 
 ## Phase 8: AI Concierge — Release B
 _(chưa băm task — gated: chờ sử dụng thật)_

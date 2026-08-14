@@ -48,6 +48,12 @@
 | D19 | Admin CRUD **client-side** (supabase-js + user session → PostgREST qua RLS) — static export KHÔNG có server actions/route handlers | `output:'export'` giới hạn; RLS là lớp enforce thật (không chỉ UI guard) |
 | D20 | Route admin: `/admin` (login) + `/admin/products` (CRUD) + `/admin/leads` (xem lead); client guard + RLS enforce | Tách rõ login vs CRUD vs lead; Phase 4 gồm luôn xem lead (anh chốt) |
 
+## 2026-08-14 — Chốt host: Vercel tạm thời, TENTEN hoãn
+
+| # | Quyết định | Lý do |
+|---|---|---|
+| D21 | **Host tạm thời = Vercel** (`sangdupont.vercel.app`) — KHÔNG deploy TENTEN trong Release A. TENTEN dời lại: chỉ khi (a) cần domain Việt Nam / giảm chi phí / Vercel Free hết hạn, hoặc (b) anh yêu cầu → làm sub-phase "migrate TENTEN" riêng | Anh chỉnh kế hoạch 2026-08-14: Vercel đang chạy ổn + free, không cần thêm bước deploy ngay; Phase 7 giờ = Release A Gate + deploy Vercel ổn định + rollback |
+
 ## 2026-08-14 — Reviewer SW-P4-ADMIN-01: PASS + 4 góp ý
 
 | # | Góp ý | Xử lý |

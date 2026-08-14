@@ -13,7 +13,7 @@
 
 **In-scope**:
 - Chuyển UI hiện tại sang Next.js + TypeScript, giữ visual parity đen-vàng luxury
-- Static export (`output: 'export'`) + build ngoài host (GitHub Actions/PC) → TENTEN
+- Static export (`output: 'export'`) + build ngoài host (GitHub Actions/PC) → **Vercel (tạm thời, D21)**; TENTEN hoãn
 - Supabase Free: DB (products/leads/...), Auth (admin), Storage (media), Edge Functions (Telegram/AI proxy)
 - Catalog + product detail + admin/CMS tối giản + lead pipeline + SEO/tracking/performance (Release A)
 - AI concierge public (Release B, khi có sử dụng thật)
@@ -25,7 +25,7 @@
 - SSR toàn site chỉ vì Next.js hỗ trợ; runtime image optimization trên shared hosting
 
 **Ràng buộc chốt (từ 2 file kế hoạch)**:
-1. Static-first: RAM/CPU/disk TENTEN tối thiểu; database/media/AI không ăn tài nguyên hosting
+1. Static-first: RAM/CPU/disk hosting tối thiểu (Vercel hiện tại, TENTEN nếu chuyển sau); database/media/AI không ăn tài nguyên hosting
 2. Không để API key/secret trong trình duyệt — mọi sensitive action qua Edge Function
 3. Không đưa AI public trước khi catalog + lead pipeline đủ chuẩn (file 1 mục tiêu #6)
 4. Nguồn sự thật canonical cho sản phẩm/giá/tình trạng; Hermes MEMORY không làm CRM/giá/tồn kho
@@ -45,7 +45,7 @@
 - Next.js App Router + TS (strict), component hóa tối thiểu, Client Component chỉ khi cần tương tác
 - `output: 'export'`, build sạch, không lỗi console nghiêm trọng
 - Dọn repo: data/ (đã ignore), preview/, asset thừa (logo variants, hero-B*), file kế hoạch giữ ở docs/
-- CI build ngoài host (GitHub Actions) — chuẩn bị cho deploy TENTEN
+- CI build ngoài host (GitHub Actions) — chuẩn bị cho deploy Vercel (TENTEN sau nếu chuyển)
 
 **Dependencies**: `none` (bắt đầu từ landing hiện tại)
 **Gate**: build sạch; visual parity desktop/mobile; không regression đáng kể; lint/typecheck PASS
@@ -107,19 +107,19 @@
 - `/vi/...`, `/en/...`, canonical, hreflang, sitemap, robots, OG, structured data, semantic HTML
 - GA4 events: `view_product`, `click_zalo`, `click_telegram`, `click_call`, `start_form`, `submit_form`, `qualified_lead`
 - Ảnh WebP/AVIF pre-optimize, srcset/sizes, lazy-load dưới fold, `prefers-reduced-motion`, giảm JS bundle
-- Không runtime `next/image` optimization trên TENTEN
+- Không runtime `next/image` optimization (static export — áp dụng mọi host)
 
 **Dependencies**: Phase 3 + Phase 5 (GA4 events `start_form`/`submit_form`/`qualified_lead` cần form từ P5)
 **Gate**: Lighthouse mobile Perf ≥ 85, desktop ≥ 90; A11y/SEO/BP ≥ 90
 
-### Phase 7: Release A Gate + Deploy TENTEN
-**Goal**: Full regression + production artifact gọn + deploy TENTEN + rollback sẵn sàng.
+### Phase 7: Release A Gate + Deploy Vercel (host tạm thời — TENTEN HOÃN, D21)
+**Goal**: Full regression + production artifact gọn + deploy ổn định trên Vercel (host hiện tại) + rollback sẵn sàng.
 
 **Deliverables**:
 - Full regression: typecheck/lint/build, route/404/VI-EN, admin CRUD, RLS, private storage, lead/Telegram, analytics, mobile/desktop
 - Production artifact: không chứa `.git`, `node_modules`, `.next/cache`, preview, crawl data, backup lớn
-- Deploy TENTEN (static export) + smoke test; giữ artifact cũ để rollback; backup DB thủ công
-- Quyết định host chờ anh chốt: hiện đang Vercel live — TENTEN target theo kế hoạch (xem OPEN DECISIONS)
+- Deploy Vercel (static export) + smoke test; giữ artifact cũ để rollback; backup DB thủ công
+- ✅ **QUYẾT ĐỊNH 2026-08-14 (D21)**: tạm thời host Vercel `sangdupont.vercel.app` — KHÔNG deploy TENTEN. TENTEN dời lại: chỉ khi (a) cần domain Việt Nam / giảm chi phí / Vercel Free hết hạn, hoặc (b) anh yêu cầu. Khi đó làm thêm sub-phase "migrate TENTEN" (build off-host + upload static + smoke) — không nằm trong Release A hiện tại.
 
 **Dependencies**: Phase 1–6
 **Gate**: RELEASE A GATE (file 1 "RELEASE A GATE" — 10 tiêu chí) đủ — chỉ production khi tất cả PASS
@@ -169,9 +169,9 @@
 
 ## 3. OPEN DECISIONS (hỏi anh khi tới phase)
 
-1. **Host**: hiện Vercel live; kế hoạch target TENTEN — giữ Vercel tới khi TENTEN sẵn sàng, hay chuyển sớm? (Phase 7)
-2. **Domain**: giữ `sangdupont.vercel.app` hay mua domain riêng (SEO)? (Phase 6–7)
-3. **GA4**: tài khoản Analytics có sẵn hay tạo mới? (Phase 6)
+1. **Host**: ✅ CHỐT 2026-08-14 — **Vercel tạm thời** (`sangdupont.vercel.app`), TENTEN hoãn (D21). Chỉ cân nhắc TENTEN khi: domain Việt Nam / giảm chi phí / Vercel Free hết hạn
+2. **Domain**: giữ `sangdupont.vercel.app` hay mua domain riêng (SEO)? (Phase 7 — không chặn release)
+3. **GA4**: tài khoản Analytics có sẵn hay tạo mới? — code đã sẵn sàng, chỉ cần Measurement ID (Phase 6 done, bổ sung bất kỳ lúc nào)
 4. **Turnstile**: dùng Cloudflare Turnstile Free cho form — xác nhận? (Phase 5)
 5. **Telegram**: bot token dùng `sangdupontbot` hiện có (đã gắn live chat)? (Phase 5)
 6. **Scope triển khai**: chỉ lên kế hoạch Release A (P1–P7) hay bao gồm cả Release B AI (P8)? (ảnh hưởng plan2task scope)
@@ -184,7 +184,7 @@
 |---|---|
 | 1. Static publishing = thêm bước rebuild khi publish | Catalog nhỏ → rebuild/deploy chấp nhận được; tự động hóa khi tần suất tăng; không ISR |
 | 2. Supabase Free pause / thiếu backup tự động | Backup thủ công định kỳ; đo usage; nâng Pro khi uptime/backup thành yêu cầu kinh doanh |
-| 3. AI/media tăng chi phí + abuse | Media ở Storage; AI ngoài TENTEN; quota/rate limit/Turnstile/kill switch |
+| 3. AI/media tăng chi phí + abuse | Media ở Storage; AI ngoài hosting; quota/rate limit/Turnstile/kill switch |
 
 ---
 
