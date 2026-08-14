@@ -36,7 +36,7 @@
 - `assets/img/` chỉ còn file được index.html tham chiếu (verify bằng grep từng tên file)
 - `git status --short` không có file lạ
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): tag + tar.gz 20.8MB tại hermes-artifacts, data/preview đã mv ra ngoài, 28 file asset thừa đã xóa, mọi ref index.html còn tồn tại
 
 ---
 
