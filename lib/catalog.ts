@@ -21,6 +21,9 @@ export interface Product {
   media: ProductMedia[];
 }
 
+type ProductRow = Omit<Product, "media">;
+type MediaRow = ProductMedia & { product_id: string };
+
 export async function getAllProducts(): Promise<Product[]> {
   const client = getSupabaseClient();
   if (!client) return [];
@@ -44,9 +47,11 @@ export async function getAllProducts(): Promise<Product[]> {
     if (e2) {
       console.warn("[catalog] fetch media fail:", e2.message);
     }
-    return (products as any[]).map((p) => ({
+    return (products as ProductRow[]).map((p) => ({
       ...p,
-      media: (media || []).filter((m) => m.product_id === p.id),
+      media: (media as MediaRow[] | null)
+        ?.filter((m) => m.product_id === p.id)
+        .map(({ product_id: _pid, ...m }) => m) || [],
     }));
   } catch (err) {
     console.warn("[catalog] getAllProducts error:", err);
