@@ -107,7 +107,7 @@ _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE
 **Constraints**: KHÔNG PII trong prompt lưu log (chỉ prompt_hash); KHÔNG innerHTML; widget ẩn trên mobile? KHÔNG — vẫn hiện nhưng nhỏ (nút 48px)
 **Definition of Done**: build PASS; browser verify (Mika): mở widget → hỏi "có L2 không?" → nhận câu trả lời từ AI; console NO_JS_ERRORS; nút handoff đúng link
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): build PASS + production CDP e2e — mở widget, hỏi "có L2 không?", AI trả lời đúng data + giá→Liên hệ + disclaimer, NO_JS_ERRORS
 
 ---
 
