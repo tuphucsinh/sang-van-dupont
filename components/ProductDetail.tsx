@@ -148,7 +148,7 @@ export default function ProductDetail({
           }}
         >
           <Link
-            href="/"
+            href={`/${lang === "en" ? "en" : ""}`}
             onMouseEnter={() => setHoverHome(true)}
             onMouseLeave={() => setHoverHome(false)}
             style={{
@@ -174,7 +174,7 @@ export default function ProductDetail({
             ›
           </span>
           <Link
-            href="/#collection"
+            href={`/${lang === "en" ? "en" : ""}#collection`}
             onMouseEnter={() => setHoverProducts(true)}
             onMouseLeave={() => setHoverProducts(false)}
             style={{

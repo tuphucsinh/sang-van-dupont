@@ -32,7 +32,7 @@ export default async function Home({
       <Nav />
       <Hero />
       <Marquee />
-      <Collection products={products} />
+      <Collection products={products} lang={(lang === "en" ? "en" : "vi") as "vi" | "en"} />
       <About />
       <Services />
       <Contact />

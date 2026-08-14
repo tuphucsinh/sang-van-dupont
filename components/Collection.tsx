@@ -1,7 +1,13 @@
 import Link from "next/link";
 import type { Product } from "../lib/catalog";
 
-export default function Collection({ products }: { products: Product[] }) {
+export default function Collection({
+  products,
+  lang = "vi",
+}: {
+  products: Product[];
+  lang?: "vi" | "en";
+}) {
   return (
     <section className="section" id="collection">
       <div className="container">
@@ -24,7 +30,7 @@ export default function Collection({ products }: { products: Product[] }) {
             const cardClass = `card reveal${delayClass}${tallClass}`;
 
             return (
-              <Link key={p.id} href={`/vi/products/${p.slug}`} className={cardClass}>
+              <Link key={p.id} href={`/${lang}/products/${p.slug}`} className={cardClass}>
                 <img src={p.media[0]?.url} alt={p.name_vi} loading="lazy" decoding="async" />
                 {p.status !== "available" && (
                   <span
