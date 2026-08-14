@@ -24,7 +24,7 @@ Post-deploy check (smoke + sitemap + route)
 | # | Kiểm tra | Lệnh (sangops) | PASS khi |
 |---|---|---|---|
 | 1 | Build CI xanh | `sangops ci` (gh run view) | run = success, không job fail |
-| 2 | Production live | `sangops smoke` | 17 routes 200, 404 chuẩn, NO_JS_ERRORS |
+| 2 | Production live | `sangops smoke` | 9 routes HTTP đúng (200/404), sitemap/robots 200, robots disallow /admin — CDP NO_JS_ERRORS: Mika verify browser riêng sau deploy |
 | 3 | Sitemap/robots | `sangops smoke` | sitemap.xml 200 + đủ URL, robots disallow /admin |
 | 4 | Nội dung VI/EN | `sangops i18n` | không lệch đáng kể |
 | 5 | Link/ảnh hỏng | `sangops links` | 0 broken |

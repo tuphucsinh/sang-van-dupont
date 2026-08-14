@@ -18,7 +18,7 @@ npm run ops -- --help
 | `links` | Crawl sitemap production → check link + ảnh hỏng | P12T04 |
 | `i18n` | So sánh nội dung VI/EN trong DB | P12T04 |
 | `seo` | Audit SEO per-page (title/desc/canonical/hreflang/OG/JSON-LD/alt) | P12T04 |
-| `smoke` | Post-deploy: HTTP routes + NO_JS_ERRORS (CDP) + sitemap/robots | P12T05 |
+| `smoke` | Post-deploy: HTTP 9 routes + sitemap/robots (CDP JS-error: Mika verify browser riêng) | P12T05 |
 | `ci` | Theo dõi GitHub Actions (`gh run list/view --log-failed`) | P12T05 |
 | `rollback` | Dry-run kế hoạch rollback — thực thi chỉ khi anh duyệt | P12T05 |
 

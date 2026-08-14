@@ -102,10 +102,28 @@ export async function productsCmd(ctx: CmdContext, args: string[]): Promise<numb
   if (sub === "delete") {
     const slug = args[1];
     const confirm = args[2];
-    if (!slug) throw new Error("products delete <slug> <gõ-lại-slug-để-xác-nhận>");
+    const force = args[3] === "--force";
+    if (!slug) throw new Error("products delete <slug> <gõ-lại-slug-để-xác-nhận> [--force]");
     if (confirm !== slug) {
       console.error(`❌ Confirm 2 bước: phải gõ lại đúng slug "${slug}" làm tham số 2 (hiện: "${confirm ?? ""}")`);
       return 1;
+    }
+    // Mặc định SOFT-DELETE (status=archived) — reversible (Reviewer góp ý 2); hard chỉ khi --force
+    if (!force) {
+      const { data: row, error } = await supabase
+        .from("products")
+        .update({ status: "archived" })
+        .eq("slug", slug)
+        .select("id, status")
+        .maybeSingle();
+      if (error) throw new Error(`soft-delete fail: ${error.message}`);
+      if (!row) {
+        console.error(`Không tìm thấy: ${slug}`);
+        return 1;
+      }
+      logOp("products delete (soft)", `slug=${slug} → status=archived`);
+      console.log(`🗂️ Đã soft-delete (archived): ${slug} — có thể khôi phục qua update. Muốn xóa hẳn: thêm --force`);
+      return 0;
     }
     const { data: row, error } = await supabase.from("products").delete().eq("slug", slug).select("id").maybeSingle();
     if (error) throw new Error(`delete fail: ${error.message}`);
@@ -113,8 +131,8 @@ export async function productsCmd(ctx: CmdContext, args: string[]): Promise<numb
       console.error(`Không tìm thấy: ${slug}`);
       return 1;
     }
-    logOp("products delete", `slug=${slug} id=${row.id}`);
-    console.log(`🗑️ Đã xóa: ${slug}`);
+    logOp("products delete (hard --force)", `slug=${slug} id=${row.id}`);
+    console.log(`🗑️ Đã xóa hẳn: ${slug}`);
     return 0;
   }
 

@@ -23,7 +23,7 @@ _(chưa băm task — gate: anh yêu cầu + usage thật; hướng: Research DB
 
 ## Phase 11: AI Marketing Pipeline — ✅ CODE DONE 2026-08-14 (P11T01-04; P11T03 generator verified với black-lacquer — xem marketing/drafts/; Reviewer không bắt buộc — không chạm backend/production)
 
-## Phase 12: AI Website Operator — ✅ CODE DONE 2026-08-14 (P12T01-06; **chờ Reviewer gate** — chạm DB write + production)
+## Phase 12: AI Website Operator — ✅ DONE 2026-08-14 (P12T01-06 + Reviewer PASS + 5 góp ý đã fix 4; còn E2E canary chờ anh test Telegram)
 
 ### [#P10T01] [sangbot/SOUL.md] Backup + SOUL internal operator mới
 

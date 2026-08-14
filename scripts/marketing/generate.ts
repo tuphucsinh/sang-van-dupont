@@ -62,13 +62,22 @@ async function callModel(model: string, prompt: string, imageB64?: string): Prom
   if (!res.ok) throw new Error(`Call ${model} HTTP ${res.status}: ${JSON.stringify(d).slice(0, 200)}`);
   const content2 = d?.choices?.[0]?.message?.content;
   if (typeof content2 !== "string" || !content2.trim()) {
-    // deepseek-v4-flash là model reasoning: nếu reasoning ngốn hết budget → content rỗng; retry 1 lần
-    const retry = await fetch(`${BASE_URL}/chat/completions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-      body: JSON.stringify({ model, messages: [{ role: "user", content: userContent }], max_tokens: 8000 }),
-    });
-    const d2 = await retry.json().catch(() => ({}));
+    // deepseek-v4-flash là model reasoning: nếu reasoning ngốn hết budget → content rỗng; retry 1 lần (có timeout + check HTTP — Reviewer góp ý 3)
+    const retryCtrl = new AbortController();
+    const retryTimer = setTimeout(() => retryCtrl.abort(), 120_000);
+    let retryRes: Response;
+    try {
+      retryRes = await fetch(`${BASE_URL}/chat/completions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+        body: JSON.stringify({ model, messages: [{ role: "user", content: userContent }], max_tokens: 8000 }),
+        signal: retryCtrl.signal,
+      });
+    } finally {
+      clearTimeout(retryTimer);
+    }
+    if (!retryRes.ok) throw new Error(`Retry ${model} HTTP ${retryRes.status}`);
+    const d2 = await retryRes.json().catch(() => ({}));
     const c2 = d2?.choices?.[0]?.message?.content;
     if (typeof c2 !== "string" || !c2.trim()) throw new Error(`Call ${model} trả content rỗng (kể cả sau retry)`);
     callCount += 1;
