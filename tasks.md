@@ -86,7 +86,7 @@ _(chi tiết từng phase: `.ai/MASTER_PLAN.md`; task `[x]` đã prune theo RULE
 **Constraints**: Secret KHÔNG commit (env chỉ); KHÔNG cho AI tool khác ngoài 3 tools; response không chứa PII khách
 **Definition of Done**: deploy OK; curl test: câu hỏi về sản phẩm có → trả lời đúng dữ liệu; hỏi giá khi price NULL → "Liên hệ"; request thứ 21 → 429; AI_ENABLED=false → 503
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): deploy + curl test — L2 đúng data thật, giá null → "Liên hệ", sp không tồn tại → nói không có (không bịa), kill switch 503/200; rate limit 20h + cost cap 100/ngày + log bảng ai_chat_logs
 
 ---
 
