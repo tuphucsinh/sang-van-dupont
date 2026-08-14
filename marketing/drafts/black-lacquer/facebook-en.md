@@ -1,7 +1,7 @@
-Some objects carry their mystery in black lacquer and quiet metal lines.  
+A black lacquer noir, trimmed in polished metal — quiet French elegance in a single object.
 
-The Ligne 1 Black Lacquer Noir is a study in French restraint—deep black lacquer with a polished metal trim, inspected and carefully maintained. It holds the elegance of a bygone era, made for those who appreciate craftsmanship over noise. Price is currently updating; for a quote, please contact +84 905 076 886 / Zalo. Let it find its place among the pieces that speak without words.  
+From the Ligne 1 line, this piece layers deep black lacquer with refined metal trim. It has been inspected and cared for, with the patina of thoughtful ownership. A lighter for those who notice quiet details — craftsmanship you carry, not display. Price is currently updating; contact +84 905 076 886 / Zalo for a personal quote.
 
-Message us to make it yours.  
+SangDupont — vintage S.T. Dupont lighters, chosen with care.
 
-#STDupont #SangDupont #VintageLighter #Collector #Ligne1
+#STDupont #VintageLighter #Ligne1 #BlackLacquerNoir #SangDupont

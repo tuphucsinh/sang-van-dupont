@@ -1,7 +1,5 @@
-Đen huyền, viền sáng — một góc nước Pháp trên đầu ngón tay.
+Đen huyền – viền kim loại sáng, một nét Pháp tĩnh lặng giữa lòng bàn tay.
 
-Sơn mài đen huyền, dòng Ligne 1, viền kim loại sáng. Đã kiểm định, lớp sơn mài được chăm sóc. Giá đang cập nhật — liên hệ 0905 076 886 / Zalo để được báo giá.
+Chiếc Ligne 1 khoác lớp sơn mài đen huyền, viền kim loại sáng. Đã kiểm định, lớp sơn được chăm sóc tỉ mỉ. Giá đang cập nhật – liên hệ 0905 076 886 / Zalo để được báo giá riêng.
 
-SangDupont (Sang Van) — nơi những chiếc bật lửa sưu tầm kể câu chuyện riêng.
-
-#SangDupont #STDupont #BậtLửaSưuTầm #Ligne1 #SơnMài
+#SangDupont #Ligne1 #STDupont #SonMai #Luxury

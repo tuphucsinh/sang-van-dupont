@@ -1,5 +1,7 @@
-**Bí ẩn của nước Pháp nằm gọn trong một chiếc bật lửa sơn mài đen.**
+Đen huyền, viền kim loại sáng – chỉ cần như vậy, không cần thêm điều gì.
 
-Sản phẩm Ligne 1 với chất liệu sơn mài và viền kim loại sáng toát lên vẻ đẹp huyền bí, trầm tĩnh. Lớp sơn mài đã được kiểm tra và chăm sóc, tình trạng hiện tại đã qua kiểm định. Giá đang cập nhật — liên hệ 0905 076 886 / Zalo để được báo giá riêng. SangDupont (Sang Van) trân trọng đồng hành cùng người sưu tầm.
+Sơn mài đen huyền trong dòng Ligne 1 khoác lên mình vẻ đẹp huyền bí Pháp, nơi lớp sơn mài sâu thẳm được điểm xuyết bởi viền kim loại sáng. Sản phẩm đã được kiểm định và chăm sóc cẩn thận, giữ trọn tinh thần tinh tế của một chiếc bật lửa sưu tầm. Giá đang cập nhật – vui lòng liên hệ 0905 076 886 / Zalo để được báo giá riêng.
 
-#STDupont #bậtLửaSưuTầm #SangDupont #Ligne1 #SơnMài
+SangDupont (Sang Van) trân trọng giới thiệu đến những người yêu bật lửa sưu tầm.
+
+#SangDupont #STDupont #BậtLửaSưuTầm #SơnMàiĐenHuyền #Ligne1

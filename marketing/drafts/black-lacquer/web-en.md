@@ -1,12 +1,9 @@
-**Black Lacquer Noir – Ligne 1**
+Some lighters catch the eye; this one holds the gaze. Black Lacquer Noir, from the Ligne 1 line, is a study in restraint — deep black lacquer, polished metal trim, and nothing more than necessary. The finish is dark and meditative, the metal edges crisp and refined. This is French elegance in its most honest form.
 
-There exists a certain allure in the dark. It is not the absence of light, but a holding of it, a secret kept within. Introducing the Black Lacquer Noir, a piece that embodies this quiet magnetism and stands as a testament to the heritage of French design.
+This piece has been inspected. The lacquer has been cared for. We describe only what we know: condition is inspected, material is lacquer with metal trim. No exaggerated age, no invented history. Just a carefully kept object, waiting for someone who understands.
 
-Part of the distinguished Ligne 1 collection, this piece presents a mysterious black lacquer finish, its depth contrasted beautifully by polished metal trim. This is an object of discreet luxury, meant to be felt as much as seen—the cool weight of the metal against the warmth of the lacquer.
+For a collector, a lighter is never merely functional. It is a quiet ritual, a daily companion, a small piece of refined design. This Black Lacquer Noir carries that spirit.
 
-Presented in a state that has been thoroughly inspected and cared for, this is a treasure ready to be appreciated. It speaks to those who understand that true elegance is found not in loud proclamations, but in the details of refined craftsmanship.
+Price: updating. For a quote, please contact +84 905 076 886 or Zalo. We will gladly answer.
 
-We invite you to make this piece yours.
-
-**Contact**
-The price for this item is currently being updated. For your personal quote, please contact us at +84 905 076 886 or via Zalo. Our team is ready to assist you.
+SangDupont (Sang Van) — vintage S.T. Dupont lighter store.

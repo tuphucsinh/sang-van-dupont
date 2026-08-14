@@ -1,7 +1,5 @@
-Giữa khoảng lặng của ánh sáng và bóng tối, SangDupont (Sang Van) giới thiệu **Sơn mài đen huyền** — vẻ đẹp huyền bí Pháp. Thuộc dòng **Ligne 1**, chiếc bật lửa mang chất liệu **sơn mài kết hợp viền kim loại sáng**: một sự hòa quyện giữa chiều sâu đen tĩnh lặng và ánh sáng kim loại sang trọng.
+Giữa khoảng lặng của thời gian, **Sơn mài đen huyền** hiện lên như một mảnh đêm Paris – huyền bí, sâu lắng và đầy quyến rũ. Từng đường viền kim loại sáng được đặt cạnh lớp sơn mài đen, tạo nên một tác phẩm mang hơi thở nước Pháp, nơi nghệ thuật thủ công chạm vào cảm xúc.
 
-Lớp sơn mài đã được kiểm tra và chăm sóc; sản phẩm đã qua kiểm định. Với người sưu tầm, vẻ đẹp ấy không nằm ở sự phô trương, mà nằm trong những chi tiết nhỏ – độ bóng sâu trên mặt sơn, viền kim loại sáng, cảm giác cầm nắm thanh lịch.
+Thuộc **dòng Ligne 1**, sản phẩm sở hữu chất liệu **sơn mài kết hợp viền kim loại**, toát lên vẻ đẹp vừa cổ điển vừa hiện đại. Lớp sơn mài đã được kiểm tra và chăm sóc, đảm bảo **tình trạng đã kiểm định** – một điểm tựa cho người sưu tầm tinh ý. Tất cả đều nằm trong mô tả hiện có: *“Sơn mài đen huyền viền kim loại sáng, vẻ đẹp huyền bí Pháp.”*
 
-Mỗi lần mở, khép, chiếc bật lửa như nhắc ta chậm lại. Một khoảnh khắc nhỏ, riêng tư giữa nhịp sống vội vã – dành cho người yêu cái đẹp tinh tế.
-
-Sản phẩm hiện có giá đang cập nhật. Để được báo giá, vui lòng liên hệ SangDupont (Sang Van) qua **0905 076 886** hoặc Zalo. Hình ảnh sản phẩm: /assets/img/img_08.jpg và /assets/img/img_03.jpg.
+**SangDupont (Sang Van)** – cửa hàng bật lửa S.T. Dupont vintage – trân trọng giới thiệu đến quý khách, những người yêu bật lửa sưu tầm, một mảnh ghép đầy cảm xúc. Giá hiện đang cập nhật. Vui lòng liên hệ **0905 076 886 / Zalo** để được tư vấn và báo giá riêng.
