@@ -69,6 +69,15 @@ export default function AiChat() {
     }
   };
 
+  // Nút nổi: đóng (kể cả bấm nút nổi ✕) cũng phải gửi lead summary — không chỉ nút ✕ trong panel
+  const toggleOpen = () => {
+    if (open) {
+      closeChat();
+    } else {
+      setOpen(true);
+    }
+  };
+
   const [loading, setLoading] = useState(false);
 
   const requestCodeRef = useRef<string>("");
@@ -151,7 +160,7 @@ export default function AiChat() {
       <button
         type="button"
         aria-label={open ? t.close : t.open}
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={toggleOpen}
         style={{
           position: "fixed",
           bottom: 20,
