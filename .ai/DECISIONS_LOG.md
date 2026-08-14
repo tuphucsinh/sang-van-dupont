@@ -54,6 +54,16 @@
 |---|---|---|
 | D21 | **Host tạm thời = Vercel** (`sangdupont.vercel.app`) — KHÔNG deploy TENTEN trong Release A. TENTEN dời lại: chỉ khi (a) cần domain Việt Nam / giảm chi phí / Vercel Free hết hạn, hoặc (b) anh yêu cầu → làm sub-phase "migrate TENTEN" riêng | Anh chỉnh kế hoạch 2026-08-14: Vercel đang chạy ổn + free, không cần thêm bước deploy ngay; Phase 7 giờ = Release A Gate + deploy Vercel ổn định + rollback |
 
+## 2026-08-14 — Backlog post-Release B
+
+| # | Việc | Trạng thái |
+|---|---|---|
+| B1 | Bảng `shop_policies` + tool `get_policies` — để AI trả lời chính sách (COD/đổi trả/giao hàng) chính xác, anh tự sửa qua SQL editor không cần redeploy | Để sau (anh chốt 14-08) — hiện AI chỉ "dẫn chủ shop 0905 076 886" |
+| B2 | Nhập giá thật qua `/admin/products` (price, price_unit) — AI tự trả lời giá ngay (tool đã trả price, không cần redeploy) | Chờ anh quyết giá từng mẫu |
+| B3 | GA4 Measurement ID → set env Vercel + rebuild | Chờ anh tạo property |
+| B4 | Backup cron định kỳ (db-backup.sh hằng ngày) | Tùy chọn — hiện chạy tay + keepalive T7/CN |
+| B5 | Giám sát AI usage (ai_chat_logs) — cost cap 100/ngày | Tự động, Mika báo khi gần ngưỡng |
+
 ## 2026-08-14 — Reviewer SW-P4-ADMIN-01: PASS + 4 góp ý
 
 | # | Góp ý | Xử lý |
