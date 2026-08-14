@@ -679,7 +679,16 @@ export default function AdminProductsPage() {
               </p>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                flexWrap: "wrap",
+                width: isMobile ? "100%" : undefined,
+                justifyContent: isMobile ? "space-between" : undefined,
+              }}
+            >
               <button
                 onClick={handleOpenCreate}
                 style={{
@@ -687,9 +696,10 @@ export default function AdminProductsPage() {
                   color: "#0a0a0d",
                   border: "none",
                   borderRadius: "6px",
-                  padding: "10px 18px",
+                  padding: isMobile ? "10px 14px" : "10px 18px",
                   fontWeight: "bold",
-                  fontSize: "14px",
+                  fontSize: isMobile ? "13px" : "14px",
+                  whiteSpace: "nowrap",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
@@ -706,9 +716,10 @@ export default function AdminProductsPage() {
                   border: "1px solid rgba(212, 175, 55, 0.4)",
                   color: "#d4af37",
                   background: "transparent",
-                  padding: "9px 16px",
+                  padding: isMobile ? "9px 12px" : "9px 16px",
                   borderRadius: "6px",
-                  fontSize: "14px",
+                  fontSize: isMobile ? "13px" : "14px",
+                  whiteSpace: "nowrap",
                   textDecoration: "none",
                   fontWeight: 500,
                   display: "inline-flex",
@@ -724,9 +735,10 @@ export default function AdminProductsPage() {
                   border: "1px solid rgba(220, 38, 38, 0.4)",
                   color: "#ef4444",
                   background: "transparent",
-                  padding: "9px 16px",
+                  padding: isMobile ? "9px 12px" : "9px 16px",
                   borderRadius: "6px",
-                  fontSize: "14px",
+                  fontSize: isMobile ? "13px" : "14px",
+                  whiteSpace: "nowrap",
                   cursor: "pointer",
                   fontWeight: 500,
                 }}
@@ -797,18 +809,19 @@ export default function AdminProductsPage() {
                       background: "#101014",
                       border: "1px solid rgba(212, 175, 55, 0.15)",
                       borderRadius: "8px",
-                      padding: "16px",
+                      padding: isMobile ? "14px" : "16px",
                       display: "flex",
-                      alignItems: "center",
-                      gap: "16px",
+                      flexDirection: isMobile ? "column" : "row",
+                      alignItems: isMobile ? "stretch" : "center",
+                      gap: isMobile ? "12px" : "16px",
                       boxShadow: "0 2px 8px rgba(0,0,0,0.4)",
                     }}
                   >
                     {/* Thumbnail */}
                     <div
                       style={{
-                        width: "56px",
-                        height: "56px",
+                        width: isMobile ? "64px" : "56px",
+                        height: isMobile ? "64px" : "56px",
                         borderRadius: "6px",
                         overflow: "hidden",
                         background: "#0a0a0d",
@@ -850,6 +863,10 @@ export default function AdminProductsPage() {
                             fontWeight: "bold",
                             fontSize: "15px",
                             color: "#f3ecd9",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            maxWidth: "100%",
                           }}
                         >
                           {p.name_vi}
@@ -866,7 +883,16 @@ export default function AdminProductsPage() {
                           flexWrap: "wrap",
                         }}
                       >
-                        <span style={{ fontFamily: "monospace", color: "#a8a29e" }}>
+                        <span
+                          style={{
+                            fontFamily: "monospace",
+                            color: "#a8a29e",
+                            maxWidth: isMobile ? "60vw" : undefined,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
                           /{p.slug}
                         </span>
                         <span>•</span>
@@ -883,8 +909,8 @@ export default function AdminProductsPage() {
                     {/* Price */}
                     <div
                       style={{
-                        textAlign: "right",
-                        minWidth: "110px",
+                        textAlign: isMobile ? "left" : "right",
+                        minWidth: isMobile ? undefined : "110px",
                         flexShrink: 0,
                       }}
                     >
@@ -915,6 +941,8 @@ export default function AdminProductsPage() {
                       style={{
                         display: "flex",
                         alignItems: "center",
+                        justifyContent: isMobile ? "flex-end" : undefined,
+                        width: isMobile ? "100%" : undefined,
                         gap: "8px",
                         flexShrink: 0,
                       }}
@@ -926,7 +954,7 @@ export default function AdminProductsPage() {
                           color: "#d4af37",
                           background: "transparent",
                           borderRadius: "4px",
-                          padding: "6px 14px",
+                          padding: isMobile ? "6px 18px" : "6px 14px",
                           fontSize: "13px",
                           fontWeight: 500,
                           cursor: "pointer",
@@ -941,7 +969,7 @@ export default function AdminProductsPage() {
                           color: "#ef4444",
                           background: "transparent",
                           borderRadius: "4px",
-                          padding: "6px 14px",
+                          padding: isMobile ? "6px 18px" : "6px 14px",
                           fontSize: "13px",
                           fontWeight: 500,
                           cursor: "pointer",
