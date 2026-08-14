@@ -63,8 +63,8 @@
 **Dependencies**: Phase 1
 **Gate**: RLS test PASS (public không đọc được lead/private media); admin CRUD test; migration từ bản sạch chạy được
 
-### Phase 3: Catalog + Product Detail
-**Goal**: Catalog sản phẩm thật từ Supabase, static generation tại build; trang chi tiết VI/EN.
+### Phase 3: Catalog + Product Detail — ✅ DONE 2026-08-14
+**Kết quả thực thi**: seed 9 sản phẩm thật (8 available + 1 reserved, tên từ landing, price NULL="Liên hệ", D17) + 16 media rows; `@supabase/supabase-js` + `lib/supabase.ts` + `lib/catalog.ts` (fetch build-time SSG, guard thiếu env → [], D14); Collection render từ data thật (8 card + badge + link detail); Product detail `/vi/products/[slug]` + `/en/products/[slug]` — SSG 16 trang, metadata/OG + hreflang, JSON-LD (không bịa price), gallery, similar 3, CTA Zalo/Telegram/Call. **Verify thật**: tsx test PASS, build PASS, browser CDP VI/EN render + NO_JS_ERRORS, 404 slug lạ, Chrome sạch sau test. Ghi chú: ảnh serve static (D15); reserved ẩn khỏi public đúng RLS (badge "Đã giữ" sẽ hoạt động khi Phase 4 có admin đổi status).
 
 **Deliverables**:
 - Product fields đầy đủ: id/slug, tên/mã, dòng, chất liệu, năm/thời kỳ, tình trạng, mô tả VI/EN, giá hoặc "Liên hệ", status `draft/available/reserved/sold/archived`, cover + gallery
