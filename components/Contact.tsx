@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import LeadForm from "./LeadForm";
 
@@ -21,15 +23,14 @@ export default function Contact() {
           Inbox hoặc gọi trực tiếp — mình luôn sẵn sàng tư vấn, gửi ảnh chi tiết và bảo dưỡng tận tay.
         </p>
         <div className="cta-row reveal d3">
-          <a
+          <button
+            type="button"
             className="btn solid"
-            href="https://t.me/sangdupontbot"
-            target="_blank"
-            rel="noopener"
             data-i18n="ct_chat"
+            onClick={() => window.dispatchEvent(new CustomEvent("sang-open-chat"))}
           >
             💬 Chat tư vấn
-          </a>
+          </button>
           <a className="btn solid" href="tel:+84905076886">
             📞 <span data-i18n="ct_call">Gọi ngay</span>
           </a>

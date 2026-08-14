@@ -55,6 +55,13 @@ export default function AiChat() {
     }
   }, [messages, loading]);
 
+  // Mở panel từ ngoài (nút "Chat tư vấn" ở section Liên hệ → không mở Telegram nữa)
+  useEffect(() => {
+    const openFromOutside = () => setOpen(true);
+    window.addEventListener("sang-open-chat", openFromOutside);
+    return () => window.removeEventListener("sang-open-chat", openFromOutside);
+  }, []);
+
   const handleSend = async (e?: FormEvent) => {
     if (e) e.preventDefault();
     const msg = input.trim();
