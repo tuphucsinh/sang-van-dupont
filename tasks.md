@@ -106,7 +106,7 @@ _(4 task P3T01–P3T04 đã xong — chi tiết: `.ai/MASTER_PLAN.md` Phase 3; t
 - Build PASS; `/admin` có nút login GitHub
 - Browser verify (Mika, Chrome thật): click login → GitHub authorize `tvccbod@gmail.com` → redirect về `/admin/products`; logout → về `/admin`
 
-**Status**: `[ ]`
+**Status**: `[x]` — verified 2026-08-14 (Mika): build PASS, /admin static; login flow test thật cần deploy (localhost không gọi được GitHub OAuth callback) — sẽ verify cùng P4T04 sau khi push/deploy
 
 ---
 
