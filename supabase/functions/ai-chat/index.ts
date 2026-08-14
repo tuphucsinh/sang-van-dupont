@@ -37,9 +37,13 @@ const SYSTEM_PROMPT = `BẠN LÀ NHÂN VIÊN BÁN HÀNG CỦA SANGDUPONT — sho
 
 ## BỔ SUNG THÔNG TIN CHO YÊU CẦU (khi có mã yêu cầu)
 - Khi khách bổ sung thông tin cho yêu cầu đã gửi (dòng quan tâm, nhu cầu, ghi chú) → gọi tool **update_lead** với request_code + thông tin mới.
-- Xác nhận: **NGẮN 1 câu, tự nhiên** (vd: "dạ em ghi chú thêm rồi nha 😊" hoặc "ok em note lại nhé~"). KHÔNG nhắc lại nội dung vừa ghi, KHÔNG nhắc mã yêu cầu trừ khi khách hỏi, KHÔNG lặp khuôn "chủ shop sẽ nắm..." ở mỗi lượt.
-- Các lượt chat sau (khách hỏi tiếp): chỉ trả lời câu hỏi mới như bình thường — KHÔNG xác nhận lại lần nữa, KHÔNG lặp lại điều đã ghi chú.
+- Xác nhận: **NGẮN 1 câu, tự nhiên** (vd: "dạ em ghi chú thêm rồi nha 😊" hoặc "ok em note lại nhé~"). KHÔNG nhắc lại nội dung vừa ghi, KHÔNG nhắc mã yêu cầu trừ khi khách hỏi, KHÔNG lặp khuôn "em ghi nhận..." ở mỗi lượt.
+- Nếu yêu cầu ĐÃ được ghi nhận trước đó (thông báo trong context) → **chỉ trả lời câu hỏi mới**, TUYỆT ĐỐI KHÔNG xác nhận lại lần nữa, không lặp lại thông tin cũ.
 - Nếu tool báo lỗi (không tìm thấy mã) → nói nhẹ: "dạ để em kiểm tra lại với chủ shop ạ" — không tự sửa.
+
+## NGÔN NGỮ (bắt buộc)
+- Khách viết TIẾNG VIỆT → **LUÔN trả lời tiếng Việt**, tuyệt đối không mở đầu câu bằng tiếng Anh, không trộn tiếng Anh (trừ tên dòng sản phẩm như Ligne 1, Gatsby).
+- Chỉ trả lời tiếng Anh khi khách chủ động viết tiếng Anh.
 
 ## CHÍNH SÁCH (KHÔNG tự đưa — dẫn chủ shop)
 - Thanh toán (COD/chuyển khoản/cọc), đổi trả, giờ liên hệ, mua sỉ/đại lý → "em không tự quyết được, để em ghi nhận, chủ shop xác nhận chính xác ạ" + lấy SĐT hoặc đưa 0905 076 886. KHÔNG bịa điều khoản.
@@ -152,7 +156,20 @@ export default {
     }
 
     if (requestCode) {
-      message = `[Yêu cầu #${requestCode}] ${message} — khách đang bổ sung thông tin cho yêu cầu này, dùng update_lead nếu có thông tin mới (dòng quan tâm/nhu cầu/ghi chú).`;
+      // Đọc trạng thái lead → chống lặp xác nhận (model stateless, không nhớ lượt trước)
+      let alreadyAcked = false;
+      try {
+        const { data: leads } = await supabase
+          .from("leads")
+          .select("meta")
+          .order("created_at", { ascending: false })
+          .limit(30);
+        const lead = (leads || []).find((r: { id: string }) => r.id.startsWith(requestCode));
+        alreadyAcked = Array.isArray(lead?.meta?.ai_notes) && (lead.meta.ai_notes as unknown[]).length > 0;
+      } catch { /* mặc định false */ }
+      message = alreadyAcked
+        ? `[Yêu cầu #${requestCode} — ĐÃ GHI NHẬN trước đó] ${message} — Khách đang chat tiếp cho yêu cầu này. Chỉ trả lời câu hỏi mới bằng tiếng Việt. TUYỆT ĐỐI KHÔNG xác nhận lại "đã ghi nhận", không lặp lại thông tin cũ, không mở đầu tiếng Anh. Nếu khách cung cấp thông tin MỚI (dòng quan tâm/nhu cầu/ghi chú) → vẫn gọi update_lead.`
+        : `[Yêu cầu #${requestCode}] ${message} — khách đang bổ sung thông tin cho yêu cầu này, dùng update_lead nếu có thông tin mới (dòng quan tâm/nhu cầu/ghi chú).`;
     }
 
     const ip = clientIp(req);

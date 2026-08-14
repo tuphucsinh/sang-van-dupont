@@ -235,7 +235,7 @@ export default function LeadForm() {
     const labels = missing.map((k) => chatFieldLabel[lang][k] || k).join(", ");
     const text =
       lang === "vi"
-        ? `Dạ em đã nhận yêu cầu của anh/chị (mã #${requestCode}) 👍 Anh/chị cho em biết thêm ${labels} để em tư vấn chuẩn hơn nha — gõ ngay ở đây cũng được ạ 😊`
+        ? `Dạ em đã nhận yêu cầu của anh (mã #${requestCode}) 👍 Anh cho em biết thêm ${labels} để em tư vấn chuẩn hơn nha — gõ ngay ở đây cũng được ạ 😊`
         : `I've received your request (code #${requestCode}) 👍 Could you tell me more: ${labels}? Just type here and I'll help right away 😊`;
     window.dispatchEvent(new CustomEvent("sang-chat-prompt", { detail: { text, requestCode } }));
   };
