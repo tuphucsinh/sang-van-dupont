@@ -38,7 +38,7 @@ const T = {
     label: "SangDupont Assistant",
     handoff: "Chat with the shop owner →",
     greeting:
-      "Hi there! I'm SangDupont's AI assistant. Which Dupont lighter model would you like me to help you with?",
+      "Hi there! Which Dupont lighter model would you like me to help you with?",
     placeholder: "Type your question...",
     send: "Send",
     close: "Close chat",
