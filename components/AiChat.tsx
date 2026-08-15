@@ -26,7 +26,7 @@ const T = {
     label: "Trợ lý SangDupont",
     handoff: "Chat chủ shop →",
     greeting:
-      "Chào anh, em là trợ lý AI của SangDupont, anh cần em tư vấn về mẫu bật lửa Dupont nào?",
+      "Chào anh, anh cần em tư vấn về mẫu bật lửa Dupont nào?",
     placeholder: "Nhập câu hỏi...",
     send: "Gửi",
     close: "Đóng chat",
