@@ -22,7 +22,7 @@ const SYSTEM_PROMPT = `BẠN LÀ NHÂN VIÊN BÁN HÀNG CỦA SANGDUPONT — sho
 ## QUY TRÌNH BÁN HÀNG
 1. CHÀO + HỎI NHU CẦU: khách mới → chào + hỏi ngắn: dùng hay tặng? thích dòng nào? (đừng hỏi cùng lúc nhiều câu)
 2. ĐOÁN Ý: tặng quà → gợi ý mẫu sang/đóng hộp đủ phụ kiện; dùng hằng ngày → dòng bền gọn; phân vân giá → trấn an "bên em nhiều phân khúc, anh để em gợi ý theo túi tiền".
-3. GIỚI THIỆU ĐÚNG DATA: gọi search_products/get_product → chọn 2-3 mẫu hợp nhất. Nhấn điểm bán THẬT (dòng, chất liệu, tình trạng, phụ kiện). Thêm 1 câu kể chuyện ngắn về era/dòng nếu khách quan tâm (vd dòng Diamond Head 80s, guilloché thủ công) — làm sản phẩm sống động, vẫn KHÔNG bịa thông số.
+3. GIỚI THIỆU ĐÚNG DATA: gọi search_products/get_product → chọn 2-3 mẫu hợp nhất. Nhấn điểm bán THẬT (dòng, chất liệu, tình trạng, phụ kiện). **LUÔN kèm link sản phẩm (field url trong data tool — dạng https://sangdupont.vercel.app/vi/products/<slug> hoặc /en nếu khách nói tiếng Anh) khi giới thiệu sản phẩm còn hàng — viết link đầy đủ, khách bấm được.** Thêm 1 câu kể chuyện ngắn về era/dòng nếu khách quan tâm (vd dòng Diamond Head 80s, guilloché thủ công) — làm sản phẩm sống động, vẫn KHÔNG bịa thông số.
 4. CHỐT SALE: khách có ý mua ("bao nhiêu", "lấy được", "gửi đi đâu") → lấy tên + SĐT → gọi create_lead → báo mã + "bên em liên hệ trong ngày" + cảm ơn.
 5. BẢO DƯỠNG: hỏi kỹ triệu chứng (yếu lửa/không bắt/kêu đá?), hướng dẫn gửi ảnh + mô tả qua form hoặc gọi 0905 076 886.
 6. TÌM THEO TIÊU CHÍ: khách đưa điều kiện (dòng/giá/chất liệu/phong cách) → gọi tool recommend và CHỈ giới thiệu candidate trả về — không tự thêm/bớt sản phẩm.
@@ -376,7 +376,13 @@ export default {
           .eq("status", "available")
           .or(`name_vi.ilike.%${kw}%,name_en.ilike.%${kw}%,line.ilike.%${kw}%,slug.ilike.%${kw}%`)
           .limit(5);
-        return JSON.stringify(data || []);
+        // Kèm link sản phẩm để model giới thiệu kèm link bấm được
+        return JSON.stringify(
+          (data || []).map((r: Record<string, unknown>) => ({
+            ...r,
+            url: `https://sangdupont.vercel.app/${uiLang}/products/${r.slug}`,
+          }))
+        );
       }
       if (name === "get_product") {
         const slug = String(args.slug || "");
@@ -386,7 +392,9 @@ export default {
           .eq("slug", slug)
           .eq("status", "available")
           .maybeSingle();
-        return JSON.stringify(data || null);
+        return JSON.stringify(
+          data ? { ...data, url: `https://sangdupont.vercel.app/${uiLang}/products/${data.slug}` } : null
+        );
       }
       if (name === "recommend") {
         // Deterministic filter — chọn candidate chính xác, AI chỉ giới thiệu
@@ -416,7 +424,14 @@ export default {
           }
           if (candidates.length === 0) candidates = data || [];
         }
-        return JSON.stringify(candidates.slice(0, 3));
+        return JSON.stringify(
+          candidates
+            .slice(0, 3)
+            .map((p: Record<string, unknown>) => ({
+              ...p,
+              url: `https://sangdupont.vercel.app/${uiLang}/products/${p.slug}`,
+            }))
+        );
       }
       if (name === "create_lead") {
         const name = String(args.name || "").trim().slice(0, 200);
@@ -562,7 +577,8 @@ export default {
                 const lines = rows.map((r: Record<string, unknown>) => {
                   const avail = r.status === "available" ? "còn hàng" : "hết hàng";
                   const price = r.price ? `${r.price} ${r.price_unit || ""}` : null;
-                  return `- ${r.name_vi} (${r.line || "dòng vintage"}) — ${avail}${price ? ", " + price : ""}`;
+                  const url = r.url ? ` (xem: ${r.url})` : "";
+                  return `- ${r.name_vi} (${r.line || "dòng vintage"}) — ${avail}${price ? ", " + price : ""}${url}`;
                 }).join("\n");
                 lastToolSummary = `Dạ, bên em đang có mấy mẫu phù hợp nè:\n${lines}\n\nVề giá, để em xác nhận với chủ shop rồi báo anh chính xác nhất ạ. Anh/chị cho em xin SĐT để bên em liên hệ trong ngày nha`;
               } else {
@@ -575,7 +591,8 @@ export default {
               if (p && p.name_vi) {
                 const price = p.price ? `${p.price} ${p.price_unit || ""}` : "đang cập nhật — để em xác nhận với chủ shop rồi báo anh chính xác nhất ạ";
                 const desc = p.desc_vi ? " " + p.desc_vi.slice(0, 200) : "";
-                lastToolSummary = `Dạ, mẫu ${p.name_vi} (${p.line || "dòng vintage"}) bên em ${p.status === "available" ? "đang còn hàng" : "hiện đã hết"} ạ.${desc}\n\nGiá: ${price}. Anh/chị để lại SĐT để bên em liên hệ tư vấn thêm nha`;
+                const url = p.url ? `\nXem sản phẩm: ${p.url}` : "";
+                lastToolSummary = `Dạ, mẫu ${p.name_vi} (${p.line || "dòng vintage"}) bên em ${p.status === "available" ? "đang còn hàng" : "hiện đã hết"} ạ.${desc}${url}\n\nGiá: ${price}. Anh/chị để lại SĐT để bên em liên hệ tư vấn thêm nha`;
               }
             } catch { /* giữ nguyên */ }
           } else if (tc.function.name === "create_lead") {
