@@ -61,7 +61,7 @@ export default function Collection({
             );
           })}
         </div>
-        <div className="collection-cta reveal d2">
+        <div className="sec-cta reveal d2">
           <p>
             {lang === "vi"
               ? "AI thế hệ mới nhất sẽ tư vấn và giúp bạn tìm chiếc bật lửa phù hợp nhất với phong cách của bạn."

@@ -1,6 +1,11 @@
+"use client";
+
 import React from "react";
+import { usePathname } from "next/navigation";
 
 export default function Services() {
+  const pathname = usePathname();
+  const lang: "vi" | "en" = pathname?.startsWith("/en") ? "en" : "vi";
   return (
     <section className="section services" id="services">
       <div className="container">
@@ -38,6 +43,31 @@ export default function Services() {
               Chăm sóc lớp sơn mài Trung Hoa và bề mặt mạ vàng — giữ vẻ đẹp nguyên bản qua thời gian.
             </p>
           </div>
+        </div>
+        <div className="sec-cta reveal d2">
+          <p>
+            {lang === "vi"
+              ? "Chuyên gia AI sẽ hỗ trợ bạn đánh giá sơ bộ tình hình và hướng dẫn hướng bảo dưỡng phù hợp."
+              : "Our AI expert will help you assess the issue and guide you on the right maintenance approach."}
+          </p>
+          <button
+            type="button"
+            className="btn solid"
+            onClick={() =>
+              window.dispatchEvent(
+                new CustomEvent("sang-chat-prompt", {
+                  detail: {
+                    text:
+                      lang === "vi"
+                        ? "Chào anh, anh gặp vấn đề gì với bật lửa ạ?"
+                        : "Hello! What issue are you having with your lighter?",
+                  },
+                })
+              )
+            }
+          >
+            {lang === "vi" ? "CHAT BẢO DƯỠNG" : "MAINTENANCE CHAT"}
+          </button>
         </div>
       </div>
     </section>
