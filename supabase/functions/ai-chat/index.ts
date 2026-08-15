@@ -513,7 +513,14 @@ export default {
         res = await fetch(`${baseUrl}/chat/completions`, {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-          body: JSON.stringify({ model, messages, tools, tool_choice: "auto", max_tokens: MAX_TOKENS }),
+          // gpt-5.6-luna KHÔNG hỗ trợ max_tokens (400 "Unsupported parameter") — phải dùng max_completion_tokens; deepseek dùng max_tokens
+          body: JSON.stringify({
+            model,
+            messages,
+            tools,
+            tool_choice: "auto",
+            ...(model.startsWith("gpt-5.6") ? { max_completion_tokens: MAX_TOKENS } : { max_tokens: MAX_TOKENS }),
+          }),
           signal: ctrl.signal,
         });
       } catch (e) {
@@ -532,7 +539,8 @@ export default {
       const choice = data.choices?.[0];
       if (!choice) return json({ ok: false, error: "Phản hồi trống" }, 502);
 
-      if (choice.finish_reason === "tool_calls" && choice.message?.tool_calls?.length) {
+      // opencode-go (gpt-5.6-luna) trả finish_reason null/undefined khi gọi tool — phải check tool_calls trực tiếp
+      if (choice.message?.tool_calls?.length) {
         messages.push(choice.message);
         for (const tc of choice.message.tool_calls) {
           let args: Record<string, unknown> = {};
