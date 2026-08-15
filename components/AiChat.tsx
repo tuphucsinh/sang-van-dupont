@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, FormEvent } from "react";
+import { useState, useRef, useEffect, FormEvent, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 
 const FUNC_URL = "https://iloaeaoojxdovedjtowt.supabase.co/functions/v1/ai-chat";
@@ -19,6 +19,32 @@ function buildAuthHeaders(anon: string): Record<string, string> {
 interface Message {
   role: "user" | "ai";
   text: string;
+}
+
+// Render text với link nhúng dạng markdown [Tên](url) → thẻ <a> đẹp, an toàn (chỉ http/https, không dangerouslySetInnerHTML)
+function renderTextWithLinks(text: string): ReactNode {
+  const parts: ReactNode[] = [];
+  const re = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+  let last = 0;
+  let m: RegExpExecArray | null;
+  let key = 0;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) parts.push(text.slice(last, m.index));
+    parts.push(
+      <a
+        key={key++}
+        href={m[2]}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ color: "#d4af37", textDecoration: "underline" }}
+      >
+        {m[1]}
+      </a>
+    );
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) parts.push(text.slice(last));
+  return parts.length ? parts : text;
 }
 
 const T = {
@@ -373,7 +399,7 @@ export default function AiChat() {
                       }
                 }
               >
-                {m.text}
+                {m.role === "user" ? m.text : renderTextWithLinks(m.text)}
               </div>
             ))}
             {loading && (
