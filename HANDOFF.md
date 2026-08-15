@@ -1,23 +1,20 @@
-# HANDOFF — SangDupont (2026-08-14, phiên chốt — Phase 10-12 + UX chat)
+# HANDOFF — SangDupont (2026-08-15, phiên chốt — UI + chat AI tối ưu)
 
-**Trạng thái**: ✅ COMPLETE — Phase 10-12 + feature lead→chat→Telegram. Production live, repo sync origin/main.
+**Trạng thái**: ✅ COMPLETE — UI homepage + chat widget AI nâng cấp. Production live, repo sync origin/main.
 
 ## Đã hoàn tất hôm nay
-1. **P10 Sangbot Internal**: SOUL internal operator, allowlist chỉ anh (6903033581), gateway Telegram connected — **anh test thật đã hoạt động** (products list + marketing generator qua lệnh chat).
-2. **P11 Marketing Pipeline**: `npm run marketing -- <slug>` → 8 đầu ra VI/EN, drafts black-lacquer v2 verified (0 giá bịa). Reviewer: không bắt buộc (không chạm backend).
-3. **P12 Website Operator**: `npm run ops -- <cmd>` — CRUD/audits/smoke/publish/rollback. **Reviewer PASS** + 4/5 góp ý đã fix.
-4. **Fix hreflang SEO** (home thiếu — Next 16 hrefLang camelCase).
-5. **UX Lead → Chat → Telegram** (feature chính phiên chiều): form chỉ bắt buộc tên+SĐT; thiếu thông tin phụ → vẫn gửi + widget mở nhắc; khách bổ sung trong chat → AI ghi vào lead (update_lead); đóng widget → tin tóm tắt lên Telegram. **AI chat tối ưu**: không emoji/~, không lặp ghi chú, hỏi giới hạn 3-4 dữ kiện rồi chốt, giữ ngữ cảnh (history 14×800), không nhắc mã yêu cầu, MAX_TOKENS 2000.
+1. **UI homepage**: Collection card đồng đều aspect 3/2 (bỏ tall, ảnh tự crop cover); Hero bỏ nút GỌI NGAY; CTA "CHAT TƯ VẤN" dưới Collection + "CHAT BẢO DƯỠNG" dưới Dịch vụ (mở widget kèm lời chào riêng — event `sang-chat-prompt`); Contact bỏ nút Chat tư vấn (còn GỌI NGAY/ZALO/MESSENGER/TIKTOK).
+2. **Chat widget — model gpt-5.6-luna (opencode-go)**: đổi từ deepseek-v4-flash; fix 2 bug (max_tokens → max_completion_tokens; finish_reason null khi tool_calls); prompt 2 bậc ngoài phạm vi (lần 1 dẫn dắt khéo, lần 2+ từ chối); cấm emoji/~ nhấn mạnh; xin tên+SĐT khéo léo khi kết thúc; **link sản phẩm nhúng [Tên](url)** — widget render `<a>` vàng (không url trần).
+3. **Vercel ops**: env NEXT_PUBLIC_* đổi Sensitive → Non-sensitive (fix `vercel pull` trả `[SENSITIVE]` làm build fail); deploy prebuilt chuẩn; patch skill `vercel-deploy-workflow` (pitfall mới).
 
 ## Blockers
-- Không có. `gh` chưa auth (sangops ci báo rõ — không chặn).
+- Không có.
 
 ## Next (khi anh muốn)
-- Test trải nghiệm khách thật 1-2 phiên → tinh chỉnh nếu cần.
-- Sangbot canary: "sinh marketing cho <slug khác>" lần đầu qua Telegram.
-- Phase 9B-next (research giá) khi anh cần.
+- Test trải nghiệm khách thật 1-2 phiên (2 nút CTA + chat bảo dưỡng) → tinh chỉnh nếu cần.
+- Sangbot canary qua Telegram nếu cần.
 
 ## Kỹ thuật lưu ý
-- **Hermes patch tool redact `apikey: <tên biến>` → `***` khi ghi file** → vỡ build (local build cache lừa) — dùng `buildAuthHeaders` động (`h["api"+"key"]`) — đã fix AiChat.
-- Deploy frontend qua `vercel build --prod` + `vercel deploy --prebuilt --prod` (git integration bị build cache cũ lừa — prebuilt là đường chuẩn).
-- Edge ai-chat rate limit 30/h/IP — khi test nhiều lượt → reset `ai_chat_logs` (2h) rồi chạy tiếp.
+- Model gpt-5.6-luna qua opencode-go: `finish_reason` null kèm `tool_calls` — code đã check `tool_calls?.length` trực tiếp; tham số completion theo model (`gpt-5.6*` → `max_completion_tokens`).
+- Edge function ai-chat: env qua Supabase secrets (AI_MODEL/AI_BASE_URL/AI_API_KEY) — KHÔNG hard-code model.
+- Backtick trong SYSTEM_PROMPT (template literal) → vỡ bundle — cấm dùng.
