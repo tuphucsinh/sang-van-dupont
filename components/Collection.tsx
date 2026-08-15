@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import type { Product } from "../lib/catalog";
 
@@ -58,6 +60,20 @@ export default function Collection({
               </Link>
             );
           })}
+        </div>
+        <div className="collection-cta reveal d2">
+          <p>
+            {lang === "vi"
+              ? "AI thế hệ mới nhất sẽ tư vấn và giúp bạn tìm chiếc bật lửa phù hợp nhất với phong cách của bạn."
+              : "Our latest AI assistant will help you find the lighter that best fits your style."}
+          </p>
+          <button
+            type="button"
+            className="btn solid"
+            onClick={() => window.dispatchEvent(new CustomEvent("sang-open-chat"))}
+          >
+            {lang === "vi" ? "CHAT TƯ VẤN" : "CHAT WITH AI"}
+          </button>
         </div>
       </div>
     </section>
