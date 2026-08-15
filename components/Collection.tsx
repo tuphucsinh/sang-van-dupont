@@ -26,8 +26,7 @@ export default function Collection({
         <div className="gallery">
           {products.map((p, i) => {
             const delayClass = i % 3 === 1 ? " d1" : i % 3 === 2 ? " d2" : "";
-            const tallClass = i === 4 ? " tall" : "";
-            const cardClass = `card reveal${delayClass}${tallClass}`;
+            const cardClass = `card reveal${delayClass}`;
 
             return (
               <Link key={p.id} href={`/${lang}/products/${p.slug}`} className={cardClass}>
