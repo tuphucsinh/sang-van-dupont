@@ -57,9 +57,6 @@ export default function Hero() {
           <span className="d"></span>
         </div>
         <div className="hero-cta reveal d3">
-          <a className="btn solid" href="tel:+84905076886">
-            <span data-i18n="cta_call">GỌI NGAY</span> · +84 905 076 886
-          </a>
           <a className="btn" href="#collection" data-i18n="cta_collection">
             Khám phá bộ sưu tập
           </a>
