@@ -10,11 +10,28 @@
 ## 0. HERO FB — "Ngọn lửa bùng lên từ rồng" (8s — ảnh fb_3, khuyên dùng nhất)
 **Input image**: fb_3.jpg (bật lửa vàng khắc rồng, nắp mở) · **Ratio**: 9:16 hoặc 1:1 · **Duration**: 8s
 
+### Bản LẦN 1 (đã dùng — composition đẹp)
 ```
 Cinematic luxury product commercial, 8 seconds, ultra premium watch-advertisement style.
 A vintage gold lighter with hand-engraved dragon patterns and open lid, from the reference image,
 held in a hand. A warm golden flame suddenly ignites from the burner with a soft metallic click,
 the flame flickering gently and growing steadier.
+Slow cinematic camera orbit around the lighter, the golden light from the flame tracing the
+engraved dragon details, making them sparkle line by line.
+Thin wisps of smoke curling upward, floating gold dust particles, dark moody background with
+warm golden bokeh.
+Dramatic chiaroscuro lighting, slow motion, shallow depth of field, 35mm film aesthetic,
+sophisticated and masculine, black and gold palette.
+No text, no logo, no watermark.
+```
+
+### Bản V2 — ĐÚNG ĐỘNG TÁC + 1 LẦN BẬT (dùng prompt này, input ảnh fb_3)
+```
+Cinematic luxury product commercial, 8 seconds, ultra premium watch-advertisement style.
+A vintage gold lighter with hand-engraved dragon patterns and open lid, from the reference image,
+held in a hand. The thumb rolls the black strike wheel downward in one decisive motion —
+a spark flashes, and the flame ignites exactly once from the burner with a soft metallic click,
+then burns steadily without relighting, the flame flickering gently.
 Slow cinematic camera orbit around the lighter, the golden light from the flame tracing the
 engraved dragon details, making them sparkle line by line.
 Thin wisps of smoke curling upward, floating gold dust particles, dark moody background with
