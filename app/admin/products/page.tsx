@@ -1,7 +1,7 @@
 "use client";
 
 import AdminGuard from "@/components/AdminGuard";
-import { supabase } from "@/lib/supabase-client";
+import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useIsMobile } from "@/lib/useIsMobile";

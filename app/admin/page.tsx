@@ -1,11 +1,10 @@
 "use client";
 
-import { supabase } from "@/lib/supabase-client";
+import { ADMIN_EMAILS, isAdminEmail } from "@/lib/admin";
+import { supabase } from "@/lib/supabase";
+import { useIsMobile } from "@/lib/useIsMobile";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useIsMobile } from "@/lib/useIsMobile";
-
-const ADMIN_EMAILS = ["tvccbod@gmail.com", "aivntps@gmail.com"];
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -41,7 +40,7 @@ export default function AdminLoginPage() {
   }, []);
 
   useEffect(() => {
-    if (!checking && email && ADMIN_EMAILS.includes(email)) {
+    if (!checking && isAdminEmail(email)) {
       router.replace("/admin/products");
     }
   }, [checking, email, router]);
@@ -97,7 +96,7 @@ export default function AdminLoginPage() {
     );
   }
 
-  if (email && ADMIN_EMAILS.includes(email)) {
+  if (isAdminEmail(email)) {
     return (
       <div
         style={{
@@ -114,7 +113,7 @@ export default function AdminLoginPage() {
     );
   }
 
-  if (email && !ADMIN_EMAILS.includes(email)) {
+  if (email && !isAdminEmail(email)) {
     return (
       <div
         style={{
