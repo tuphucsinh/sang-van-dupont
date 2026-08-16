@@ -116,3 +116,14 @@
 | D34 | **V18 hạ mức** (Q5) — signup đã an toàn theo L1: email provider tắt, RLS is_admin chặn write | disable_signup=false chủ đích (GitHub OAuth); ai đăng ký cũng chỉ đọc public |
 | D35 | **R2 tách 2 phần** (agy bổ sung): R2a metadata theo lang làm ngay; R2b html lang cần route group `(site)/(admin)` để đợt sau | Next 16 nested layout không render được `<html>` |
 | D36 | Plan ZCode tin cậy CAO (0 claim SAI — agy 25+ điểm khớp; Mika 6/6 CAO khớp) | 3 nguồn thống nhất: ZCode + Mika verify + agy Opus 4.6 |
+
+## 2026-08-16 — Đợt 2 security đã xong + production (R11-R14 + T2/T8)
+
+| # | Quyết định | Lý do |
+|---|---|---|
+| D37 | **Đợt 2 thực hiện qua runner agy** (thay ZCode) — 2 dispatch (ai-chat + vision-intake) + 2 fix review | Anh đổi runner; quy trình Mika-runner chuẩn |
+| D38 | **ai-chat 502 sẵn có** — KHÔNG phải regression đợt 2 (bản cũ cũng 502); nguyên nhân AI_API_KEY trong Supabase secrets cũ → set lại key mới từ shared.env | Verify bản cũ/main cũng 502 + upstream 200 với key shared.env |
+| D39 | **Model vision qwen3.7-plus/qwen3.8-max 503 từ provider** → chuyển `AI_VISION_MODEL=mimo-v2.5` (test vision thật 200, mô tả ảnh đúng) | Provider Console Go lỗi nhánh qwen; mimo-v2.5 đọc ảnh OK |
+| D40 | **Review fixes agy (gemini-3.1-pro-high)**: R12 insert ai_chat_logs cho lead_summary/chat_photo (count tăng — chặn spammer); R13 escape & trong signed URL Telegram; R14 giữ dấu chấm kw (.or) | 3 điểm agy nêu đều hợp lý, fix + deploy + test 200 |
+
+**Trả lời câu hỏi reviewer**: (1) AI_ENABLED tắt toàn bộ vision-intake (kể cả intake) — chủ ý giống ai-chat: kill switch tổng khi cần tắt khẩn; draft/translate có thêm lớp JWT admin riêng. (2) RATE_LIMIT_PER_HOUR=30 (như cũ) — khách thật hiếm vượt 30 chat/h.
