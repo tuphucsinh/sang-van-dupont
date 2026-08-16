@@ -1,6 +1,6 @@
 # HANDOFF — SangDupont (2026-08-16, phiên chốt — Refactor 3 đợt + security + production xanh)
 
-**Trạng thái**: ✅ COMPLETE — Refactor toàn diện 3 đợt (ZCode plan → agy thực hiện + review). Production live, main pushed `e70e127`.
+**Trạng thái**: ✅ COMPLETE — Refactor toàn diện 3 đợt (ZCode plan → agy thực hiện + review). Production live, main pushed `16f3fec`. Bài học phiên đã gộp vào skill `static-website-supabase` v1.1.0 (Refactor & Hardening + pitfalls 10-15).
 
 ## Đã hoàn tất hôm nay
 1. **Refactor đợt 1** (main `107cad7`): i18n render theo lang (bỏ DOM swap data-i18n), metadata theo ngôn ngữ, Zalo đúng số, build guard chống site rỗng, video reduced-motion, LeadForm 3MB, React.cache + singleton, SEO (canonical/sitemap), nav Link, Lightbox, not-found. Browser verify /vi + /en + product 100%.
