@@ -103,6 +103,10 @@ function hash(s: string): string {
   return h.toString(16);
 }
 
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 function b64ToBytes(b64: string): Uint8Array {
   try {
     const bin = atob(b64);
@@ -146,6 +150,19 @@ export default {
     // Mã yêu cầu (khách bổ sung thông tin cho lead đã gửi qua form)
     const requestCode = String(body.request_code || "").trim().slice(0, 8);
 
+    // Rate limit chung cho action nhạy cảm (lead_summary/chat_photo) — chống spam Telegram (V5)
+    if (body.action === "lead_summary" || body.action === "chat_photo") {
+      const ip = clientIp(req);
+      const { count: actCount } = await supabase
+        .from("ai_chat_logs")
+        .select("id", { count: "exact", head: true })
+        .gte("created_at", new Date(Date.now() - 3600_000).toISOString())
+        .eq("ip", ip);
+      if ((actCount || 0) >= RATE_LIMIT_PER_HOUR) {
+        return json({ ok: false, error: "Quá nhiều yêu cầu — thử lại sau 1 giờ" }, 429);
+      }
+    }
+
     // Đóng chat widget → gửi tóm tắt lead lên Telegram cho chủ shop (không gọi model, không tốn quota chat)
     if (body.action === "lead_summary") {
       if (!requestCode) return json({ ok: false, error: "Thiếu request_code" }, 400);
@@ -172,11 +189,11 @@ export default {
       }
       const lines = [
         `[LEAD ${lead.type === "maintenance" ? "BẢO DƯỠNG" : "MUA"}] #${lead.id.slice(0, 8)}`,
-        `Tên: ${lead.name} — ${lead.phone}`,
-        lead.budget ? `Ngân sách: ${lead.budget}` : "",
-        lead.line_interest ? `Dòng quan tâm: ${lead.line_interest}` : "",
-        lead.need ? `Nhu cầu: ${lead.need}` : "",
-        ...notes.slice(-3).map((n) => `Ghi chú chat: ${n.text}`),
+        `Tên: ${escapeHtml(lead.name || "")} — ${escapeHtml(lead.phone || "")}`,
+        lead.budget ? `Ngân sách: ${escapeHtml(lead.budget)}` : "",
+        lead.line_interest ? `Dòng quan tâm: ${escapeHtml(lead.line_interest)}` : "",
+        lead.need ? `Nhu cầu: ${escapeHtml(lead.need)}` : "",
+        ...notes.slice(-3).map((n) => `Ghi chú chat: ${escapeHtml(n.text || "")}`),
         photoLine,
       ].filter(Boolean).join("\n");
       const token = Deno.env.get("TELEGRAM_BOT_TOKEN") || "";
@@ -370,11 +387,12 @@ export default {
     const callTool = async (name: string, args: Record<string, unknown>) => {
       if (name === "search_products") {
         const kw = String(args.keyword || "").trim();
+        const kwClean = kw.replace(/[,.()%]/g, "");
         const { data } = await supabase
           .from("products")
           .select("slug, name_vi, name_en, line, status, price")
           .eq("status", "available")
-          .or(`name_vi.ilike.%${kw}%,name_en.ilike.%${kw}%,line.ilike.%${kw}%,slug.ilike.%${kw}%`)
+          .or(`name_vi.ilike.%${kwClean}%,name_en.ilike.%${kwClean}%,line.ilike.%${kwClean}%,slug.ilike.%${kwClean}%`)
           .limit(5);
         // Kèm link sản phẩm để model giới thiệu kèm link bấm được
         return JSON.stringify(
@@ -400,6 +418,7 @@ export default {
         // Deterministic filter — chọn candidate chính xác, AI chỉ giới thiệu
         const line = String(args.line || "").trim();
         const material = String(args.material || "").trim();
+        const materialClean = material.replace(/[,.()%]/g, "");
         const budgetMax = Number(args.budget_max) > 0 ? Number(args.budget_max) : null;
         const style = String(args.style || "").trim().toLowerCase();
 
@@ -408,7 +427,7 @@ export default {
           .select("slug, name_vi, name_en, line, material, status, price, price_unit")
           .eq("status", "available");
         if (line) q = q.eq("line", line);
-        if (material) q = q.or(`material.ilike.%${material}%,name_vi.ilike.%${material}%,name_en.ilike.%${material}%`);
+        if (material) q = q.or(`material.ilike.%${materialClean}%,name_vi.ilike.%${materialClean}%,name_en.ilike.%${materialClean}%`);
         if (budgetMax) q = q.lte("price", budgetMax);
         const { data } = await q.limit(5);
 
@@ -456,7 +475,7 @@ export default {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 chat_id: Number(chatId),
-                text: `[LEAD MỚI — AI CHAT]\nTên: <b>${name}</b>\nSĐT: ${phone}\nNhu cầu: ${need || "-"}\n#${lead.id.slice(0, 8)}`,
+                text: `[LEAD MỚI — AI CHAT]\nTên: <b>${escapeHtml(name)}</b>\nSĐT: ${escapeHtml(phone)}\nNhu cầu: ${escapeHtml(need || "-")}\n#${lead.id.slice(0, 8)}`,
                 parse_mode: "HTML",
               }),
             });
@@ -560,7 +579,10 @@ export default {
       const data = await res.json();
       usedTokens = data.usage?.total_tokens || 0;
       const choice = data.choices?.[0];
-      if (!choice) return json({ ok: false, error: "Phản hồi trống" }, 502);
+      if (!choice) {
+        await supabase.from("ai_chat_logs").insert({ prompt_hash: hash(message), ip, status: 502, tokens: 0, response_preview: "no choice" });
+        return json({ ok: false, error: "Phản hồi trống" }, 502);
+      }
 
       // opencode-go (gpt-5.6-luna) trả finish_reason null/undefined khi gọi tool — phải check tool_calls trực tiếp
       if (choice.message?.tool_calls?.length) {

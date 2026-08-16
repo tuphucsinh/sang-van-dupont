@@ -1,5 +1,5 @@
 // vision-intake — AI mô tả sơ bộ ảnh (P9T01, P9T03 mode=draft)
-// Provider: opencode-go (AI_API_KEY) — model qwen3.8-max (vision verified 2026-08-14; gpt-5.6-luna text-only)
+// Provider: opencode-go (AI_API_KEY) — model qwen3.7-plus (vision; gpt-5.6-luna text-only)
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const ALLOWED_ORIGIN = "https://sangdupont.vercel.app";
@@ -50,6 +50,10 @@ export default {
     if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
     if (req.method !== "POST") return json({ ok: false, error: "Method not allowed" }, 405);
 
+    if (Deno.env.get("AI_ENABLED") !== "true") {
+      return json({ ok: false, error: "Dịch vụ tạm tắt" }, 503);
+    }
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -62,8 +66,21 @@ export default {
       return json({ ok: false, error: "JSON không hợp lệ" }, 400);
     }
     const imageB64 = String(body.image_b64 || "");
+    const mode = body.mode === "draft" ? "draft" : body.mode === "translate" ? "translate" : "intake";
+
+    if (mode === "draft" || mode === "translate") {
+      const authHeader = req.headers.get("authorization") || "";
+      const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+      if (!token) return json({ ok: false, error: "Yêu cầu đăng nhập admin" }, 401);
+      const { data: userData, error: authErr } = await supabase.auth.getUser(token);
+      if (authErr || !userData?.user) return json({ ok: false, error: "Token không hợp lệ" }, 401);
+      // Allowlist email admin (khớp migration 20260814160000_admin_allowlist_email.sql)
+      const adminEmail = Deno.env.get("ADMIN_EMAIL") || "tvccbod@gmail.com";
+      if (userData.user.email !== adminEmail) return json({ ok: false, error: "Không có quyền admin" }, 403);
+    }
+
     // translate không cần ảnh
-    if (body.mode !== "translate") {
+    if (mode !== "translate") {
       if (!imageB64) return json({ ok: false, error: "Thiếu ảnh (image_b64)" }, 400);
       // ước lượng kích thước base64 → bytes (xấp xỉ 3/4)
       if ((imageB64.length * 3) / 4 > MAX_IMG_BYTES + 4096) {
@@ -80,8 +97,6 @@ export default {
     if ((count || 0) >= RATE_LIMIT_PER_HOUR) {
       return json({ ok: false, error: "Thử lại sau 1 giờ" }, 429);
     }
-
-    const mode = body.mode === "draft" ? "draft" : body.mode === "translate" ? "translate" : "intake";
     const name = String(body.name || "").slice(0, 200);
     const text = String(body.text || "").slice(0, 300);
     let userPrompt = INTAKE_PROMPT;
