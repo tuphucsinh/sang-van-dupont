@@ -104,3 +104,15 @@
 | D27 | **AI Marketing Pipeline = tool internal sangbot**: prompt templates + gọi opencode-go (deepseek-v4-flash text / qwen3.7-plus vision) từ Pi5; input data Supabase thật; output draft git-tracked `marketing/drafts/<slug>/`; human review trước publish; **KHÔNG tự đăng bài** | D11 AI chỉ tạo draft; out-of-scope file nguồn §11 ("AI tự đăng bài") | D11 + file nguồn §11 |
 | D28 | **Website Operator = CLI `sangops` local** (scripts/ops/): service role từ `.env.local` (không vào git), gh CLI theo dõi Actions, Vercel deploy hook (reuse P4), smoke CDP (reuse P7); **push/deploy/delete = approval gate** anh duyệt qua Telegram | An toàn production; quy tắc git dự án: push chỉ khi anh báo | AGENTS.md GIT & SECRETS |
 | D29 | **Internal AI Policy mở rộng** (append AI_POLICY.md): nội dung marketing/operator chỉ từ data thật; mọi write có log + reversible; operator tuân thủ guard approval | Nhất quán AI_POLICY nguyên tắc 1 + 5 | AI_POLICY.md |
+
+## 2026-08-16 — Duyệt plan refactor ZCode (REFACTOR_PLAN.md) — theo khuyến nghị Mika + agy Opus 4.6
+
+| # | Quyết định | Lý do |
+|---|---|---|
+| D30 | **GIỮ video hero** (Q1) — không bỏ/nén; R5 chỉ bỏ preload hero.jpg + prefers-reduced-motion + sửa comment | Anh chốt giữ video; nặng nhất site nhưng là điểm nhấn thị giác anh muốn giữ |
+| D31 | **/en là market thật** (Q2) — làm đủ R1 + R2 + R8 SEO EN | Anh chốt; EN đang bị index nội dung VI |
+| D32 | **Refactor i18n R1** (Q3): bỏ cơ chế data-i18n DOM swap, render đúng ngôn ngữ theo lang từ đầu | Đúng hướng, 1 cơ chế thay 4; browser-verify 2 ngôn ngữ |
+| D33 | **P3 (R11-R14) làm sau đợt 1** (Q4) — edge functions deploy có anh duyệt từng bước | C6 là rủi ro mất tiền nhưng cần deploy; không trộn vào đợt 1 |
+| D34 | **V18 hạ mức** (Q5) — signup đã an toàn theo L1: email provider tắt, RLS is_admin chặn write | disable_signup=false chủ đích (GitHub OAuth); ai đăng ký cũng chỉ đọc public |
+| D35 | **R2 tách 2 phần** (agy bổ sung): R2a metadata theo lang làm ngay; R2b html lang cần route group `(site)/(admin)` để đợt sau | Next 16 nested layout không render được `<html>` |
+| D36 | Plan ZCode tin cậy CAO (0 claim SAI — agy 25+ điểm khớp; Mika 6/6 CAO khớp) | 3 nguồn thống nhất: ZCode + Mika verify + agy Opus 4.6 |

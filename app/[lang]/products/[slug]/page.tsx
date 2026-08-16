@@ -7,6 +7,8 @@ import {
 } from "../../../../lib/catalog";
 import ProductDetail from "../../../../components/ProductDetail";
 import Contact from "@/components/Contact";
+import Lightbox from "@/components/Lightbox";
+import { I18nProvider } from "@/components/I18nProvider";
 
 export const dynamicParams = false; // 404 cho slug lạ (static export)
 
@@ -34,7 +36,7 @@ export async function generateMetadata({
     title: name + " — Sang Van",
     description: desc || undefined,
     alternates: {
-      canonical: `/vi/products/${p.slug}`,
+      canonical: lang === "en" ? `/en/products/${p.slug}` : `/vi/products/${p.slug}`,
       languages: {
         vi: `https://sangdupont.vercel.app/vi/products/${p.slug}`,
         en: `https://sangdupont.vercel.app/en/products/${p.slug}`,
@@ -59,13 +61,14 @@ export default async function ProductPage({
 
   const similar = await getSimilarProducts(product, 3);
   return (
-    <>
+    <I18nProvider initialLang={lang as "vi" | "en"}>
       <ProductDetail
         product={product}
         lang={lang as "vi" | "en"}
         similar={similar}
       />
       <Contact />
-    </>
+      <Lightbox />
+    </I18nProvider>
   );
 }

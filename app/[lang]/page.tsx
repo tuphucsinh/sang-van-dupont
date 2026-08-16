@@ -23,12 +23,30 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const { lang } = await params;
   const isEn = lang === "en";
   return {
+    title: isEn
+      ? "ST DUPONT VINTAGE — Sang Van | Vintage S.T. Dupont Lighters"
+      : "ST DUPONT VINTAGE — Sang Van · Bật lửa sưu tầm chính hãng",
+    description: isEn
+      ? "Authentic vintage S.T. Dupont lighters — French artistry, curated, inspected and serviced in Vietnam."
+      : "Sưu tầm & bảo dưỡng bật lửa S.T. Dupont vintage chính hãng — Tinh hoa nước Pháp, gửi đến Việt Nam.",
     alternates: {
       canonical: isEn ? "/en" : "/vi",
       languages: {
         vi: "https://sangdupont.vercel.app/vi",
         en: "https://sangdupont.vercel.app/en",
       },
+    },
+    openGraph: {
+      title: isEn
+        ? "ST DUPONT VINTAGE — Sang Van | Vintage S.T. Dupont Lighters"
+        : "ST DUPONT VINTAGE — Sang Van",
+      description: isEn
+        ? "Authentic vintage S.T. Dupont lighters — French artistry, curated, inspected and serviced in Vietnam."
+        : "Bật lửa S.T. Dupont vintage chính hãng — sưu tầm, kiểm định, bảo dưỡng",
+      siteName: "SangDupont",
+      locale: isEn ? "en_US" : "vi_VN",
+      type: "website",
+      images: [{ url: "/assets/img/hero.jpg", width: 1200, height: 630 }],
     },
   };
 }
@@ -43,7 +61,6 @@ export default async function Home({
 
   return (
     <I18nProvider initialLang={(lang === "en" ? "en" : "vi") as "vi" | "en"}>
-      <link rel="preload" as="image" href="/assets/img/hero.jpg" />
       <Nav />
       <Hero />
       <Marquee />

@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getSupabaseClient } from "./supabase";
 
 export interface ProductMedia {
@@ -24,9 +25,17 @@ export interface Product {
 type ProductRow = Omit<Product, "media">;
 type MediaRow = ProductMedia & { product_id: string };
 
-export async function getAllProducts(): Promise<Product[]> {
+export const getAllProducts = cache(async (): Promise<Product[]> => {
+  const isProd = process.env.NODE_ENV === "production";
   const client = getSupabaseClient();
-  if (!client) return [];
+  if (!client) {
+    if (isProd) {
+      throw new Error(
+        "Build blocked: catalog fetch failed — Supabase client not initialized (missing environment variables)"
+      );
+    }
+    return [];
+  }
   try {
     const { data: products, error: e1 } = await client
       .from("products")
@@ -35,9 +44,17 @@ export async function getAllProducts(): Promise<Product[]> {
       .order("slug");
     if (e1) {
       console.warn("[catalog] fetch products fail:", e1.message);
+      if (isProd) {
+        throw new Error(`Build blocked: catalog fetch failed — ${e1.message}`);
+      }
       return [];
     }
-    if (!products?.length) return [];
+    if (!products?.length) {
+      if (isProd) {
+        throw new Error("Build blocked: catalog fetch failed — no products found");
+      }
+      return [];
+    }
     const ids = products.map((p) => p.id);
     const { data: media, error: e2 } = await client
       .from("product_media")
@@ -46,18 +63,33 @@ export async function getAllProducts(): Promise<Product[]> {
       .order("sort_order");
     if (e2) {
       console.warn("[catalog] fetch media fail:", e2.message);
+      if (isProd) {
+        throw new Error(`Build blocked: catalog fetch failed — ${e2.message}`);
+      }
     }
     return (products as ProductRow[]).map((p) => ({
       ...p,
-      media: (media as MediaRow[] | null)
-        ?.filter((m) => m.product_id === p.id)
-        .map((m) => ({ url: m.url, kind: m.kind, sort_order: m.sort_order })) || [],
+      media:
+        (media as MediaRow[] | null)
+          ?.filter((m) => m.product_id === p.id)
+          .map((m) => ({ url: m.url, kind: m.kind, sort_order: m.sort_order })) ||
+        [],
     }));
   } catch (err) {
     console.warn("[catalog] getAllProducts error:", err);
+    if (isProd) {
+      if (err instanceof Error && err.message.startsWith("Build blocked:")) {
+        throw err;
+      }
+      throw new Error(
+        `Build blocked: catalog fetch failed — ${
+          err instanceof Error ? err.message : String(err)
+        }`
+      );
+    }
     return [];
   }
-}
+});
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const all = await getAllProducts();

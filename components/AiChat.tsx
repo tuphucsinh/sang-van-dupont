@@ -59,6 +59,17 @@ const T = {
     open: "Mở chat AI",
     error: "Tạm thời không liên hệ được — thử lại",
     fail: "Không kết nối được — thử lại",
+    responding: "Đang phản hồi...",
+    attachTitle: "Gửi ảnh (≤3 ảnh, ≤1.5MB)",
+    imageOnly: "Dạ chỉ nhận file ảnh thôi ạ.",
+    imageTooLarge: "Dạ ảnh hơi lớn — anh gửi ảnh dưới 1.5MB nha.",
+    imageLimit: "Dạ tối đa 3 ảnh cho 1 yêu cầu thôi ạ.",
+    imageNeedInfo:
+      "Dạ anh cho em xin tên + SĐT qua form bên dưới trước để em gắn ảnh vào yêu cầu nha — hoặc gửi qua Zalo 0905 076 886 ạ.",
+    imageError:
+      "Dạ gửi ảnh chưa được — anh thử lại hoặc gửi qua Zalo 0905 076 886 nha.",
+    imageSentLabel: "[Ảnh] ",
+    imageSentPrefix: "em đã gửi ảnh: ",
   },
   en: {
     label: "SangDupont Assistant",
@@ -71,6 +82,17 @@ const T = {
     open: "Open AI chat",
     error: "Something went wrong — please try again",
     fail: "Cannot connect — please try again",
+    responding: "Responding...",
+    attachTitle: "Send photos (≤3 photos, ≤1.5MB)",
+    imageOnly: "Only image files are supported.",
+    imageTooLarge: "Image is too large — please send images under 1.5MB.",
+    imageLimit: "Maximum 3 photos per request.",
+    imageNeedInfo:
+      "Please provide your name and phone number via the contact form below first so we can attach the photos to your request — or send via Zalo 0905 076 886.",
+    imageError:
+      "Could not send photo — please try again or send via Zalo 0905 076 886.",
+    imageSentLabel: "[Photo] ",
+    imageSentPrefix: "I sent a photo: ",
   },
 } as const;
 
@@ -192,22 +214,22 @@ export default function AiChat() {
     e.target.value = "";
     if (!file || uploading) return;
     if (!file.type.startsWith("image/")) {
-      setMessages((p) => [...p, { role: "ai", text: "Dạ chỉ nhận file ảnh thôi ạ." }]);
+      setMessages((p) => [...p, { role: "ai", text: t.imageOnly }]);
       return;
     }
     if (file.size > 1.5 * 1024 * 1024) {
-      setMessages((p) => [...p, { role: "ai", text: "Dạ ảnh hơi lớn — anh gửi ảnh dưới 1.5MB nha." }]);
+      setMessages((p) => [...p, { role: "ai", text: t.imageTooLarge }]);
       return;
     }
     if (photoCount >= 3) {
-      setMessages((p) => [...p, { role: "ai", text: "Dạ tối đa 3 ảnh cho 1 yêu cầu thôi ạ." }]);
+      setMessages((p) => [...p, { role: "ai", text: t.imageLimit }]);
       return;
     }
     const code = requestCodeRef.current;
     if (!code) {
       setMessages((p) => [
         ...p,
-        { role: "ai", text: "Dạ anh cho em xin tên + SĐT qua form bên dưới trước để em gắn ảnh vào yêu cầu nha — hoặc gửi qua Zalo 0905 076 886 ạ." },
+        { role: "ai", text: t.imageNeedInfo },
       ]);
       return;
     }
@@ -230,10 +252,10 @@ export default function AiChat() {
         const d = await res.json();
         if (!res.ok || !d.ok) throw new Error(d?.error || "upload fail");
         setPhotoCount((c) => c + 1);
-        setMessages((p) => [...p, { role: "user", text: "[Ảnh] " + file.name }]);
-        await sendMessage(`em đã gửi ảnh: ${file.name}`);
+        setMessages((p) => [...p, { role: "user", text: t.imageSentLabel + file.name }]);
+        await sendMessage(`${t.imageSentPrefix}${file.name}`);
       } catch {
-        setMessages((p) => [...p, { role: "ai", text: "Dạ gửi ảnh chưa được — anh thử lại hoặc gửi qua Zalo 0905 076 886 nha." }]);
+        setMessages((p) => [...p, { role: "ai", text: t.imageError }]);
       } finally {
         setUploading(false);
       }
@@ -312,7 +334,7 @@ export default function AiChat() {
             </span>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <a
-                href="https://zalo.me/0905076886"
+                href="https://zalo.me/84905076886"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -415,7 +437,7 @@ export default function AiChat() {
                   fontStyle: "italic",
                 }}
               >
-                Đang phản hồi...
+                {t.responding}
               </div>
             )}
           </div>
@@ -431,7 +453,7 @@ export default function AiChat() {
             }}
           >
             <label
-              title="Gửi ảnh (≤3 ảnh, ≤1.5MB)"
+              title={t.attachTitle}
               style={{
                 display: "flex",
                 alignItems: "center",

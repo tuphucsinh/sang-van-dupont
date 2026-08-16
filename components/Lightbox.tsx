@@ -13,32 +13,27 @@ export default function Lightbox() {
   }, []);
 
   useEffect(() => {
-    const handleCardClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement | null;
-      const card = target?.closest(".card");
-      if (card) {
-        const img = card.querySelector("img") as HTMLImageElement | null;
-        const cap = card.querySelector(".cap") as HTMLElement | null;
-        if (img) {
-          setImgSrc(img.src);
-          setCaption(cap ? cap.textContent?.trim().replace(/\s+/g, " · ") || "" : "");
-          setIsOpen(true);
-          document.body.style.overflow = "hidden";
-        }
-      }
-    };
-
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         close();
       }
     };
 
-    document.addEventListener("click", handleCardClick);
+    const handleCustomOpen = (e: Event) => {
+      const customEvent = e as CustomEvent<{ src: string; caption?: string }>;
+      if (customEvent.detail?.src) {
+        setImgSrc(customEvent.detail.src);
+        setCaption(customEvent.detail.caption || "");
+        setIsOpen(true);
+        document.body.style.overflow = "hidden";
+      }
+    };
+
+    window.addEventListener("sang-open-lightbox", handleCustomOpen);
     document.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.removeEventListener("click", handleCardClick);
+      window.removeEventListener("sang-open-lightbox", handleCustomOpen);
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
     };

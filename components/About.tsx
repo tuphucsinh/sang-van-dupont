@@ -1,6 +1,12 @@
+"use client";
+
 import React from "react";
+import { useI18n, I18N } from "./I18nProvider";
 
 export default function About() {
+  const { lang } = useI18n();
+  const t = I18N[lang];
+
   return (
     <section
       className="section"
@@ -17,22 +23,22 @@ export default function About() {
             </div>
             <div className="badge">
               <b>20+</b>
-              <span data-i18n="badge_fb">Năm sưu tầm</span>
+              <span data-i18n="badge_fb">{t.badge_fb}</span>
             </div>
           </div>
           <div className="about-copy reveal d1">
             <div className="eyebrow" data-i18n="about_eyebrow">
-              Về tôi
+              {t.about_eyebrow}
             </div>
-            <h2 data-i18n="about_title">Sang Van — người giữ lửa S.T. Dupont</h2>
+            <h2 data-i18n="about_title">{t.about_title}</h2>
             <p data-i18n="about_p1">
-              Đam mê sưu tầm bật lửa S.T. Dupont chính hãng. Tôi dành thời gian tìm kiếm những chiếc bật lửa vintage còn nguyên giá trị, kiểm tra từng chi tiết, bảo dưỡng cơ chế đánh lửa và trao lại chúng cho những người biết trân trọng.
+              {t.about_p1}
             </p>
             <p data-i18n="about_p2">
-              Từ TP.HCM, qua Facebook và TikTok, tôi chia sẻ hành trình sưu tầm của mình đến cộng đồng yêu bật lửa — và đồng hành cùng họ trong việc bảo dưỡng, phục hồi những tuyệt tác nước Pháp.
+              {t.about_p2}
             </p>
             <blockquote className="quote" data-i18n="about_quote">
-              “Đừng do dự nữa anh em, quyết định thôi. Lăn tăn chỉ chuốc muộn phiền — một khi đã thích, xuống tiền nhích ngay.”
+              {t.about_quote}
             </blockquote>
             <div className="about-links">
               <a
@@ -58,7 +64,7 @@ export default function About() {
                 rel="noopener"
                 data-i18n="about_zalo"
               >
-                Chat Zalo
+                {t.about_zalo}
               </a>
             </div>
           </div>

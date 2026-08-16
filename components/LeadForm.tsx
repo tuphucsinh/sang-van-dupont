@@ -54,6 +54,7 @@ const T = {
     rateLimit: "Quá nhiều yêu cầu — vui lòng thử lại sau 1 giờ",
     network: "Không kết nối được — thử lại",
     submitError: "Lỗi gửi",
+    photoTotalLimit: "Tổng dung lượng ảnh vượt quá 3MB. Vui lòng chọn ảnh nhỏ hơn.",
   },
   en: {
     title: "Send consultation request",
@@ -100,6 +101,7 @@ const T = {
     rateLimit: "Too many requests — please try again in 1 hour",
     network: "Cannot connect — please try again",
     submitError: "Failed to send request",
+    photoTotalLimit: "Total photo size exceeds 3MB. Please select smaller files.",
   },
 } as const;
 
@@ -195,6 +197,14 @@ export default function LeadForm() {
       (file) => file.type.startsWith("image/") && file.size <= 1.5 * 1024 * 1024
     );
     const newAttachments = [...attachments, ...validImages].slice(0, 3);
+    const totalSize = newAttachments.reduce((sum, f) => sum + f.size, 0);
+    if (totalSize > 3 * 1024 * 1024) {
+      setStatus("error");
+      setErrorMsg(t.photoTotalLimit);
+    } else if (status === "error" && errorMsg === t.photoTotalLimit) {
+      setStatus("idle");
+      setErrorMsg("");
+    }
     setAttachments(newAttachments);
     e.target.value = "";
 
@@ -206,6 +216,11 @@ export default function LeadForm() {
   const handleRemoveFile = (index: number) => {
     const nextAttachments = attachments.filter((_, i) => i !== index);
     setAttachments(nextAttachments);
+    const totalSize = nextAttachments.reduce((sum, f) => sum + f.size, 0);
+    if (totalSize <= 3 * 1024 * 1024 && status === "error" && errorMsg === t.photoTotalLimit) {
+      setStatus("idle");
+      setErrorMsg("");
+    }
     if (nextAttachments.length === 0) {
       setAiSummary("");
       setAiError("");
@@ -268,6 +283,15 @@ export default function LeadForm() {
       setStatus("error");
       setErrorMsg(t.consentReq);
       return;
+    }
+
+    if (form.type === "maintenance" && attachments.length > 0) {
+      const totalSize = attachments.reduce((sum, f) => sum + f.size, 0);
+      if (totalSize > 3 * 1024 * 1024) {
+        setStatus("error");
+        setErrorMsg(t.photoTotalLimit);
+        return;
+      }
     }
 
     setStatus("sending");
