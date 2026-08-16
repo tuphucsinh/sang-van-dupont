@@ -1,16 +1,24 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useI18n, I18N } from "./I18nProvider";
 
 export default function Hero() {
   const { lang } = useI18n();
   const t = I18N[lang];
   const [videoDone, setVideoDone] = useState(false);
-  const [reducedMotion] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  });
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const t = setTimeout(() => setReducedMotion(mql.matches), 0);
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mql.addEventListener("change", handler);
+    return () => {
+      clearTimeout(t);
+      mql.removeEventListener("change", handler);
+    };
+  }, []);
 
   return (
     <section className="hero">

@@ -7,6 +7,7 @@ import {
 } from "../../../../lib/catalog";
 import ProductDetail from "../../../../components/ProductDetail";
 import Contact from "@/components/Contact";
+import Lightbox from "@/components/Lightbox";
 import { I18nProvider } from "@/components/I18nProvider";
 
 export const dynamicParams = false; // 404 cho slug lạ (static export)
@@ -67,6 +68,7 @@ export default async function ProductPage({
         similar={similar}
       />
       <Contact />
+      <Lightbox />
     </I18nProvider>
   );
 }

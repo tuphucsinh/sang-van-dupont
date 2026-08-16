@@ -452,12 +452,20 @@ export default function ProductDetail({
                     alt={`${name} - ${idx + 2}`}
                     loading="lazy"
                     decoding="async"
+                    onClick={() =>
+                      window.dispatchEvent(
+                        new CustomEvent("sang-open-lightbox", {
+                          detail: { src: m.url, caption: name },
+                        })
+                      )
+                    }
                     style={{
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
                       display: "block",
                       borderRadius: "6px",
+                      cursor: "pointer",
                     }}
                   />
                 </div>
