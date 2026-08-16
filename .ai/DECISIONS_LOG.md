@@ -137,3 +137,5 @@
 | D43 | **R15 is_admin theo auth.uid allowlist**: migration `20260816170000_admin_uid_allowlist.sql` — bảng admin_uids (2 uid seed) + hàm is_admin() so auth.uid(); GRANT EXECUTE cho anon (policy chạy dưới role anon); đã deploy + verify: anon đọc products 200, anon INSERT chặn 42501 | V18 — email claim dễ giả; uid bất biến |
 | D44 | **R2b html lang**: KHÔNG route group — bất khả thi Next 16 (root layout render html trước, (site)/layout không nhận params.lang); cơ chế hiện có đủ: I18nProvider set documentElement.lang client-side + generateMetadata locale theo lang (verify browser /en → html lang="en") | Giới hạn kỹ thuật; hreflang + metadata đã đủ SEO |
 | D45 | **Push main `e70e127`** sau khi anh duyệt "test rồi push luôn" | Anh yêu cầu; remote SSH tuphucsinh/sang-van-dupont |
+| D46 | **T3/T4 create-lead** (mime thật cho attachment upload + b64ToBytes 1 lần/ảnh) — deploy + test 201 (lead test đã xóa) | Mục THẤP còn lại trong plan |
+| D47 | **R15 verified E2E production**: anh mở /admin login GitHub OAuth → **OK** (session admin + RLS is_admin theo auth.uid hoạt động thật) | Chốt blocker cuối cùng; toàn bộ refactor 4 đợt hoàn tất |

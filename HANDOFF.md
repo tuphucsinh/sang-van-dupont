@@ -12,9 +12,9 @@
 - Không.
 
 ## Next (khi anh muốn)
-- Verify admin login thật production (GitHub OAuth) sau R15 migration — đã test anon chặn, chưa test admin session thật.
-- Dịch data `line`/`condition` sang EN trong Supabase (card collection /en đang hiện VI).
-- T3/T4 create-lead (mime thật + b64ToBytes 1 lần) — mục THẤP còn lại.
+- Không còn blocker — refactor 4 đợt hoàn tất + verified production (gồm admin login GitHub OAuth OK).
+- Theo dõi model vision `mimo-v2.5` (qwen có thể sống lại — cân nhắc đổi lại).
+- Backlog cũ: shop_policies cho AI, nhập giá thật, GA4 measurement ID (B1-B3 post-Release B).
 
 ## Kỹ thuật lưu ý
 - Model vision hiện tại `mimo-v2.5` (qwen3.7-plus/3.8-max đều 503 từ provider 16-08) — nếu qwen sống lại có thể cân nhắc đổi lại.
