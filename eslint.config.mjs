@@ -18,6 +18,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vercel prebuilt output (build artifact, gitignored)
+    ".vercel/**",
     // Supabase Edge Functions = Deno runtime, không theo chuẩn eslint Next
     "supabase/functions/**",
   ]),

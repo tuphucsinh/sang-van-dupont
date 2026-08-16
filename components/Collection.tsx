@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { Product } from "../lib/catalog";
+import { I18N } from "./I18nProvider";
 
 export default function Collection({
   products,
@@ -10,29 +11,32 @@ export default function Collection({
   products: Product[];
   lang?: "vi" | "en";
 }) {
+  const t = I18N[lang];
+
   return (
     <section className="section" id="collection">
       <div className="container">
         <div className="eyebrow reveal" data-i18n="col_eyebrow">
-          Collection 2026
+          {t.col_eyebrow}
         </div>
         <h2 className="sec-title reveal" data-i18n="col_title">
-          Tinh hoa trong từng chi tiết
+          {t.col_title}
         </h2>
         <div className="ornament reveal">
           <span className="dia"></span>
         </div>
         <p className="sec-sub reveal" data-i18n="col_sub">
-          Mỗi chiếc bật lửa là một lát cắt lịch sử — sơn mài Trung Hoa, khắc guilloché, mạ vàng 20 microns. Mỗi sản phẩm đều được kiểm tra và bảo dưỡng trước khi đến tay người sưu tầm.
+          {t.col_sub}
         </p>
         <div className="gallery">
           {products.map((p, i) => {
             const delayClass = i % 3 === 1 ? " d1" : i % 3 === 2 ? " d2" : "";
             const cardClass = `card reveal${delayClass}`;
+            const productName = lang === "en" ? p.name_en : p.name_vi;
 
             return (
               <Link key={p.id} href={`/${lang}/products/${p.slug}`} className={cardClass}>
-                <img src={p.media[0]?.url} alt={p.name_vi} loading="lazy" decoding="async" />
+                <img src={p.media[0]?.url} alt={productName} loading="lazy" decoding="async" />
                 {p.status !== "available" && (
                   <span
                     className="badge"
@@ -50,11 +54,13 @@ export default function Collection({
                       letterSpacing: "0.1em",
                     }}
                   >
-                    {p.status === "reserved" ? "Đã giữ" : "Đã bán"}
+                    {p.status === "reserved"
+                      ? (lang === "en" ? "Reserved" : "Đã giữ")
+                      : (lang === "en" ? "Sold" : "Đã bán")}
                   </span>
                 )}
                 <div className="cap">
-                  <b>{p.name_vi}</b>
+                  <b>{productName}</b>
                   <span>{p.line || p.condition || ""}</span>
                 </div>
               </Link>

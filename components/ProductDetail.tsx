@@ -30,6 +30,8 @@ export default function ProductDetail({
           call: "Call",
           chat: "Chat",
           inquiry: "Ask about this piece",
+          gallery: "Gallery",
+          noImage: "No image available",
         }
       : {
           home: "Trang chủ",
@@ -42,6 +44,8 @@ export default function ProductDetail({
           call: "Gọi ngay",
           chat: "Chat tư vấn",
           inquiry: "Hỏi về sản phẩm này",
+          gallery: "Bộ sưu tập ảnh",
+          noImage: "Chưa có hình ảnh",
         };
 
   const name = lang === "en" ? product.name_en : product.name_vi;
@@ -259,7 +263,7 @@ export default function ProductDetail({
                   color: "#a89f8a",
                 }}
               >
-                No image available
+                {t.noImage}
               </div>
             )}
             {product.status !== "available" && (
@@ -423,7 +427,7 @@ export default function ProductDetail({
                 fontWeight: 600,
               }}
             >
-              Gallery
+              {t.gallery}
             </h2>
             <div
               style={{

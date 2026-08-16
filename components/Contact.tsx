@@ -2,16 +2,20 @@
 
 import React from "react";
 import LeadForm from "./LeadForm";
+import { useI18n, I18N } from "./I18nProvider";
 
 export default function Contact() {
+  const { lang } = useI18n();
+  const t = I18N[lang];
+
   return (
     <section className="section contact" id="contact">
       <div className="container">
         <div className="eyebrow reveal" data-i18n="ct_eyebrow">
-          Liên hệ
+          {t.ct_eyebrow}
         </div>
         <h2 className="sec-title reveal" data-i18n="ct_title">
-          Sở hữu một phần lịch sử
+          {t.ct_title}
         </h2>
         <div className="ornament reveal">
           <span className="dia"></span>
@@ -20,11 +24,11 @@ export default function Contact() {
           +84 905 076 886
         </a>
         <p className="note reveal d2" data-i18n="ct_note">
-          Inbox hoặc gọi trực tiếp — mình luôn sẵn sàng tư vấn, gửi ảnh chi tiết và bảo dưỡng tận tay.
+          {t.ct_note}
         </p>
         <div className="cta-row reveal d3">
           <a className="btn solid" href="tel:+84905076886">
-            📞 <span data-i18n="ct_call">Gọi ngay</span>
+            📞 <span data-i18n="ct_call">{t.ct_call}</span>
           </a>
           <a
             className="btn solid"

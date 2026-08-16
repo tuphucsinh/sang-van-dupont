@@ -49,7 +49,12 @@ export const I18N = {
     ct_note: "Inbox hoặc gọi trực tiếp — mình luôn sẵn sàng tư vấn, gửi ảnh chi tiết và bảo dưỡng tận tay.",
     ct_call: "Gọi ngay",
     ct_chat: "Chat tư vấn",
-    foot_note: "Bật lửa sưu tầm chính hãng · Bảo dưỡng chuyên sâu · TP.HCM, Việt Nam"
+    foot_note: "Bật lửa sưu tầm chính hãng · Bảo dưỡng chuyên sâu · TP.HCM, Việt Nam",
+    marquee_1: "S.T. Dupont Vintage",
+    marquee_2: "Bật lửa sưu tầm chính hãng",
+    marquee_3: "Bảo dưỡng chuyên sâu",
+    marquee_4: "Sơn mài & guilloché Pháp",
+    marquee_5: "Gatsby · L2 · Ligne 1"
   },
   en: {
     nav_brand_sub: "Sang Van · Collection",
@@ -95,7 +100,12 @@ export const I18N = {
     ct_note: "Message or call directly — always happy to advise, send detailed photos and hand-service your lighter.",
     ct_call: "Call now",
     ct_chat: "Chat with us",
-    foot_note: "Authentic collector lighters · Expert servicing · Ho Chi Minh City, Vietnam"
+    foot_note: "Authentic collector lighters · Expert servicing · Ho Chi Minh City, Vietnam",
+    marquee_1: "S.T. Dupont Vintage",
+    marquee_2: "Authentic collector lighters",
+    marquee_3: "Expert servicing",
+    marquee_4: "French lacquer & guilloché",
+    marquee_5: "Gatsby · L2 · Ligne 1"
   }
 };
 
@@ -130,13 +140,6 @@ export function I18nProvider({
   const applyLang = useCallback((nextLang: Lang) => {
     document.documentElement.setAttribute("lang", nextLang);
     document.documentElement.dataset.lang = nextLang;
-    const dict = I18N[nextLang];
-    document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((el) => {
-      const key = el.dataset.i18n as keyof typeof dict | undefined;
-      if (key && dict[key]) {
-        el.textContent = dict[key];
-      }
-    });
     document.getElementById("langVi")?.classList.toggle("active", nextLang === "vi");
     document.getElementById("langEn")?.classList.toggle("active", nextLang === "en");
     try {

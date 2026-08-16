@@ -1,6 +1,12 @@
+"use client";
+
 import React from "react";
+import { useI18n, I18N } from "./I18nProvider";
 
 export default function Footer() {
+  const { lang } = useI18n();
+  const t = I18N[lang];
+
   return (
     <footer>
       <div className="container foot">
@@ -16,7 +22,7 @@ export default function Footer() {
           ST·DUPONT <span>VINTAGE</span> — Sang Van
         </div>
         <p data-i18n="foot_note">
-          Bật lửa sưu tầm chính hãng · Bảo dưỡng chuyên sâu · TP.HCM, Việt Nam
+          {t.foot_note}
         </p>
         <div className="social">
           <a

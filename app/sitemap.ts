@@ -12,6 +12,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: base + "/",
       lastModified: new Date(),
     },
+    {
+      url: `${base}/vi`,
+      lastModified: new Date(),
+      alternates: {
+        languages: {
+          vi: `${base}/vi`,
+          en: `${base}/en`,
+        },
+      },
+    },
+    {
+      url: `${base}/en`,
+      lastModified: new Date(),
+      alternates: {
+        languages: {
+          vi: `${base}/vi`,
+          en: `${base}/en`,
+        },
+      },
+    },
   ];
 
   for (const p of products) {
