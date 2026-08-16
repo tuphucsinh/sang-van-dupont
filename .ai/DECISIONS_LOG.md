@@ -127,3 +127,13 @@
 | D40 | **Review fixes agy (gemini-3.1-pro-high)**: R12 insert ai_chat_logs cho lead_summary/chat_photo (count tăng — chặn spammer); R13 escape & trong signed URL Telegram; R14 giữ dấu chấm kw (.or) | 3 điểm agy nêu đều hợp lý, fix + deploy + test 200 |
 
 **Trả lời câu hỏi reviewer**: (1) AI_ENABLED tắt toàn bộ vision-intake (kể cả intake) — chủ ý giống ai-chat: kill switch tổng khi cần tắt khẩn; draft/translate có thêm lớp JWT admin riêng. (2) RATE_LIMIT_PER_HOUR=30 (như cũ) — khách thật hiếm vượt 30 chat/h.
+
+## 2026-08-16 — Đợt 3: R15-R17 + R2b verify + push main
+
+| # | Quyết định | Lý do |
+|---|---|---|
+| D41 | **R16 gộp module**: xóa lib/supabase-client.ts → lib/supabase.ts export cả `getSupabaseClient` (lazy, catalog) + `supabase` (eager, admin) | V4 — 2 module song song dễ nhầm; 4 file admin đổi import |
+| D42 | **R17 ADMIN_EMAILS 1 nơi**: tạo lib/admin.ts (ADMIN_EMAILS + isAdminEmail) — admin page + AdminGuard import chung | V9 — trước 3 nơi lệch nhau |
+| D43 | **R15 is_admin theo auth.uid allowlist**: migration `20260816170000_admin_uid_allowlist.sql` — bảng admin_uids (2 uid seed) + hàm is_admin() so auth.uid(); GRANT EXECUTE cho anon (policy chạy dưới role anon); đã deploy + verify: anon đọc products 200, anon INSERT chặn 42501 | V18 — email claim dễ giả; uid bất biến |
+| D44 | **R2b html lang**: KHÔNG route group — bất khả thi Next 16 (root layout render html trước, (site)/layout không nhận params.lang); cơ chế hiện có đủ: I18nProvider set documentElement.lang client-side + generateMetadata locale theo lang (verify browser /en → html lang="en") | Giới hạn kỹ thuật; hreflang + metadata đã đủ SEO |
+| D45 | **Push main `e70e127`** sau khi anh duyệt "test rồi push luôn" | Anh yêu cầu; remote SSH tuphucsinh/sang-van-dupont |

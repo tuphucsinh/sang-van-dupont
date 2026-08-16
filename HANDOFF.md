@@ -1,20 +1,23 @@
-# HANDOFF — SangDupont (2026-08-15, phiên chốt — UI + chat AI tối ưu)
+# HANDOFF — SangDupont (2026-08-16, phiên chốt — Refactor 3 đợt + security + production xanh)
 
-**Trạng thái**: ✅ COMPLETE — UI homepage + chat widget AI nâng cấp. Production live, repo sync origin/main.
+**Trạng thái**: ✅ COMPLETE — Refactor toàn diện 3 đợt (ZCode plan → agy thực hiện + review). Production live, main pushed `e70e127`.
 
 ## Đã hoàn tất hôm nay
-1. **UI homepage**: Collection card đồng đều aspect 3/2 (bỏ tall, ảnh tự crop cover); Hero bỏ nút GỌI NGAY; CTA "CHAT TƯ VẤN" dưới Collection + "CHAT BẢO DƯỠNG" dưới Dịch vụ (mở widget kèm lời chào riêng — event `sang-chat-prompt`); Contact bỏ nút Chat tư vấn (còn GỌI NGAY/ZALO/MESSENGER/TIKTOK).
-2. **Chat widget — model gpt-5.6-luna (opencode-go)**: đổi từ deepseek-v4-flash; fix 2 bug (max_tokens → max_completion_tokens; finish_reason null khi tool_calls); prompt 2 bậc ngoài phạm vi (lần 1 dẫn dắt khéo, lần 2+ từ chối); cấm emoji/~ nhấn mạnh; xin tên+SĐT khéo léo khi kết thúc; **link sản phẩm nhúng [Tên](url)** — widget render `<a>` vàng (không url trần).
-3. **Vercel ops**: env NEXT_PUBLIC_* đổi Sensitive → Non-sensitive (fix `vercel pull` trả `[SENSITIVE]` làm build fail); deploy prebuilt chuẩn; patch skill `vercel-deploy-workflow` (pitfall mới).
+1. **Refactor đợt 1** (main `107cad7`): i18n render theo lang (bỏ DOM swap data-i18n), metadata theo ngôn ngữ, Zalo đúng số, build guard chống site rỗng, video reduced-motion, LeadForm 3MB, React.cache + singleton, SEO (canonical/sitemap), nav Link, Lightbox, not-found. Browser verify /vi + /en + product 100%.
+2. **Refactor đợt 2** (main `04855d1`): security edge functions — vision-intake kill switch + JWT admin draft/translate, rate limit lead_summary/chat_photo, escapeHtml Telegram, sanitize kw, log no choice. Review agy + fixes (insert log action, escape & URL, giữ dấu chấm kw).
+3. **Refactor đợt 3** (main `e70e127`): R16 gộp supabase client modules, R17 ADMIN_EMAILS 1 hằng số (lib/admin.ts), R15 is_admin theo auth.uid allowlist (migration `20260816170000_admin_uid_allowlist.sql` đã deploy — anon read OK, INSERT chặn 42501). R2b verify: html lang client-side + metadata đủ (route group bất khả thi Next 16).
+4. **Sự cố đã xử lý**: ai-chat 502 (AI_API_KEY Supabase cũ → set key mới shared.env); model vision qwen chết upstream → `AI_VISION_MODEL=mimo-v2.5` (test vision thật OK).
 
 ## Blockers
-- Không có.
+- Không.
 
 ## Next (khi anh muốn)
-- Test trải nghiệm khách thật 1-2 phiên (2 nút CTA + chat bảo dưỡng) → tinh chỉnh nếu cần.
-- Sangbot canary qua Telegram nếu cần.
+- Verify admin login thật production (GitHub OAuth) sau R15 migration — đã test anon chặn, chưa test admin session thật.
+- Dịch data `line`/`condition` sang EN trong Supabase (card collection /en đang hiện VI).
+- T3/T4 create-lead (mime thật + b64ToBytes 1 lần) — mục THẤP còn lại.
 
 ## Kỹ thuật lưu ý
-- Model gpt-5.6-luna qua opencode-go: `finish_reason` null kèm `tool_calls` — code đã check `tool_calls?.length` trực tiếp; tham số completion theo model (`gpt-5.6*` → `max_completion_tokens`).
-- Edge function ai-chat: env qua Supabase secrets (AI_MODEL/AI_BASE_URL/AI_API_KEY) — KHÔNG hard-code model.
-- Backtick trong SYSTEM_PROMPT (template literal) → vỡ bundle — cấm dùng.
+- Model vision hiện tại `mimo-v2.5` (qwen3.7-plus/3.8-max đều 503 từ provider 16-08) — nếu qwen sống lại có thể cân nhắc đổi lại.
+- `AI_ENABLED` kill switch giờ áp cho CẢ ai-chat lẫn vision-intake (tắt toàn bộ AI khi cần).
+- Admin allowlist giờ ở `lib/admin.ts` (client) + `admin_uids` bảng (DB RLS) — thêm admin phải sửa CẢ 2 chỗ + Supabase Auth user.
+- Server local 3000 chạy next-server — khi build phải unset env ô nhiễm.
