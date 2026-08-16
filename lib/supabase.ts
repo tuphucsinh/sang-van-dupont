@@ -13,3 +13,9 @@ export function getSupabaseClient(): SupabaseClient | null {
   client = createClient(url, key);
   return client;
 }
+
+// Eager singleton cho admin (app/admin/*, components/AdminGuard) — url/key bắt buộc có ở build
+export const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || "",
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
+);
