@@ -13,8 +13,10 @@ export interface Product {
   name_vi: string;
   name_en: string;
   line: string | null;
+  line_en: string | null;
   material: string | null;
   condition: string | null;
+  condition_en: string | null;
   desc_vi: string | null;
   desc_en: string | null;
   price: number | null;

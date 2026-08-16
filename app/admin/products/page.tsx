@@ -19,8 +19,10 @@ export interface ProductRow {
   name_vi: string;
   name_en: string;
   line: string | null;
+  line_en?: string | null;
   material: string | null;
   condition: string | null;
+  condition_en?: string | null;
   desc_vi: string | null;
   desc_en: string | null;
   price: number | null;
@@ -34,8 +36,10 @@ interface ProductFormData {
   name_vi: string;
   name_en: string;
   line: string;
+  line_en: string;
   material: string;
   condition: string;
+  condition_en: string;
   desc_vi: string;
   desc_en: string;
   price: string;
@@ -47,8 +51,10 @@ const INITIAL_FORM: ProductFormData = {
   name_vi: "",
   name_en: "",
   line: "",
+  line_en: "",
   material: "",
   condition: "",
+  condition_en: "",
   desc_vi: "",
   desc_en: "",
   price: "",
@@ -140,8 +146,10 @@ export default function AdminProductsPage() {
       name_vi: p.name_vi || "",
       name_en: p.name_en || "",
       line: p.line || "",
+      line_en: p.line_en || "",
       material: p.material || "",
       condition: p.condition || "",
+      condition_en: p.condition_en || "",
       desc_vi: p.desc_vi || "",
       desc_en: p.desc_en || "",
       price: p.price !== null && p.price !== undefined ? String(p.price) : "",
@@ -301,8 +309,10 @@ export default function AdminProductsPage() {
         name_en: formData.name_en.trim(),
         slug: formData.slug.trim(),
         line: formData.line.trim() || null,
+        line_en: formData.line_en.trim() || null,
         material: formData.material.trim() || null,
         condition: formData.condition.trim() || null,
+        condition_en: formData.condition_en.trim() || null,
         desc_vi: formData.desc_vi.trim() || null,
         desc_en: formData.desc_en.trim() || null,
         price: formData.price.trim() !== "" ? Number(formData.price) : null,
@@ -1204,15 +1214,15 @@ export default function AdminProductsPage() {
                         color: "rgba(243, 236, 217, 0.85)",
                       }}
                     >
-                      Chất liệu (Material)
+                      Dòng sản phẩm EN (Line EN)
                     </label>
                     <input
                       type="text"
-                      value={formData.material}
+                      value={formData.line_en}
                       onChange={(e) =>
-                        setFormData({ ...formData, material: e.target.value })
+                        setFormData({ ...formData, line_en: e.target.value })
                       }
-                      placeholder="VD: Mạ vàng 20μ, Sơn mài tự nhiên..."
+                      placeholder="VD: Ligne 2, Gatsby, Accessories..."
                       style={{
                         width: "100%",
                         background: "#18181e",
@@ -1245,6 +1255,70 @@ export default function AdminProductsPage() {
                         setFormData({ ...formData, condition: e.target.value })
                       }
                       placeholder="VD: NOS full box, Like New 98%..."
+                      style={{
+                        width: "100%",
+                        background: "#18181e",
+                        border: "1px solid rgba(212, 175, 55, 0.25)",
+                        borderRadius: "6px",
+                        padding: "8px 12px",
+                        color: "#f3ecd9",
+                        fontSize: "14px",
+                        outline: "none",
+                        boxSizing: "border-box",
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      style={{
+                        display: "block",
+                        fontSize: "13px",
+                        marginBottom: "4px",
+                        color: "rgba(243, 236, 217, 0.85)",
+                      }}
+                    >
+                      Tình trạng EN (Condition EN)
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.condition_en}
+                      onChange={(e) =>
+                        setFormData({ ...formData, condition_en: e.target.value })
+                      }
+                      placeholder="VD: Authenticated, Serviced..."
+                      style={{
+                        width: "100%",
+                        background: "#18181e",
+                        border: "1px solid rgba(212, 175, 55, 0.25)",
+                        borderRadius: "6px",
+                        padding: "8px 12px",
+                        color: "#f3ecd9",
+                        fontSize: "14px",
+                        outline: "none",
+                        boxSizing: "border-box",
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      style={{
+                        display: "block",
+                        fontSize: "13px",
+                        marginBottom: "4px",
+                        color: "rgba(243, 236, 217, 0.85)",
+                      }}
+                    >
+                      Chất liệu (Material)
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.material}
+                      onChange={(e) =>
+                        setFormData({ ...formData, material: e.target.value })
+                      }
+                      placeholder="VD: Mạ vàng 20μ, Sơn mài tự nhiên..."
                       style={{
                         width: "100%",
                         background: "#18181e",

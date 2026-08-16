@@ -61,7 +61,7 @@ export default function Collection({
                 )}
                 <div className="cap">
                   <b>{productName}</b>
-                  <span>{p.line || p.condition || ""}</span>
+                  <span>{lang === "en" ? (p.line_en || p.condition_en || "") : (p.line || p.condition || "")}</span>
                 </div>
               </Link>
             );

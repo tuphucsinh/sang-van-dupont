@@ -50,7 +50,11 @@ export default function ProductDetail({
 
   const name = lang === "en" ? product.name_en : product.name_vi;
   const desc = lang === "en" ? product.desc_en : product.desc_vi;
-  const specs = [product.line, product.material, product.condition]
+  const line =
+    lang === "en" ? product.line_en || product.line : product.line;
+  const condition =
+    lang === "en" ? product.condition_en || product.condition : product.condition;
+  const specs = [line, product.material, condition]
     .filter(Boolean)
     .join(" • ");
   const formattedPrice =
