@@ -101,25 +101,29 @@ export default {
     };
     let savedAttachments = 0;
     if (attachments.length > 0) {
+      const decoded: { b64: string; name: string; raw: Uint8Array; mime: string }[] = [];
       let totalBytes = 0;
       for (const a of attachments) {
         const b64 = typeof a?.base64 === "string" ? a.base64 : "";
-        totalBytes += b64ToBytes(b64).length;
+        if (!b64) continue;
+        const raw = b64ToBytes(b64);
+        totalBytes += raw.length;
+        const name = typeof a?.name === "string" ? a.name : `anh-${decoded.length + 1}.jpg`;
+        const mime = typeof a?.type === "string" && a.type.startsWith("image/")
+          ? a.type
+          : (typeof a?.mime === "string" && a.mime.startsWith("image/") ? a.mime : "image/jpeg");
+        decoded.push({ b64, name, raw, mime });
       }
       if (totalBytes > 3 * 1024 * 1024) {
         return json({ ok: false, error: "Tổng ảnh tối đa 3MB" }, 400);
       }
-      for (const [i, a] of attachments.entries()) {
-        const b64 = typeof a?.base64 === "string" ? a.base64 : "";
-        const name = typeof a?.name === "string" ? a.name : `anh-${i + 1}.jpg`;
-        if (!b64) continue;
-        const raw = b64ToBytes(b64);
-        if (raw.length === 0 || raw.length > 1.5 * 1024 * 1024) continue;
-        const ext = name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+      for (const [i, d] of decoded.entries()) {
+        if (d.raw.length === 0 || d.raw.length > 1.5 * 1024 * 1024) continue;
+        const ext = d.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
         const path = `leads/${lead.id}/${Date.now()}-${i}.${ext}`;
         const { error: upErr } = await supabase.storage
           .from("lead-attachments")
-          .upload(path, raw, { contentType: "image/jpeg", upsert: false });
+          .upload(path, d.raw, { contentType: d.mime, upsert: false });
         if (upErr) {
           console.error("upload attach fail:", upErr.message);
           continue;
