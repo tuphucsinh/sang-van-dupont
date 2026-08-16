@@ -185,7 +185,7 @@ export default {
       if (atts && atts.length > 0) {
         const first = atts[0].storage_path as string;
         const { data: signed } = await supabase.storage.from("lead-attachments").createSignedUrl(first, 3600);
-        photoLine = `[Ảnh: ${atts.length}]${signed?.signedUrl ? " " + signed.signedUrl : ""}`;
+        photoLine = `[Ảnh: ${atts.length}]${signed?.signedUrl ? " " + signed.signedUrl.replace(/&/g, "&amp;") : ""}`;
       }
       const lines = [
         `[LEAD ${lead.type === "maintenance" ? "BẢO DƯỠNG" : "MUA"}] #${lead.id.slice(0, 8)}`,
@@ -209,6 +209,13 @@ export default {
           sent = r.ok;
         }
       } catch { /* không fail chính */ }
+      await supabase.from("ai_chat_logs").insert({
+        prompt_hash: "action-lead_summary",
+        ip: clientIp(req),
+        status: sent ? 200 : 500,
+        tokens: 0,
+        response_preview: "lead_summary",
+      });
       return json({ ok: true, sent }, 200);
     }
 
@@ -257,6 +264,13 @@ export default {
         : [];
       notes.push({ text: `Khách gửi ảnh qua chat: ${filename}`, at: new Date().toISOString(), source: "chat_widget" });
       await supabase.from("leads").update({ meta: { ...lead.meta, ai_notes: notes } }).eq("id", lead.id);
+      await supabase.from("ai_chat_logs").insert({
+        prompt_hash: "action-chat_photo",
+        ip: clientIp(req),
+        status: 200,
+        tokens: 0,
+        response_preview: "chat_photo",
+      });
       return json({ ok: true, count: (existCount || 0) + 1 }, 200);
     }
 
@@ -387,7 +401,7 @@ export default {
     const callTool = async (name: string, args: Record<string, unknown>) => {
       if (name === "search_products") {
         const kw = String(args.keyword || "").trim();
-        const kwClean = kw.replace(/[,.()%]/g, "");
+        const kwClean = kw.replace(/[,()%]/g, "");
         const { data } = await supabase
           .from("products")
           .select("slug, name_vi, name_en, line, status, price")
@@ -418,7 +432,7 @@ export default {
         // Deterministic filter — chọn candidate chính xác, AI chỉ giới thiệu
         const line = String(args.line || "").trim();
         const material = String(args.material || "").trim();
-        const materialClean = material.replace(/[,.()%]/g, "");
+        const materialClean = material.replace(/[,()%]/g, "");
         const budgetMax = Number(args.budget_max) > 0 ? Number(args.budget_max) : null;
         const style = String(args.style || "").trim().toLowerCase();
 
